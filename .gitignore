@@ -6,6 +6,8 @@ node_modules/
 .wrangler/
 deployment-status.json
 automation-status.json
+automation-local-status.json
+adsense-status.json
 sites/*/assets/
 sites/*/dist/
 sites/*/generated-pages.json

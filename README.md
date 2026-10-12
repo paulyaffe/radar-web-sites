@@ -1,12 +1,11 @@
 # Cuatro webs en Cloudflare Pages
 
-Paquete preparado para alojamiento gratuito. Los nombres de los proyectos
-son propuestas y todavía no prueban que se haya publicado una web.
+Las cuatro webs se publicaron y se comprobaron el 12 de octubre de 2026.
 
-- Cocina en gramos: `cocina-en-gramos-paul`
-- Masa exacta: `masa-exacta-paul`
-- Casa en vatios: `casa-en-vatios-paul`
-- Marcador claro: `marcador-claro-paul`
+- Cocina en gramos: https://cocina-en-gramos-paul.pages.dev
+- Masa exacta: https://masa-exacta-paul.pages.dev
+- Casa en vatios: https://casa-en-vatios-paul.pages.dev
+- Marcador claro: https://marcador-claro-paul.pages.dev
 
 ## Generar
 
@@ -43,6 +42,13 @@ solo el permiso Account > Cloudflare Pages > Edit para la cuenta elegida.
 No debe pegarse en archivos, mensajes de chat ni comandos que lo registren.
 Wrangler puede publicarlo localmente con OAuth, pero eso por sí solo no conecta
 las tareas de GitHub. El workflow no publica si faltan los secretos.
+
+Mientras se conecta GitHub, la tarea `RadarWeb_Cloudflare` del PC publica
+resultados cada dos horas y el resto de sitios una vez al día UTC mediante
+la sesión OAuth existente. Requiere que el PC esté encendido y la sesión del
+usuario abierta. Se ejecuta sin ventana, con prioridad baja y sin concurrencia.
+Los sitios siguen accesibles cuando el PC se apaga, con su última actualización.
+La tarea local deja de publicar al activar el workflow de GitHub.
 
 La fuente de fútbol no requiere cuentas ni claves. Se advierte de resultados
 desactualizados y no se inventan marcadores. No hay servicios de IA de pago ni
