@@ -1,0 +1,112 @@
+name: Actualizar y publicar las webs
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Actualizar y publicar los cuatro sitios
+        type: boolean
+        default: true
+  schedule:
+    - cron: '17 */2 * * *'
+
+concurrency:
+  group: radar-web-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      profiles: ${{ steps.update.outputs.profiles }}
+      ready: ${{ steps.connection.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Comprobar conexión con el alojamiento
+        id: connection
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Falta conectar Cloudflare; no se publica.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/setup-python@v6
+        if: steps.connection.outputs.ready == 'true'
+        with:
+          python-version: '3.11'
+      - name: Consultar fuentes y generar las webs
+        id: update
+        if: steps.connection.outputs.ready == 'true'
+        env:
+          FORCE_UPDATE: ${{ github.event.inputs.force }}
+        run: |
+          if [ "$FORCE_UPDATE" = 'true' ]; then
+            python update.py --force
+          else
+            python update.py
+          fi
+      - name: Conservar catálogos y resultados
+        if: steps.connection.outputs.ready == 'true'
+        run: |
+          git config user.name 'Radar Web'
+          git config user.email 'radar-web@users.noreply.github.com'
+          git add sites/*/*.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Actualizar datos y contenido de las webs'
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        if: steps.connection.outputs.ready == 'true'
+        with:
+          name: webs
+          path: sites/*/dist/
+          retention-days: 2
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        profile: ${{ fromJSON(needs.build.outputs.profiles) }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v5
+        with:
+          name: webs
+          path: sites
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Leer nombre del proyecto
+        id: project
+        env:
+          PROFILE: ${{ matrix.profile }}
+        run: |
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          config = json.loads(Path('sites', os.environ['PROFILE'], 'site.json').read_text())
+          project = config['cloudflare_project']
+          if not re.fullmatch(r'[a-z0-9-]{1,58}', project):
+              raise ValueError('Nombre de proyecto no válido')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write('name='+project+'\n')
+          PY
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          wranglerVersion: '4.149.0'
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy sites/${{ matrix.profile }}/dist --project-name=${{ steps.project.outputs.name }} --branch=main --commit-message="Actualizar Radar Web"

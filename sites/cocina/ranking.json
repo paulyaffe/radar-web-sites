@@ -1,0 +1,82 @@
+{
+  "updated": "2026-10-12T00:46:19+00:00",
+  "country": "ES",
+  "profile": "cocina",
+  "ranking": [
+    {
+      "topic": "garbanzos",
+      "sources": [
+        {
+          "title": "Sandra Moñino, nutricionista: \"La primera comida del día no debe ser un bizcocho; se puede desayunar una ensalada\" - Vitónica",
+          "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOZHRpSklSVWFBSUNKV29YZmc2cHQ0cmZjRU1kZk1TT1l5YkszaDRvbTlZOGJCajFJRHc0bnlhaXdrTGI1NXJkOVgwNzhGdk52eVZiOVdxOW9TdGlFN0NhQV9WRldFT21BQnhZMUFLQjRFNUNWWU9oNV9CeWc1aXFQS3B2M1JveVJITmh5VV9yZHdGTVo4Rl9RSHZ2Snh3XzB2Z1hWZDZOWXlqYXZSOFBEY2k3ei02cDNNbFhyODR3bENlbWtFamxKMtIBzgFBVV95cUxOT2lNT3BqSTNhcDUwZHhRUlBVLXNrQTFONllmeXZkUUpjTnAzME5kVFgxYXh6eTZNZExPakZEWmRWV1RXckwtbmdxRHdnWDJkMmdVVWtmYkNySE9KdVhuVjAxX2ZISEFna3dWUGo4bEx5VjNzOS1hMUtsTHA3UlR5ZFNaNVd1Mi1sTzU1R1hYdFlnWlluWkdpcUhCeUFKRVIxZlB6R2NVUWR4aTNDYkNDb2kwZTFKZUhnS3JKelNEd2pXdXpSbG1mZ2E3SExIZw?oc=5",
+          "date": "2026-10-08T13:53:52+00:00",
+          "source": "Google News",
+          "searches_lower_bound": null,
+          "traffic_label": ""
+        },
+        {
+          "title": "Top 10 de Cocina Fácil. Lo más visto esta semana: ensalada de patata, bizcocho con yogur y fresas y 8 recetas deliciosas más - Lecturas",
+          "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxQWFFJS01pSDh0RVNTNk8xcW5CNW9SblMxVlhtU3lVbnFqODNyTDFaQm9ZRUR1TnZoNkZzc0ZmVkFWa0tldW1CVlZzVXRxU2VZc1FfaUFtQ0c3VVkzNHdKT2lNS3ZuY3F0ZXZpalo5NXJ2OFZaX3Q4VGtlc2F2U3VEUzR3QlBPQmtzOFQ1blZIV1NScS1ZMlUyTGJYTFdfTTdLTXEta052ODJNaXdwXzRfMm54alZlcUVZelpYeUNZVFlmUzY2MzVMTFMyODJTai1qZEI3T05obVppakdPMTRpQ3RXVXJDTlU?oc=5",
+          "date": "2026-05-13T07:00:00+00:00",
+          "source": "Google News",
+          "searches_lower_bound": null,
+          "traffic_label": ""
+        },
+        {
+          "title": "Menú semanal saludable de Cocina Fácil: ensaladas, pollo, tortillas y postres para disfrutar sin remordimientos - Lecturas",
+          "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxOeGVLV0hpU1FCZU9FUnBhRDM3cExabGtjUHcxV3JLVjNrSldFek1FZG1ONkNvdUNSQjA1allPTC1tNFNaQlRCdzVnamJHaExZUUd5eV9kcHJuNWxMc0VoWnR2RkVfMWtDVE1KQlBRaWZGOTBCaG9wTzRYc0pRN1NRa2RTc09pQ0p0bjM0UXFweTRVa1VwZ0lvcnBaeS1rVDEzNUdPa0pWbnduVVgtZU9Xa0E1VVhUdGd4QTJQTHFpZklqWmQ2YVpNaXFnbDdVeHc5X3FOWlQzYWpfNG1wdjJsdDN3emxNc28?oc=5",
+          "date": "2026-05-18T07:00:00+00:00",
+          "source": "Google News",
+          "searches_lower_bound": null,
+          "traffic_label": ""
+        }
+      ],
+      "news_count": 3,
+      "searches_lower_bound": null,
+      "score": 5.0
+    },
+    {
+      "topic": "bizcocho",
+      "sources": [
+        {
+          "title": "Sandra Moñino, nutricionista: \"La primera comida del día no debe ser un bizcocho; se puede desayunar una ensalada\" - Vitónica",
+          "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOZHRpSklSVWFBSUNKV29YZmc2cHQ0cmZjRU1kZk1TT1l5YkszaDRvbTlZOGJCajFJRHc0bnlhaXdrTGI1NXJkOVgwNzhGdk52eVZiOVdxOW9TdGlFN0NhQV9WRldFT21BQnhZMUFLQjRFNUNWWU9oNV9CeWc1aXFQS3B2M1JveVJITmh5VV9yZHdGTVo4Rl9RSHZ2Snh3XzB2Z1hWZDZOWXlqYXZSOFBEY2k3ei02cDNNbFhyODR3bENlbWtFamxKMtIBzgFBVV95cUxOT2lNT3BqSTNhcDUwZHhRUlBVLXNrQTFONllmeXZkUUpjTnAzME5kVFgxYXh6eTZNZExPakZEWmRWV1RXckwtbmdxRHdnWDJkMmdVVWtmYkNySE9KdVhuVjAxX2ZISEFna3dWUGo4bEx5VjNzOS1hMUtsTHA3UlR5ZFNaNVd1Mi1sTzU1R1hYdFlnWlluWkdpcUhCeUFKRVIxZlB6R2NVUWR4aTNDYkNDb2kwZTFKZUhnS3JKelNEd2pXdXpSbG1mZ2E3SExIZw?oc=5",
+          "date": "2026-10-08T13:53:52+00:00",
+          "source": "Google News",
+          "searches_lower_bound": null,
+          "traffic_label": ""
+        },
+        {
+          "title": "Top 10 de Cocina Fácil. Lo más visto esta semana: ensalada de patata, bizcocho con yogur y fresas y 8 recetas deliciosas más - Lecturas",
+          "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxQWFFJS01pSDh0RVNTNk8xcW5CNW9SblMxVlhtU3lVbnFqODNyTDFaQm9ZRUR1TnZoNkZzc0ZmVkFWa0tldW1CVlZzVXRxU2VZc1FfaUFtQ0c3VVkzNHdKT2lNS3ZuY3F0ZXZpalo5NXJ2OFZaX3Q4VGtlc2F2U3VEUzR3QlBPQmtzOFQ1blZIV1NScS1ZMlUyTGJYTFdfTTdLTXEta052ODJNaXdwXzRfMm54alZlcUVZelpYeUNZVFlmUzY2MzVMTFMyODJTai1qZEI3T05obVppakdPMTRpQ3RXVXJDTlU?oc=5",
+          "date": "2026-05-13T07:00:00+00:00",
+          "source": "Google News",
+          "searches_lower_bound": null,
+          "traffic_label": ""
+        }
+      ],
+      "news_count": 2,
+      "searches_lower_bound": null,
+      "score": 4.0
+    },
+    {
+      "topic": "tortilla",
+      "sources": [
+        {
+          "title": "Menú semanal saludable de Cocina Fácil: ensaladas, pollo, tortillas y postres para disfrutar sin remordimientos - Lecturas",
+          "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxOeGVLV0hpU1FCZU9FUnBhRDM3cExabGtjUHcxV3JLVjNrSldFek1FZG1ONkNvdUNSQjA1allPTC1tNFNaQlRCdzVnamJHaExZUUd5eV9kcHJuNWxMc0VoWnR2RkVfMWtDVE1KQlBRaWZGOTBCaG9wTzRYc0pRN1NRa2RTc09pQ0p0bjM0UXFweTRVa1VwZ0lvcnBaeS1rVDEzNUdPa0pWbnduVVgtZU9Xa0E1VVhUdGd4QTJQTHFpZklqWmQ2YVpNaXFnbDdVeHc5X3FOWlQzYWpfNG1wdjJsdDN3emxNc28?oc=5",
+          "date": "2026-05-18T07:00:00+00:00",
+          "source": "Google News",
+          "searches_lower_bound": null,
+          "traffic_label": ""
+        }
+      ],
+      "news_count": 1,
+      "searches_lower_bound": null,
+      "score": 1.0
+    }
+  ],
+  "errors": [],
+  "raw_count": 18,
+  "meaning": "Prioridad editorial estimada. Google Trends mide búsquedas en auge; el recuento de noticias no mide búsquedas ni visitas."
+}

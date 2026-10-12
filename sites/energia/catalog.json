@@ -1,0 +1,109 @@
+{
+  "articles": [
+    {
+      "id": "vatios",
+      "title": "De vatios a kWh: entiende la cuenta",
+      "description": "Convierte una potencia media y un tiempo de uso en energía consumida.",
+      "kind": "guide",
+      "topic": "vatios",
+      "status": "published",
+      "created": "2026-10-12T00:07:37+00:00",
+      "sections": [
+        [
+          "Potencia y energía",
+          "Los vatios expresan potencia. Los kilovatios hora expresan energía. Un aparato que consume de media 100 W durante 10 horas utiliza 1 kWh."
+        ],
+        [
+          "La fórmula",
+          "Energía en kWh = vatios × horas ÷ 1000. Coste de energía = kWh × precio por kWh. Para 30 días, multiplica las horas de uso diario por 30."
+        ],
+        [
+          "Un ejemplo",
+          "Con 100 W, 8 horas al día y 30 días, el consumo es 24 kWh. Con un precio introducido de 0,20 €/kWh, el coste de esa energía es 4,80 €. Es un ejemplo, no una tarifa actual."
+        ],
+        [
+          "Qué incluye el resultado",
+          "La herramienta estima el término de energía con el precio que escribas. No añade potencia contratada, alquiler de contador, impuestos ni otros conceptos. Si tu precio ya los incluye, no los vuelvas a sumar."
+        ],
+        [
+          "Mide si puedes",
+          "La potencia de una etiqueta no siempre es el consumo medio. Los aparatos con ciclos o varios modos necesitan una medición representativa para una estimación útil."
+        ]
+      ],
+      "sources": [
+        "https://www.energy.gov/energysaver/estimating-appliance-and-home-electronic-energy-use"
+      ],
+      "origin": "Contenido original con fórmulas comprobables"
+    },
+    {
+      "id": "servidor",
+      "title": "El coste de un servidor encendido las 24 horas",
+      "description": "Una pequeña potencia sostenida durante todo el mes puede sumar un consumo apreciable.",
+      "kind": "guide",
+      "topic": "servidor",
+      "status": "published",
+      "created": "2026-10-12T00:07:37+00:00",
+      "sections": [
+        [
+          "Usa un consumo medido",
+          "Un servidor no utiliza de forma constante la potencia máxima de su fuente. Para hacer la cuenta, introduce una medición media representativa del equipo completo."
+        ],
+        [
+          "Treinta días completos",
+          "Un consumo medio de 40 W durante 24 horas al día y 30 días suma 28,8 kWh. Con el precio de ejemplo de 0,20 €/kWh, la energía cuesta 5,76 €."
+        ],
+        [
+          "Qué equipos estás contando",
+          "Si mides la torre, no incluyas también ese valor como consumo de sus discos internos. Puedes medir por separado un SAI, un switch o un monitor si no estaban incluidos."
+        ],
+        [
+          "Comparar antes de comprar",
+          "Introduce el consumo del equipo actual y del nuevo en la herramienta de amortización. El ahorro depende de las horas de funcionamiento y del precio de energía que realmente pagues."
+        ]
+      ],
+      "sources": [
+        "https://www.energy.gov/energysaver/estimating-appliance-and-home-electronic-energy-use"
+      ],
+      "origin": "Contenido original con fórmulas comprobables"
+    },
+    {
+      "id": "electrodomesticos",
+      "title": "Estimar un electrodoméstico con ciclos de consumo",
+      "description": "Distingue la potencia máxima de la energía de un ciclo completo.",
+      "kind": "guide",
+      "topic": "electrodomesticos",
+      "status": "published",
+      "created": "2026-10-12T00:07:39+00:00",
+      "sections": [
+        [
+          "La etiqueta y el uso real",
+          "Un calentador o un compresor no funciona necesariamente durante todo el tiempo que el aparato está encendido. Potencia máxima por horas encendido puede sobreestimar su consumo."
+        ],
+        [
+          "Si conoces los kWh por ciclo",
+          "Multiplica la energía medida de un ciclo por el número de ciclos del mes y por el precio por kWh. No necesitas volver a convertir desde vatios."
+        ],
+        [
+          "Si utilizas nuestra calculadora",
+          "Introduce una potencia media correspondiente al tiempo de uso, obtenida de una medición representativa. No presentes una estimación como una lectura de contador."
+        ],
+        [
+          "Compara condiciones parecidas",
+          "Para comparar dos aparatos, utiliza un mismo tipo de uso. Carga, programa y temperatura pueden cambiar la energía consumida."
+        ]
+      ],
+      "sources": [
+        "https://www.energy.gov/energysaver/estimating-appliance-and-home-electronic-energy-use"
+      ],
+      "origin": "Contenido original con fórmulas comprobables",
+      "trigger": {
+        "topic": "electrodomesticos",
+        "detected": "2026-10-12T00:07:39+00:00",
+        "score": 6.0,
+        "meaning": "Señal editorial; no visitas"
+      }
+    }
+  ],
+  "last_generation_date": "2026-10-12",
+  "generated_today": 1
+}

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+node_modules/
+.env
+.dev.vars
+.wrangler/
+deployment-status.json
+automation-status.json
+sites/*/assets/
+sites/*/dist/
+sites/*/generated-pages.json

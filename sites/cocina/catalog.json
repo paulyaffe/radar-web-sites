@@ -1,0 +1,204 @@
+{
+  "articles": [
+    {
+      "id": "tortitas",
+      "title": "Tortitas sencillas para una mañana tranquila",
+      "description": "Una receta base con harina, leche y huevo. Ajusta las cantidades al número de raciones que necesitas.",
+      "kind": "recipe",
+      "topic": "tortitas",
+      "status": "published",
+      "created": "2026-10-12T00:07:34+00:00",
+      "servings": 4,
+      "ingredients": [
+        {
+          "amount": 200,
+          "unit": "g",
+          "name": "harina de trigo"
+        },
+        {
+          "amount": 250,
+          "unit": "g",
+          "name": "leche"
+        },
+        {
+          "amount": 1,
+          "unit": "unidad",
+          "name": "huevo"
+        },
+        {
+          "amount": 20,
+          "unit": "g",
+          "name": "azúcar"
+        },
+        {
+          "amount": 8,
+          "unit": "g",
+          "name": "impulsor químico"
+        },
+        {
+          "amount": 20,
+          "unit": "g",
+          "name": "aceite suave"
+        },
+        {
+          "amount": 1,
+          "unit": "g",
+          "name": "sal"
+        }
+      ],
+      "steps": [
+        "Mezcla la harina, el azúcar, el impulsor y la sal en un bol.",
+        "Bate el huevo con la leche y el aceite. Incorpora los ingredientes secos hasta obtener una mezcla uniforme, sin batir en exceso.",
+        "Deja reposar la mezcla unos diez minutos. Calienta una sartén a fuego medio y engrásala ligeramente.",
+        "Vierte pequeñas porciones. Cuando aparezcan burbujas y los bordes empiecen a cuajar, gira cada tortita.",
+        "Termina de cocinar hasta que el centro esté cuajado. Ajusta el fuego si el exterior se dora antes que el interior."
+      ],
+      "sections": [
+        [
+          "Antes de empezar",
+          "Contiene trigo, leche y huevo. La absorción de la harina y el tamaño del huevo pueden cambiar la textura. Al escalar, ajusta los huevos con criterio: una fracción de huevo se puede pesar después de batirlo. Los tiempos son orientativos; comprueba la cocción."
+        ]
+      ],
+      "sources": [],
+      "origin": "Receta base orientativa; sin pruebas de cocina documentadas",
+      "tested": false
+    },
+    {
+      "id": "garbanzos",
+      "title": "Ensalada de garbanzos con limón",
+      "description": "Legumbres ya cocidas, verduras y un aliño sencillo. Una receta fácil de ajustar por raciones.",
+      "kind": "recipe",
+      "topic": "garbanzos",
+      "status": "published",
+      "created": "2026-10-12T00:07:34+00:00",
+      "servings": 2,
+      "ingredients": [
+        {
+          "amount": 400,
+          "unit": "g",
+          "name": "garbanzos cocidos y escurridos"
+        },
+        {
+          "amount": 200,
+          "unit": "g",
+          "name": "tomate"
+        },
+        {
+          "amount": 150,
+          "unit": "g",
+          "name": "pepino"
+        },
+        {
+          "amount": 50,
+          "unit": "g",
+          "name": "cebolla"
+        },
+        {
+          "amount": 20,
+          "unit": "g",
+          "name": "aceite de oliva"
+        },
+        {
+          "amount": 15,
+          "unit": "g",
+          "name": "zumo de limón"
+        },
+        {
+          "amount": 2,
+          "unit": "g",
+          "name": "sal"
+        }
+      ],
+      "steps": [
+        "Lava las verduras y corta tomate, pepino y cebolla en trozos pequeños.",
+        "Escurre los garbanzos ya cocidos. Si son de conserva, puedes aclararlos antes de escurrirlos.",
+        "Mezcla aceite, limón y sal en un recipiente pequeño.",
+        "Reúne garbanzos y verduras en un bol. Añade el aliño, mezcla y prueba antes de ajustar la sal.",
+        "Sirve o guarda la preparación tapada en el frigorífico hasta consumirla."
+      ],
+      "sections": [
+        [
+          "Antes de empezar",
+          "Usa garbanzos ya cocidos, no legumbres secas. La cantidad de sal y la acidez son ajustables. Si empleas ingredientes envasados, revisa sus alérgenos."
+        ]
+      ],
+      "sources": [],
+      "origin": "Receta base orientativa; sin pruebas de cocina documentadas",
+      "tested": false
+    },
+    {
+      "id": "tortilla",
+      "title": "Tortilla francesa: una receta de dos huevos",
+      "description": "Una base corta para preparar una tortilla y adaptar la cantidad a otras raciones.",
+      "kind": "recipe",
+      "topic": "tortilla",
+      "status": "published",
+      "created": "2026-10-12T00:07:34+00:00",
+      "servings": 1,
+      "ingredients": [
+        {
+          "amount": 2,
+          "unit": "unidades",
+          "name": "huevos"
+        },
+        {
+          "amount": 5,
+          "unit": "g",
+          "name": "aceite de oliva"
+        },
+        {
+          "amount": 0.5,
+          "unit": "g",
+          "name": "sal"
+        }
+      ],
+      "steps": [
+        "Casca los huevos en un bol, añade la sal y bátelos hasta integrar clara y yema.",
+        "Calienta una sartén antiadherente a fuego medio con el aceite.",
+        "Vierte el huevo y mueve suavemente al principio para repartirlo.",
+        "Cuando la base se sostenga, dobla la tortilla. Termina de cocinar hasta que el huevo esté cuajado, sin dejar partes líquidas.",
+        "Sirve enseguida. Si preparas varias raciones, cocina tortillas separadas para controlar mejor la cocción."
+      ],
+      "sections": [
+        [
+          "Antes de empezar",
+          "Contiene huevo. Usa huevos en buen estado y evita el contacto de las cáscaras con la preparación. La herramienta escala ingredientes, no tiempos ni tamaño de sartén."
+        ]
+      ],
+      "sources": [],
+      "origin": "Receta base orientativa; sin pruebas de cocina documentadas",
+      "tested": false
+    },
+    {
+      "id": "bizcocho",
+      "title": "Cómo adaptar una receta a otro molde redondo",
+      "description": "Compara las superficies de dos moldes para mantener una altura de masa parecida.",
+      "kind": "guide",
+      "topic": "bizcocho",
+      "status": "published",
+      "created": "2026-10-12T00:07:34+00:00",
+      "sections": [
+        [
+          "Mide el diámetro interior",
+          "Para dos moldes redondos de igual altura de llenado, el factor de escala es (diámetro nuevo ÷ diámetro original)². Cambiar de 20 a 24 cm requiere un factor de 1,44."
+        ],
+        [
+          "Multiplica todos los ingredientes",
+          "Si tu receta emplea 200 g de harina, la cantidad escalada es 288 g. Aplica el mismo factor al resto de los ingredientes, incluidos los huevos medidos por peso si necesitas fracciones."
+        ],
+        [
+          "Comprueba la capacidad",
+          "La comparación presupone una altura de masa similar. No llenes un molde por encima de la capacidad apropiada para tu receta; necesita espacio para crecer."
+        ],
+        [
+          "El horno no se escala",
+          "El tiempo no se multiplica por 1,44. El material del molde, el horno y la geometría afectan a la cocción. Vigila el resultado y utiliza los criterios de cocción de tu receta."
+        ]
+      ],
+      "sources": [],
+      "origin": "Contenido original con fórmulas comprobables"
+    }
+  ],
+  "last_generation_date": "2026-10-12",
+  "generated_today": 0
+}

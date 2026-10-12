@@ -1,0 +1,13 @@
+{
+  "profile": "energia",
+  "base_url": "https://casa-en-vatios-paul.pages.dev",
+  "country": "ES",
+  "max_new_per_day": 1,
+  "auto_publish_math": true,
+  "adsense": {
+    "publisher_id": "pub-7901739911277041",
+    "enabled": false,
+    "google_cmp_ready": false
+  },
+  "cloudflare_project": "casa-en-vatios-paul"
+}

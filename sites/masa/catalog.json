@@ -1,0 +1,136 @@
+{
+  "articles": [
+    {
+      "id": "porcentajes-panaderos",
+      "title": "El porcentaje panadero, sin misterio",
+      "description": "La harina es el 100 %. Aprende a leer una fórmula y a cambiar su tamaño sin perder las proporciones.",
+      "kind": "guide",
+      "topic": "porcentajes-panaderos",
+      "status": "published",
+      "created": "2026-10-12T00:07:36+00:00",
+      "sections": [
+        [
+          "La referencia es la harina",
+          "En el porcentaje panadero cada ingrediente se compara con la harina, no con el peso total de masa. Para 500 g de harina, un 65 % de hidratación corresponde a 325 g de agua."
+        ],
+        [
+          "Por qué los porcentajes suman más de cien",
+          "La harina ya representa el 100 %. Al añadir un 65 % de agua y un 2 % de sal, la suma alcanza el 167 %. No es un error: describe el peso de una fórmula respecto a su harina."
+        ],
+        [
+          "El peso total",
+          "Con 500 g de harina, 325 g de agua y 10 g de sal obtienes 835 g de masa antes de las pérdidas de manipulación y horneado. La calculadora añade también el aceite y la levadura que indiques."
+        ],
+        [
+          "Cómo utilizarlo",
+          "Si cambias la cantidad de harina, conserva los porcentajes de los demás ingredientes. Cambiar las cantidades no determina el tiempo de fermentación: también influyen temperatura, harina y levadura."
+        ]
+      ],
+      "sources": [
+        "https://www.kingarthurbaking.com/pro/reference/bakers-percentage"
+      ],
+      "origin": "Contenido original con fórmulas comprobables"
+    },
+    {
+      "id": "pizza",
+      "title": "Calcula la harina para tus bolas de pizza",
+      "description": "Una fórmula para preparar el peso de masa que necesitas, con el agua, la sal, el aceite y la levadura incluidos.",
+      "kind": "guide",
+      "topic": "pizza",
+      "status": "published",
+      "created": "2026-10-12T00:07:36+00:00",
+      "sections": [
+        [
+          "Empieza por el peso de las piezas",
+          "Cuatro bolas de 250 g requieren 1000 g de masa total. Ese peso se reparte entre todos los ingredientes, no solo entre harina y agua."
+        ],
+        [
+          "Un ejemplo calculado",
+          "Con hidratación del 65 %, sal del 2 %, aceite del 2 % y levadura seca del 0,2 %, necesitas aproximadamente 591,0 g de harina, 384,2 g de agua, 11,8 g de sal, 11,8 g de aceite y 1,2 g de levadura seca."
+        ],
+        [
+          "La cuenta",
+          "Harina = masa total ÷ [1 + (hidratación + sal + aceite + levadura) ÷ 100]. Cada cantidad restante se obtiene multiplicando la harina por su porcentaje."
+        ],
+        [
+          "Lo que debes ajustar",
+          "Los valores de la herramienta son ejemplos editables. La cantidad de levadura y los tiempos deben adaptarse a tu proceso. La calculadora no estima fermentación ni garantiza un estilo de pizza."
+        ]
+      ],
+      "sources": [
+        "https://www.kingarthurbaking.com/pro/reference/bakers-percentage"
+      ],
+      "origin": "Contenido original con fórmulas comprobables"
+    },
+    {
+      "id": "masa-madre",
+      "title": "Cuenta el agua y la harina de la masa madre",
+      "description": "Tu masa madre también contiene harina y agua. Inclúyelas para conservar la hidratación que buscas.",
+      "kind": "guide",
+      "topic": "masa-madre",
+      "status": "published",
+      "created": "2026-10-12T00:07:36+00:00",
+      "sections": [
+        [
+          "Define la harina total",
+          "Si tu fórmula tiene 500 g de harina total y el 20 % está prefermentado, habrá 100 g de harina dentro de la masa madre."
+        ],
+        [
+          "Una masa madre al cien por cien",
+          "Con hidratación del 100 %, esos 100 g de harina van acompañados de 100 g de agua: necesitas 200 g de masa madre."
+        ],
+        [
+          "Qué queda por añadir",
+          "Para una hidratación final del 70 %, el agua total es 350 g. Añade 400 g de harina y 250 g de agua, además de los 200 g de masa madre. La sal y otros ingredientes se calculan aparte sobre los 500 g de harina total."
+        ],
+        [
+          "Evita un error habitual",
+          "El porcentaje de harina prefermentada no es el porcentaje de peso de masa madre. La herramienta usa harina prefermentada y permite cambiar la hidratación de tu cultivo."
+        ]
+      ],
+      "sources": [
+        "https://www.kingarthurbaking.com/pro/reference/bakers-percentage"
+      ],
+      "origin": "Contenido original con fórmulas comprobables"
+    },
+    {
+      "id": "focaccia",
+      "title": "Cuánta masa necesitas para tu bandeja de focaccia",
+      "description": "Usa la superficie del molde para escalar una fórmula que ya conoces.",
+      "kind": "guide",
+      "topic": "focaccia",
+      "status": "published",
+      "created": "2026-10-12T00:07:37+00:00",
+      "sections": [
+        [
+          "Parte de una bandeja de referencia",
+          "Si una fórmula te funciona en un molde de 20 × 30 cm, su superficie es 600 cm². En uno de 30 × 40 cm, la superficie es 1200 cm²: el doble."
+        ],
+        [
+          "Conserva la altura",
+          "Multiplica todos los ingredientes por la relación entre las superficies. Esto conserva la cantidad de masa por centímetro cuadrado, siempre que el molde tenga altura suficiente."
+        ],
+        [
+          "No escales el reloj",
+          "Duplicar la masa no significa duplicar el horneado. La geometría, el material del molde y el horno afectan al proceso."
+        ],
+        [
+          "Anota tu resultado",
+          "Registra la cantidad de masa, las medidas de la bandeja y la altura obtenida. Una fórmula propia documentada es una referencia mejor que atribuir una textura a una cantidad sin probarla."
+        ]
+      ],
+      "sources": [
+        "https://www.kingarthurbaking.com/pro/reference/bakers-percentage"
+      ],
+      "origin": "Contenido original con fórmulas comprobables",
+      "trigger": {
+        "topic": "focaccia",
+        "detected": "2026-10-12T00:07:37+00:00",
+        "score": 4.0,
+        "meaning": "Señal editorial; no visitas"
+      }
+    }
+  ],
+  "last_generation_date": "2026-10-12",
+  "generated_today": 1
+}
