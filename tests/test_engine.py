@@ -117,6 +117,28 @@ class Publishing(unittest.TestCase):
         with self.assertRaises(ValueError):
             engine.render(self.root)
 
+    def test_consent_confirmation_alone_does_not_start_ads(self):
+        config = engine.read_json(self.root/"site.json")
+        config["adsense"] = {"publisher_id": "pub-1234567890123456", "enabled": False, "google_cmp_ready": True}
+        engine.write_json(self.root/"site.json", config)
+        engine.render(self.root)
+        text = (self.root/"dist/index.html").read_text(encoding="utf-8")
+        self.assertNotIn("adsbygoogle.js", text)
+        self.assertNotIn("/assets/consent.js", text)
+
+    def test_ad_integration_can_be_installed_while_google_reviews_the_site(self):
+        config = engine.read_json(self.root/"site.json")
+        config["adsense"] = {"publisher_id": "pub-1234567890123456", "enabled": True,
+                             "google_cmp_ready": True, "approval_confirmed": False}
+        engine.write_json(self.root/"site.json", config)
+        engine.render(self.root)
+        text = (self.root/"dist/index.html").read_text(encoding="utf-8")
+        self.assertIn("adsbygoogle.js?client=ca-pub-1234567890123456", text)
+        self.assertIn('<script src="/assets/consent.js" defer></script>', text)
+        self.assertIn('id="privacy-options" hidden', text)
+        privacy = (self.root/"dist/privacidad/index.html").read_text(encoding="utf-8")
+        self.assertIn("cambiar o retirar tu consentimiento", privacy)
+
     def test_failed_sport_source_keeps_old_date(self):
         previous = {"football": {"updated": "2026-01-01T00:00:00+00:00", "matches": []}}
         engine.write_json(self.root/"sports.json", previous)

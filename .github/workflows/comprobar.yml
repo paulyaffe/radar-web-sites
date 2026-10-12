@@ -37,7 +37,13 @@ jobs:
                   assert 'chatgpt.site' not in text
                   assert base in text
                   assert 'ca-pub-7901739911277041' in text
-                  assert 'adsbygoogle.js' not in text
+                  if config.get('adsense', {}).get('enabled'):
+                      assert config['adsense'].get('google_cmp_ready')
+                      assert 'adsbygoogle.js?client=ca-pub-7901739911277041' in text
+                      assert '/assets/consent.js' in text
+                      assert 'id="privacy-options" hidden' in text
+                  else:
+                      assert 'adsbygoogle.js' not in text
               ET.parse(site/'dist/sitemap.xml')
               assert 'pub-7901739911277041' in (site/'dist/ads.txt').read_text()
           sports = json.loads(Path('sites/deportes/sports.json').read_text())

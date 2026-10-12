@@ -20,9 +20,13 @@ Python 3.11 o posterior, sin paquetes externos:
 python update.py --force
 ```
 
-Los resultados aparecen en `sites/<perfil>/dist`. Incluyen AdSense
-(`pub-7901739911277041`) como verificación; los anuncios siguen desactivados
-hasta tener aprobación y consentimiento de Google.
+Los resultados aparecen en `sites/<perfil>/dist`. Incluyen el código de AdSense
+(`pub-7901739911277041`) y el enlace para modificar el consentimiento mediante
+la CMP de Google. El usuario confirmó la publicación de los mensajes y la
+activación de los anuncios automáticos en Google. Los cuatro sitios siguen
+en revisión con estado Preparando; instalar el código no confirma su aprobación
+ni que Google esté sirviendo anuncios. Google controla la autorización final.
+El generador exige confirmar el mensaje CMP antes de incluir el código.
 
 ## Publicar
 

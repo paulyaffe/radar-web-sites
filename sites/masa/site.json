@@ -6,8 +6,9 @@
   "auto_publish_math": true,
   "adsense": {
     "publisher_id": "pub-7901739911277041",
-    "enabled": false,
-    "google_cmp_ready": false
+    "enabled": true,
+    "google_cmp_ready": true,
+    "approval_confirmed": false
   },
   "cloudflare_project": "masa-exacta-paul"
 }
