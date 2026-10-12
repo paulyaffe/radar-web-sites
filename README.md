@@ -7,6 +7,11 @@ Las cuatro webs se publicaron y se comprobaron el 12 de octubre de 2026.
 - Casa en vatios: https://casa-en-vatios-paul.pages.dev
 - Marcador claro: https://marcador-claro-paul.pages.dev
 
+Los logotipos PNG de 600 x 160 píxeles para los mensajes de AdSense están en
+`assets/logo-cocina-en-gramos.png`, `assets/logo-masa-exacta.png`,
+`assets/logo-casa-en-vatios.png` y `assets/logo-marcador-claro.png`.
+Las actualizaciones conservan estos archivos en el alojamiento.
+
 ## Generar
 
 Python 3.11 o posterior, sin paquetes externos:
