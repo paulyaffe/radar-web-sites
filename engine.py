@@ -455,7 +455,7 @@ def render(root):
     save("/", p["seo_title"], p["description"], body, {"@context": "https://schema.org", "@type": "WebSite", "name": p["title"], "url": base+"/", "inLanguage": "es"})
     if profile == "deportes":
         sports = read_json(root/"sports.json", {})
-        save("/equipo/", "Últimos resultados y próximos partidos de un equipo", "Los cinco últimos resultados y los cinco próximos partidos de un club o selección.", '<section class="team-history" data-team-history aria-busy="false"><a class="back-link" href="/partidos/">← Partidos</a><h1>Equipo</h1><p data-team-status class="data-status" role="status" aria-live="polite">Cargando…</p><div data-team-content></div><noscript>Activa JavaScript para ver los partidos.</noscript></section><script src="/assets/team.js" defer></script>')
+        save("/equipo/", "Últimos resultados y próximos partidos de un equipo", "Los cinco últimos resultados y los cinco próximos partidos de un club o selección.", '<section class="team-history" data-team-history aria-busy="false"><a class="back-link" href="/partidos/">← Partidos</a><h1>Equipo</h1><p data-team-status class="data-status" role="status" aria-live="polite"></p><div data-team-content></div><noscript>Activa JavaScript para ver los partidos.</noscript></section><script src="/assets/team.js" defer></script>')
         team_page = out/"equipo/index.html"
         team_page.write_text(team_page.read_text(encoding="utf-8").replace("</head>", '<meta name="robots" content="noindex,follow"></head>'), encoding="utf-8")
         save("/partidos/", "Partidos por fecha", "Horarios y resultados de fútbol por fecha.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
@@ -558,12 +558,12 @@ def date_controls(filters):
 def competition_table_html(kind):
     choices = [(code, value[2]) for code, value in LEAGUES.items()] + list(NATIONAL_COMPETITIONS.items())
     options = ''.join('<option value="'+esc(code)+'">'+esc(name)+'</option>' for code, name in choices)
-    return '<section data-competition-table="'+kind+'" aria-busy="false"><h1 class="sport-title">'+('Tabla de posiciones' if kind == 'clasificacion' else 'Goleadores')+'</h1><form class="table-form"><label>Competición<select name="competicion">'+options+'</select></label><button class="button" type="submit">Ver</button></form><div class="competition-actions"><a data-table-link="clasificacion" href="/clasificacion/?competicion=PD">Tabla de posiciones</a><a data-table-link="goleadores" href="/goleadores/?competicion=PD">Tabla de goleadores</a></div><p data-data-status class="data-status" role="status" aria-live="polite">Cargando…</p><div data-data-list></div></section><script src="/assets/sports-data.js" defer></script>'
+    return '<section data-competition-table="'+kind+'" aria-busy="false"><h1 class="sport-title">'+('Tabla de posiciones' if kind == 'clasificacion' else 'Goleadores')+'</h1><form class="table-form"><label>Competición<select name="competicion">'+options+'</select></label><button class="button" type="submit">Ver</button></form><div class="competition-actions"><a data-table-link="clasificacion" href="/clasificacion/?competicion=PD">Tabla de posiciones</a><a data-table-link="goleadores" href="/goleadores/?competicion=PD">Tabla de goleadores</a></div><p data-data-status class="data-status" role="status" aria-live="polite"></p><div data-data-list></div></section><script src="/assets/sports-data.js" defer></script>'
 
 
 def tennis_html():
     filters = '<label>Circuito<select name="circuito"><option value="todos">ATP y WTA</option><option value="atp">ATP</option><option value="wta">WTA</option></select></label><label>Modalidad<select name="modalidad"><option value="todas">Todas</option><option value="singles">Individuales</option><option value="doubles">Dobles</option></select></label>'
-    return '<section class="calendar tennis-calendar" data-tennis aria-busy="false">'+date_controls(filters)+'<p class="data-status" data-data-status role="status" aria-live="polite">Cargando tenis…</p><div data-data-list></div><noscript>Activa JavaScript para consultar el tenis.</noscript></section><script src="/assets/sports-data.js" defer></script>'
+    return '<section class="calendar tennis-calendar" data-tennis aria-busy="false">'+date_controls(filters)+'<p class="data-status" data-data-status role="status" aria-live="polite"></p><div data-data-list></div><noscript>Activa JavaScript para consultar el tenis.</noscript></section><script src="/assets/sports-data.js" defer></script>'
 
 
 def f1_compact_html(data):
@@ -581,7 +581,7 @@ def calendar_html(selected="todas"):
     choices += [(code, value[2]) for code, value in LEAGUES.items()]
     choices += list(NATIONAL_COMPETITIONS.items())
     options = "".join(f'<option value="{esc(code)}"'+(' selected' if selected == code else '')+f'>{esc(name)}</option>' for code, name in choices)
-    return '<section id="partidos" class="calendar" data-fixtures aria-busy="false">'+date_controls('<label>Competición<select name="competicion">'+options+'</select></label>')+'<p class="calendar-status" data-fixtures-status role="status" aria-live="polite">Cargando partidos…</p><div data-fixtures-list></div><noscript>Activa JavaScript para consultar los partidos.</noscript><script src="/assets/calendar.js" defer></script></section>'
+    return '<section id="partidos" class="calendar" data-fixtures aria-busy="false">'+date_controls('<label>Competición<select name="competicion">'+options+'</select></label>')+'<p class="calendar-status" data-fixtures-status role="status" aria-live="polite"></p><div data-fixtures-list></div><noscript>Activa JavaScript para consultar los partidos.</noscript><script src="/assets/calendar.js" defer></script></section>'
 
 
 

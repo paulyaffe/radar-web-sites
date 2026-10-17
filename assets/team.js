@@ -14,8 +14,6 @@
   }
   function section(part,future){
     const box=el('section',undefined,'team-history-section');box.append(el('h2',future?'Próximos 5 partidos':'Últimos 5 partidos'));
-    if(part.error)box.append(el('p',part.error+(part.stale?' Se conserva la última copia disponible.':''),'calendar-warning'));
-    if(!part.matches.length)box.append(el('p',part.error?'La fuente no permite confirmar esta lista ahora.':future?'Todavía no hay próximos partidos publicados.':'No hay resultados finalizados publicados.','calendar-empty'));
     for(const m of part.matches){
       const row=el('article',undefined,'fixture-row team-history-row'),time=el('div',undefined,'fixture-time');
       const clock=el('time',when(m));clock.dateTime=m.date;time.append(clock,el('small',m.competition_name),el('small',m.status));
@@ -24,14 +22,12 @@
       if(!future&&m.home_penalties!=null&&m.away_penalties!=null)score.append(el('small','Pen. '+m.home_penalties+' – '+m.away_penalties));
       row.append(time,team(m.home,m.home_icon,m.national,m.home_id,m.competition),score,team(m.away,m.away_icon,m.national,m.away_id,m.competition));box.append(row);
     }
-    if(part.matches.length>0&&part.matches.length<5&&!part.error)box.append(el('p','La fuente solo publica '+part.matches.length+(future?' próximos partidos.':' partidos finalizados en las temporadas consultadas.'),'small'));
-    if(part.stale&&part.updated)box.append(el('p','Copia del '+when({date:part.updated,time_confirmed:true})+'.','small'));
     return box;
   }
   async function load(){
     if(params.has('id'))query.set('id',params.get('id'));else if(params.has('nombre'))query.set('nombre',params.get('nombre'));
     if(params.has('competicion'))query.set('competicion',params.get('competicion'));
-    root.setAttribute('aria-busy','true');status.textContent='Consultando los partidos del equipo…';
+    root.setAttribute('aria-busy','true');status.textContent='';
     try{
       const response=await fetch('/api/equipo?'+query,{signal:AbortSignal.timeout(25000)}),data=await response.json();
       if(!response.ok||!data.team||!data.past||!data.future)throw Error(data.error||'No se ha podido consultar este equipo.');
@@ -40,7 +36,7 @@
       status.textContent=(data.team.national?'Selección':'Club')+' · Hora peninsular';
       const grid=el('div',undefined,'team-history-grid');grid.append(section(data.past,false),section(data.future,true));
       content.replaceChildren(grid);
-    }catch(e){status.textContent=e.name==='TimeoutError'?'La consulta está tardando demasiado. Inténtalo de nuevo.':e.message;content.replaceChildren(el('p','Vuelve al calendario y selecciona el equipo para reintentar la consulta.','calendar-warning'));}
+    }catch(e){status.textContent='';content.replaceChildren();}
     finally{root.setAttribute('aria-busy','false');}
   }
   load();

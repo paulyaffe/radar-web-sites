@@ -13,13 +13,11 @@
     const competitions=data.flatMap(d=>d.competitions||[]);const problems=competitions.filter(c=>c.error);
     const count=competitions.reduce((n,c)=>n+c.matches.length,0);const fragment=document.createDocumentFragment();
     status.textContent=count+' partidos · '+date.value.slice(8,10)+'/'+date.value.slice(5,7)+'/'+date.value.slice(2,4);
-    if(problems.length){const warning=el('p','No se ha podido consultar completamente: '+problems.map(c=>c.name).join(', ')+'. La lista puede estar incompleta.','calendar-warning');warning.setAttribute('role','status');fragment.append(warning);}
-    if(!count){fragment.append(el('p',problems.length?'No podemos confirmar los partidos de esta fecha. Prueba de nuevo más tarde.':'La fuente no publica partidos para esta fecha en las competiciones seleccionadas.','calendar-empty'));}
+    if(!count&&problems.length)status.textContent='';
     for(const c of competitions){
       if(!c.matches.length&&competitions.length>1)continue;
       const box=el('section',undefined,'fixture-competition');box.append(el('h3',c.name));
       const actions=el('div',undefined,'competition-actions');for(const [route,label]of [['clasificacion','Tabla de posiciones'],['goleadores','Tabla de goleadores']]){const a=el('a',label);a.href='/'+route+'/?competicion='+encodeURIComponent(c.code);actions.append(a);}box.append(actions);
-      if(c.stale)box.append(el('p','Última copia disponible: '+(c.updated||'sin fecha')+'. No se ha renovado la fuente.','score-meta'));
       for(const m of c.matches){
         const row=el('article',undefined,'fixture-row');const when=el('div',undefined,'fixture-time');const clock=el('time',matchDate(m.date));clock.dateTime=m.date;when.append(clock,el('small',m.status));
         const score=m.home_score==null||m.away_score==null?'—':m.home_score+' – '+m.away_score;
@@ -32,7 +30,7 @@
   async function load(updateUrl=true){
     if(!form.reportValidity())return;
     const myVersion=++version;controller?.abort();controller=new AbortController();
-    root.setAttribute('aria-busy','true');status.textContent='Consultando partidos…';list.replaceChildren();
+    root.setAttribute('aria-busy','true');status.textContent='';list.replaceChildren();
     if(updateUrl){const u=new URL(location.href);u.searchParams.set('fecha',date.value);u.searchParams.set('competicion',filter.value);history.replaceState(null,'',u);}
     const groups=filter.value==='todas'?['clubes','selecciones']:[filter.value];
     try{
@@ -41,7 +39,7 @@
         if(!Array.isArray(d.competitions))throw Error(d.error||'No se ha podido consultar el calendario.');return d;
       }));
       if(myVersion===version)render(data);
-    }catch(e){if(e.name==='AbortError'||myVersion!==version)return;root.setAttribute('aria-busy','false');status.textContent='No se ha podido cargar el calendario. Pulsa «Ver» para reintentar.';list.replaceChildren(el('p','Esto no significa que no haya partidos en esa fecha.','calendar-warning'));}
+    }catch(e){if(e.name==='AbortError'||myVersion!==version)return;root.setAttribute('aria-busy','false');status.textContent='';list.replaceChildren();}
   }
   form.addEventListener('submit',e=>{e.preventDefault();load();});filter.addEventListener('change',()=>load());date.addEventListener('change',()=>load());
   root.querySelectorAll('[data-day-step]').forEach(b=>b.addEventListener('click',()=>{const d=new Date(date.value+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+Number(b.dataset.dayStep));date.value=d.toISOString().slice(0,10);load();}));
