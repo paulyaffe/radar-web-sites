@@ -83,10 +83,10 @@ function json(value, status=200) {
     'X-Content-Type-Options':'nosniff', 'X-Robots-Tag':'noindex'}});
 }
 async function upstreamJson(upstream, limit=2_000_000) {
-  const response = await fetch(upstream, {headers:{Accept:'application/json','User-Agent':'MarcadorClaro/1.0 (+https://marcador-claro-paul.pages.dev)'},
+  const response = await fetch(upstream, {headers:{Accept:'application/json'},
     signal:AbortSignal.timeout(9000), redirect:'manual'});
-  if (!response.ok) throw new Error('Fuente HTTP '+response.status);
-  if (Number(response.headers.get('Content-Length') || 0) > limit) throw new Error('Respuesta demasiado grande');
+  if (!response.ok) { await response.body?.cancel(); throw new Error('Fuente HTTP '+response.status); }
+  if (Number(response.headers.get('Content-Length') || 0) > limit) { await response.body?.cancel(); throw new Error('Respuesta demasiado grande'); }
   const raw = await response.text();
   if (raw.length > limit) throw new Error('Respuesta demasiado grande');
   return JSON.parse(raw);
