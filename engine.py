@@ -534,7 +534,7 @@ def render(root):
         worker = Path(__file__).with_name("calendar_worker.mjs")
         if worker.exists():
             shutil.copy2(worker, out/"_worker.js")
-            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo", "/api/tabla", "/api/tenis"], "exclude": []})
+            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo", "/api/tabla", "/api/tenis", "/api/banderas"], "exclude": []})
     for obsolete in set(read_json(root/"generated-pages.json", []))-set(paths):
         if re.fullmatch(r"/(?:guias|recetas)/[a-z0-9-]+/", obsolete):
             stale = out/obsolete.strip("/")/"index.html"

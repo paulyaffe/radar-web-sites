@@ -260,7 +260,7 @@ export function normalizeScorers(data, code) {
   if(!Array.isArray(data?.stats))throw Error('Respuesta sin estadísticas');
   const leaders=data.stats.find(s=>s.name==='goalsLeaders')?.leaders || [];
   return leaders.slice(0,100).filter(l=>l.athlete?.displayName && statNumber(l.athlete.statistics,'totalGoals')!==null)
-    .map(l=>({name:l.athlete.displayName,team:simpleTeam(l.athlete.team,COMPETITIONS[code][2]),
+    .map(l=>({name:l.athlete.displayName,athlete_id:teamId(l.athlete.id),...athleteNationality(l.athlete),team:simpleTeam(l.athlete.team,COMPETITIONS[code][2]),
       goals:statNumber(l.athlete.statistics,'totalGoals'),played:statNumber(l.athlete.statistics,'appearances')}))
     .sort((a,b)=>b.goals-a.goals);
 }
@@ -282,7 +282,7 @@ export async function competitionTable(request,ctx={waitUntil:()=>{}},env={}) {
   const url=new URL(request.url),code=url.searchParams.get('competicion'),type=url.searchParams.get('tipo');
   if(!COMPETITIONS[code] || !['clasificacion','goleadores'].includes(type))return json({error:'Competición o tabla no válida.'},400);
   if(code==='FRIENDLY' && type==='clasificacion')return json({competition:code,name:COMPETITIONS[code][0],type,season:'',groups:[],scorers:[],stale:false});
-  return cachedData(url,'/api/tabla?competicion='+code+'&tipo='+type+'&v=1',ctx,async()=>{
+  return cachedData(url,'/api/tabla?competicion='+code+'&tipo='+type+'&v=2',ctx,async()=>{
     const slug=COMPETITIONS[code][1];
     let data,snapshot;
     try{
@@ -338,12 +338,35 @@ export async function tennisFixtures(request,ctx={waitUntil:()=>{}}) {
     return {date:day,tour,timezone:TZ,matches:[...new Map(rows.map(m=>[m.id,m])).values()]};
   });
 }
+export function athleteNationality(athlete) {
+  return {flag:teamIcon({logo:athlete?.flag?.href},true),
+    nationality:typeof athlete?.citizenship==='string'?athlete.citizenship:String(athlete?.flag?.alt || '')};
+}
+async function playerNationality(id,origin,ctx) {
+  const cache=globalThis.caches?.default,key=new Request(origin+'/api/banderas?jugador='+id+'&v=1');
+  try{const cached=await cache?.match(key);if(cached)return await cached.json();}catch{}
+  try{
+    const data=await upstreamJson('https://site.api.espn.com/apis/common/v3/sports/soccer/all/athletes/'+id);
+    if(teamId(data?.athlete?.id)!==id)throw Error('Jugador no coincidente');
+    const player={id,...athleteNationality(data.athlete)};
+    if(cache)ctx.waitUntil(cache.put(key,new Response(JSON.stringify(player),{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
+    return player;
+  }catch{return {id,flag:'',nationality:''};}
+}
+export async function playerFlags(request,ctx={waitUntil:()=>{}}) {
+  if(request.method!=='GET')return json({error:'Método no permitido'},405);
+  const url=new URL(request.url),values=(url.searchParams.get('jugadores') || '').split(',');
+  if(!values.length||values.length>10||values.some(id=>!teamId(id)||teamId(id)!==id))return json({error:'Jugadores no válidos'},400);
+  const ids=[...new Set(values)];
+  return json({players:await Promise.all(ids.map(id=>playerNationality(id,url.origin,ctx)))});
+}
 export default {
   async fetch(request, env, ctx) {
     if (new URL(request.url).pathname === '/api/partidos') return fixtures(request,ctx);
     if (new URL(request.url).pathname === '/api/equipo') return teamHistory(request,ctx);
     if (new URL(request.url).pathname === '/api/tabla') return competitionTable(request,ctx,env);
     if (new URL(request.url).pathname === '/api/tenis') return tennisFixtures(request,ctx);
+    if (new URL(request.url).pathname === '/api/banderas') return playerFlags(request,ctx);
     return env.ASSETS.fetch(request);
   }
 };

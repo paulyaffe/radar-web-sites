@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import worker,{normalizeStandings,normalizeScorers,normalizeTennis,competitionTable,tennisFixtures} from '../calendar_worker.mjs';
+import worker,{normalizeStandings,normalizeScorers,normalizeTennis,competitionTable,tennisFixtures,playerFlags,athleteNationality} from '../calendar_worker.mjs';
 const table={season:2026,children:[{name:'Grupo A',standings:{entries:[{team:{id:'86',displayName:'Real Madrid'},stats:[{name:'points',value:0},{name:'gamesPlayed',value:0},{name:'rank',value:1}]}]}},{name:'Grupo B',standings:{entries:[{team:{id:'83',displayName:'Barcelona'},stats:[{name:'points',value:9}]}]}}]};
 const groups=normalizeStandings(table,'CL');assert.equal(groups.length,2);assert.equal(groups[0].rows[0].points,0);assert.equal(groups[0].rows[0].played,0);assert.equal(groups[0].rows[0].won,null,'Missing statistics must not turn into zero');assert.equal(groups[1].rows[0].team.id,'83');
 const stats={season:{displayName:'2026-27'},stats:[{name:'assistsLeaders',leaders:[{athlete:{displayName:'Wrong',statistics:[{name:'goalAssists',value:20}]}}]},{name:'goalsLeaders',leaders:[{athlete:{displayName:'First',team:{id:'86',displayName:'Madrid'},statistics:[{name:'totalGoals',value:4},{name:'appearances',value:2}]}},{athlete:{displayName:'Second',statistics:[{name:'totalGoals',value:8}]}},{athlete:{displayName:'Missing',statistics:[]}}]}]};
@@ -25,5 +25,13 @@ globalThis.fetch=async()=>Response.json(tennis);response=await tennisFixtures(ne
 response=await tennisFixtures(new Request('https://site.test/api/tenis?fecha=2026-02-30&circuito=atp'),ctx);assert.equal(response.status,400);
 response=await tennisFixtures(new Request('https://site.test/api/tenis?circuito=http://bad'),ctx);assert.equal(response.status,400);
 response=await tennisFixtures(new Request('https://site.test/api/tenis',{method:'POST'}),ctx);assert.equal(response.status,405);
+cache.clear();calls=0;
+assert.equal(athleteNationality({flag:{href:'https://a.espncdn.com/i/teamlogos/soccer/500/83.png',alt:'Barcelona'}}).flag,'','Do not use the club crest as nationality');
+assert.equal(athleteNationality({citizenship:'Brazil',flag:{href:'https://bad.invalid/bra.png'}}).flag,'');
+globalThis.fetch=async url=>{calls++;const id=String(url).split('/').pop();return Response.json({athlete:{id,citizenship:'Brazil',flag:{href:'https://a.espncdn.com/i/teamlogos/countries/500/bra.png',alt:'Brazil'}}});};
+response=await playerFlags(new Request('https://site.test/api/banderas?jugadores=231050,231050,231388'),ctx);body=await response.json();assert.equal(body.players.length,2);assert.equal(calls,2);assert.equal(body.players[0].nationality,'Brazil');assert.ok(body.players[0].flag.endsWith('/bra.png'));await Promise.all(pending);
+response=await playerFlags(new Request('https://site.test/api/banderas?jugadores=231388,231050'),ctx);await response.json();assert.equal(calls,2,'Nationality cache is shared across competitions and batches');
+for(const query of ['', 'jugadores=', 'jugadores=../2', 'jugadores='+Array(11).fill('1').join(',')]){response=await playerFlags(new Request('https://site.test/api/banderas?'+query),ctx);assert.equal(response.status,400);}
+cache.clear();globalThis.fetch=async()=>{throw Error('offline');};response=await playerFlags(new Request('https://site.test/api/banderas?jugadores=231050'),ctx);body=await response.json();assert.equal(body.players[0].flag,'');assert.equal(body.players[0].nationality,'');
 globalThis.fetch=originalFetch;globalThis.caches=originalCaches;
 console.log('Clasificaciones, grupos, goleadores, tenis por día de Madrid, sets, dobles, caché y errores comprobados.');
