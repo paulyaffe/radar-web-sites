@@ -12,22 +12,21 @@
   function render(data){
     const competitions=data.flatMap(d=>d.competitions||[]);const problems=competitions.filter(c=>c.error);
     const count=competitions.reduce((n,c)=>n+c.matches.length,0);const fragment=document.createDocumentFragment();
-    const dates=competitions.map(c=>c.updated).filter(Boolean).sort();
-    status.textContent=count+' partidos publicados para '+new Intl.DateTimeFormat('es-ES',{timeZone:zone,dateStyle:'full'}).format(new Date(date.value+'T12:00:00Z'))+'. Horas de España peninsular.';
+    status.textContent=count+' partidos · '+date.value.slice(8,10)+'/'+date.value.slice(5,7)+'/'+date.value.slice(2,4);
     if(problems.length){const warning=el('p','No se ha podido consultar completamente: '+problems.map(c=>c.name).join(', ')+'. La lista puede estar incompleta.','calendar-warning');warning.setAttribute('role','status');fragment.append(warning);}
     if(!count){fragment.append(el('p',problems.length?'No podemos confirmar los partidos de esta fecha. Prueba de nuevo más tarde.':'La fuente no publica partidos para esta fecha en las competiciones seleccionadas.','calendar-empty'));}
     for(const c of competitions){
-      if(!c.matches.length)continue;
+      if(!c.matches.length&&competitions.length>1)continue;
       const box=el('section',undefined,'fixture-competition');box.append(el('h3',c.name));
+      const actions=el('div',undefined,'competition-actions');for(const [route,label]of [['clasificacion','Tabla de posiciones'],['goleadores','Tabla de goleadores']]){const a=el('a',label);a.href='/'+route+'/?competicion='+encodeURIComponent(c.code);actions.append(a);}box.append(actions);
       if(c.stale)box.append(el('p','Última copia disponible: '+(c.updated||'sin fecha')+'. No se ha renovado la fuente.','score-meta'));
       for(const m of c.matches){
         const row=el('article',undefined,'fixture-row');const when=el('div',undefined,'fixture-time');const clock=el('time',matchDate(m.date));clock.dateTime=m.date;when.append(clock,el('small',m.status));
         const score=m.home_score==null||m.away_score==null?'—':m.home_score+' – '+m.away_score;
         row.append(when,team(m.home,m.home_icon,m.national,m.home_id,c.code),el('strong',score,'fixture-score'),team(m.away,m.away_icon,m.national,m.away_id,c.code));box.append(row);
       }
-      const source=el('a','Calendario de '+c.name+' en ESPN','source-link');source.href=c.source;source.rel='noopener';box.append(source);fragment.append(box);
+      fragment.append(box);
     }
-    if(dates.length)fragment.append(el('p','Consulta correcta más antigua de esta lista: '+new Intl.DateTimeFormat('es-ES',{timeZone:zone,dateStyle:'short',timeStyle:'short'}).format(new Date(dates[0]))+'. Los horarios y resultados pueden corregirse.','small'));
     list.replaceChildren(fragment);root.setAttribute('aria-busy','false');
   }
   async function load(updateUrl=true){
@@ -42,7 +41,7 @@
         if(!Array.isArray(d.competitions))throw Error(d.error||'No se ha podido consultar el calendario.');return d;
       }));
       if(myVersion===version)render(data);
-    }catch(e){if(e.name==='AbortError'||myVersion!==version)return;root.setAttribute('aria-busy','false');status.textContent='No se ha podido cargar el calendario. Vuelve a pulsar «Ver partidos».';list.replaceChildren(el('p','Esto no significa que no haya partidos en esa fecha.','calendar-warning'));}
+    }catch(e){if(e.name==='AbortError'||myVersion!==version)return;root.setAttribute('aria-busy','false');status.textContent='No se ha podido cargar el calendario. Pulsa «Ver» para reintentar.';list.replaceChildren(el('p','Esto no significa que no haya partidos en esa fecha.','calendar-warning'));}
   }
   form.addEventListener('submit',e=>{e.preventDefault();load();});filter.addEventListener('change',()=>load());date.addEventListener('change',()=>load());
   root.querySelectorAll('[data-day-step]').forEach(b=>b.addEventListener('click',()=>{const d=new Date(date.value+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+Number(b.dataset.dayStep));date.value=d.toISOString().slice(0,10);load();}));
@@ -50,4 +49,5 @@
   const params=new URLSearchParams(location.search);date.value=params.get('fecha')||fmt.format(Date.now());
   if(params.get('competicion')&&[...filter.options].some(o=>o.value===params.get('competicion')))filter.value=params.get('competicion');
   load(false);
+  setInterval(()=>{if(!document.hidden)load(false);},15*60*1000);
 })();

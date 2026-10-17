@@ -82,13 +82,13 @@ function json(value, status=200) {
   return Response.json(value, {status, headers:{'Cache-Control':'no-store',
     'X-Content-Type-Options':'nosniff', 'X-Robots-Tag':'noindex'}});
 }
-async function upstreamJson(upstream) {
-  const response = await fetch(upstream, {headers:{Accept:'application/json'},
+async function upstreamJson(upstream, limit=2_000_000) {
+  const response = await fetch(upstream, {headers:{Accept:'application/json','User-Agent':'MarcadorClaro/1.0 (+https://marcador-claro-paul.pages.dev)'},
     signal:AbortSignal.timeout(9000), redirect:'manual'});
   if (!response.ok) throw new Error('Fuente HTTP '+response.status);
-  if (Number(response.headers.get('Content-Length') || 0) > 2_000_000) throw new Error('Respuesta demasiado grande');
+  if (Number(response.headers.get('Content-Length') || 0) > limit) throw new Error('Respuesta demasiado grande');
   const raw = await response.text();
-  if (raw.length > 2_000_000) throw new Error('Respuesta demasiado grande');
+  if (raw.length > limit) throw new Error('Respuesta demasiado grande');
   return JSON.parse(raw);
 }
 async function queryDay(code, day, selectedDay) {
@@ -234,10 +234,116 @@ export async function teamHistory(request, ctx={waitUntil:()=>{}}) {
   if(cache && payload.complete) ctx.waitUntil(cache.put(key,new Response(JSON.stringify(payload),{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
   return json(payload);
 }
+function statNumber(stats, name) {
+  const raw=stats?.find(s=>s.name===name)?.value;
+  return raw !== null && raw !== undefined && Number.isFinite(Number(raw)) ? Number(raw) : null;
+}
+function simpleTeam(team, national=false) {
+  return {id:teamId(team?.id),name:String(team?.displayName || team?.name || ''),icon:teamIcon(team,national),national};
+}
+export function normalizeStandings(data, code) {
+  const groups=[]; const national=COMPETITIONS[code][2];
+  function visit(node, depth=0) {
+    if(depth>5 || !node) return;
+    if(Array.isArray(node.standings?.entries)) {
+      const rows=node.standings.entries.slice(0,100).filter(e=>e.team?.displayName).map(e=>({team:simpleTeam(e.team,national),
+        rank:statNumber(e.stats,'rank'),played:statNumber(e.stats,'gamesPlayed'),won:statNumber(e.stats,'wins'),
+        drawn:statNumber(e.stats,'ties'),lost:statNumber(e.stats,'losses'),for:statNumber(e.stats,'pointsFor'),
+        against:statNumber(e.stats,'pointsAgainst'),difference:statNumber(e.stats,'pointDifferential'),points:statNumber(e.stats,'points')}));
+      if(rows.length)groups.push({name:String(node.name || node.standings.name || COMPETITIONS[code][0]),rows});
+    }
+    for(const child of (node.children || []).slice(0,100))visit(child,depth+1);
+  }
+  visit(data); return groups;
+}
+export function normalizeScorers(data, code) {
+  if(!Array.isArray(data?.stats))throw Error('Respuesta sin estadísticas');
+  const leaders=data.stats.find(s=>s.name==='goalsLeaders')?.leaders || [];
+  return leaders.slice(0,100).filter(l=>l.athlete?.displayName && statNumber(l.athlete.statistics,'totalGoals')!==null)
+    .map(l=>({name:l.athlete.displayName,team:simpleTeam(l.athlete.team,COMPETITIONS[code][2]),
+      goals:statNumber(l.athlete.statistics,'totalGoals'),played:statNumber(l.athlete.statistics,'appearances')}))
+    .sort((a,b)=>b.goals-a.goals);
+}
+async function cachedData(url,key,ctx,build) {
+  const cache=globalThis.caches?.default;const request=new Request(url.origin+key);let old;
+  try{const r=await cache?.match(request);old=r && await r.json();}catch{}
+  if(old && Date.now()-Date.parse(old.checked_at || old.updated)<FRESH_MS)return json(old);
+  try{
+    const payload={updated:new Date().toISOString(),stale:false,...await build(),checked_at:new Date().toISOString()};
+    if(cache)ctx.waitUntil(cache.put(request,new Response(JSON.stringify(payload),{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
+    return json(payload);
+  }catch(e){
+    console.warn('Datos deportivos: '+String(e.message));
+    return old ? json({...old,stale:true,error:'No se ha podido actualizar. Se muestra la última copia disponible.'}) : json({error:'No se pueden consultar los datos ahora. Inténtalo de nuevo.'},503);
+  }
+}
+export async function competitionTable(request,ctx={waitUntil:()=>{}},env={}) {
+  if(request.method!=='GET')return json({error:'Método no permitido'},405);
+  const url=new URL(request.url),code=url.searchParams.get('competicion'),type=url.searchParams.get('tipo');
+  if(!COMPETITIONS[code] || !['clasificacion','goleadores'].includes(type))return json({error:'Competición o tabla no válida.'},400);
+  if(code==='FRIENDLY' && type==='clasificacion')return json({competition:code,name:COMPETITIONS[code][0],type,season:'',groups:[],scorers:[],stale:false});
+  return cachedData(url,'/api/tabla?competicion='+code+'&tipo='+type+'&v=1',ctx,async()=>{
+    const slug=COMPETITIONS[code][1];
+    let data,snapshot;
+    try{
+      data=await upstreamJson(type==='clasificacion'?'https://site.web.api.espn.com/apis/v2/sports/soccer/'+slug+'/standings':
+        'https://site.api.espn.com/apis/site/v2/sports/soccer/'+slug+'/statistics');
+    }catch(e){
+      if(type!=='clasificacion'||!env.ASSETS)throw e;
+      const copy=await env.ASSETS.fetch(new Request(url.origin+'/clasificaciones.json'));
+      if(!copy.ok)throw e;
+      snapshot=(await copy.json()).competitions?.[code];
+      if(!snapshot?.data || !snapshot.updated)throw e;
+      data=snapshot.data;
+    }
+    if(type==='clasificacion' && !Array.isArray(data?.children) && !data?.standings)throw Error('Respuesta sin clasificación');
+    const season=data.season;const seasonLabel=typeof season==='object'?season?.displayName || season?.name || season?.year : season;
+    return {competition:code,name:COMPETITIONS[code][0],type,season:String(seasonLabel || ''),
+      groups:type==='clasificacion'?normalizeStandings(data,code):[],scorers:type==='goleadores'?normalizeScorers(data,code):[],
+      ...(snapshot?{updated:snapshot.updated,stale:Boolean(snapshot.error)||Date.now()-Date.parse(snapshot.updated)>6*3600000,
+        ...(snapshot.error?{error:'No se ha podido renovar esta tabla. Se conserva su fecha original.'}:{})}:{})};
+  });
+}
+export function normalizeTennis(data,tour,day) {
+  if(!Array.isArray(data?.events))throw Error('Respuesta sin tenis');
+  const rows=[];
+  for(const event of data.events.slice(0,50))for(const group of (event.groupings || []).slice(0,8)){
+    const doubles=/doubles/.test(group.grouping?.slug || '');
+    for(const match of (group.competitions || []).slice(0,600)){
+      if(madridDay(match.date)!==day || match.competitors?.length!==2)continue;
+      const state=match.status?.type || {},played=state.state==='in'||state.state==='post';
+      const players=[...match.competitors].sort((a,b)=>(a.order||0)-(b.order||0)).map(p=>({
+        name:String(p.athlete?.displayName || p.roster?.displayName || p.team?.displayName || 'Por confirmar'),
+        flags:(p.athlete?[p.athlete]:p.roster?.athletes || []).map(a=>teamIcon({logo:a.flag?.href},true)).filter(Boolean),
+        winner:p.winner===true,sets:played?(p.linescores || []).slice(0,5).map(s=>({score:score(s),tie:score(s.tiebreak)})):[]
+      }));
+      rows.push({id:tour+'-'+event.id+'-'+match.id,date:match.date,time_confirmed:match.timeValid!==false,tour,
+        tournament:String(event.name || tour.toUpperCase()),doubles,round:String(match.round?.displayName || ''),players,
+        status:/RETIRED/i.test(state.name)?'Retiro':/WALKOVER/i.test(state.name)?'Incomparecencia':/POSTPON|DELAY|SUSPEND/i.test(state.name)?'Aplazado':
+          /CANCEL/i.test(state.name)?'Cancelado':state.completed?'Finalizado':state.state==='in'?'En juego':'Programado'});
+    }
+  }
+  return rows.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
+}
+export async function tennisFixtures(request,ctx={waitUntil:()=>{}}) {
+  if(request.method!=='GET')return json({error:'Método no permitido'},405);
+  const url=new URL(request.url),day=url.searchParams.get('fecha') || madridDay(Date.now()),tour=url.searchParams.get('circuito') || 'atp';
+  if(!validDate(day)||!['atp','wta'].includes(tour))return json({error:'Fecha o circuito no válido.'},400);
+  return cachedData(url,'/api/tenis?fecha='+day+'&circuito='+tour+'&v=1',ctx,async()=>{
+    const previous=new Date(Date.parse(day+'T12:00:00Z')-86400000).toISOString().slice(0,10),rows=[];
+    for(const date of [day,previous]){
+      const data=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/tennis/'+tour+'/scoreboard?dates='+date.replaceAll('-',''),6_000_000);
+      rows.push(...normalizeTennis(data,tour,day));
+    }
+    return {date:day,tour,timezone:TZ,matches:[...new Map(rows.map(m=>[m.id,m])).values()]};
+  });
+}
 export default {
   async fetch(request, env, ctx) {
     if (new URL(request.url).pathname === '/api/partidos') return fixtures(request,ctx);
     if (new URL(request.url).pathname === '/api/equipo') return teamHistory(request,ctx);
+    if (new URL(request.url).pathname === '/api/tabla') return competitionTable(request,ctx,env);
+    if (new URL(request.url).pathname === '/api/tenis') return tennisFixtures(request,ctx);
     return env.ASSETS.fetch(request);
   }
 };

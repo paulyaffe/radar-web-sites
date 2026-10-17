@@ -97,3 +97,19 @@ No inventa próximos encuentros cuando la fuente publica menos de cinco.
 Funciona en Cloudflare con el PC apagado y reutiliza consultas unos quince minutos.
 
 Comprobaciones: `node tests/team_worker.mjs` (desde el paquete Cloudflare).
+
+## Marcador compacto, tablas y tenis
+
+La portada entra directamente al calendario, con accesos Fútbol / Fórmula 1 /
+Tenis y una fila de competiciones. Las fichas de equipos mantienen cinco
+resultados y cinco próximos partidos. Cada bloque de fútbol enlaza a
+`/clasificacion/?competicion=...` y `/goleadores/?competicion=...`.
+Tenis incluye ATP y WTA, individuales y dobles, filtrados por día de Madrid.
+
+Las APIs `/api/tabla` y `/api/tenis` reutilizan datos unos quince minutos.
+Si el proveedor de posiciones no responde desde Cloudflare, se usa
+`clasificaciones.json`, con la fecha real de la copia. `update_tables()` renueva
+las posiciones con cada publicación deportiva; conserva la copia anterior
+y marca el fallo cuando una descarga no se completa. La tarea del PC sigue
+publicando cada dos horas cuando está encendido; no se ha activado otro servicio.
+Los créditos y licencias están en `/metodo/`, sin ocupar los resultados.

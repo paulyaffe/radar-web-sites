@@ -53,12 +53,12 @@ PROFILES = {
     "deportes": {
         "title": "Marcador claro", "eyebrow": "FÚTBOL · FÓRMULA 1 · DATOS ABIERTOS",
         "heading": "El resultado.\nLa fuente. La fecha.",
-        "description": "Partidos por fecha, siete ligas europeas, Champions League, Europa League, selecciones y Fórmula 1. Horarios, resultados y fuentes visibles.",
+        "description": "Resultados y horarios de fútbol, Fórmula 1 y tenis. Clasificaciones, goleadores y partidos de clubes y selecciones.",
         "color": "#3759a0", "background": "#f2f4f7", "icon": "sport",
         "query": "futbol bundesliga formula 1 resultados",
         "topics": {"futbol": ["futbol", "bundesliga"], "formula-1": ["formula 1", "f1", "gran premio"]},
         "tools": [],
-        "seo_title": "Resultados de fútbol europeo y Fórmula 1",
+        "seo_title": "Fútbol, Fórmula 1 y tenis: resultados y horarios",
     },
     "cocina": {
         "title": "Cocina en gramos", "eyebrow": "RECETAS · PROPORCIONES · COCINA COTIDIANA",
@@ -376,8 +376,15 @@ def page(profile, base_url, path, title, description, body, schema=None, adsense
     if ads.get("enabled"):
         adtags += '<script src="/assets/consent.js" defer></script>'
         privacy_control = '<a href="/privacidad/" id="privacy-options" hidden>Opciones de privacidad</a>'
-    nav = '<a href="/">Inicio</a>' + ('<a href="/partidos/">Partidos por fecha</a><a href="/metodo/">Fuentes</a>' if profile == "deportes" else '<a href="/#herramientas">Calculadoras</a><a href="/#lecturas">' + ("Recetas y guías" if profile == "cocina" else "Guías") + '</a>')
-    return f'''<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(title)} | {esc(p['title'])}</title><meta name="description" content="{esc(description)}"><link rel="canonical" href="{esc(canonical)}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:type" content="website"><meta property="og:url" content="{esc(canonical)}"><meta property="og:image" content="{esc(base_url)}/assets/{p['icon']}.svg"><link rel="icon" href="/assets/{p['icon']}.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/style.css"><script src="/assets/tools.js" defer></script>{adtags}{'<script type="application/ld+json">'+structured+'</script>' if structured else ''}</head><body style="--accent:{p['color']};--paper:{p['background']}"><a class="skip" href="#contenido">Ir al contenido</a><header class="site-header"><a class="brand" href="/"><img src="/assets/{p['icon']}.svg" width="38" height="38" alt="">{esc(p['title'])}<span class="brand-dot">.</span></a><nav aria-label="Principal">{nav}</nav></header><main id="contenido">{body}</main><footer><a class="brand" href="/">{esc(p['title'])}.</a><p>Contenido gratuito. Fuentes visibles. Cuentas claras.</p><div><a href="/metodo/">Cómo trabajamos</a><a href="/privacidad/">Privacidad</a>{privacy_control}<a href="/sitemap.xml">Mapa del sitio</a></div><small>© {dt.datetime.now(UTC).year} {esc(p['title'])}</small></footer></body></html>'''
+    nav = '<a href="/">Inicio</a><a href="/#herramientas">Calculadoras</a><a href="/#lecturas">' + ("Recetas y guías" if profile == "cocina" else "Guías") + '</a>'
+    if profile == "deportes":
+        sport = "tenis" if path.startswith("/tenis/") else "formula-1" if path.startswith("/formula-1/") else "futbol"
+        nav = ''.join('<a href="/'+slug+'/"'+(' aria-current="page"' if slug == sport else '')+'>'+label+'</a>' for slug, label in [("futbol", "Fútbol"), ("formula-1", "Fórmula 1"), ("tenis", "Tenis")])
+    document = f'''<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(title)} | {esc(p['title'])}</title><meta name="description" content="{esc(description)}"><link rel="canonical" href="{esc(canonical)}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:type" content="website"><meta property="og:url" content="{esc(canonical)}"><meta property="og:image" content="{esc(base_url)}/assets/{p['icon']}.svg"><link rel="icon" href="/assets/{p['icon']}.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/style.css"><script src="/assets/tools.js" defer></script>{adtags}{'<script type="application/ld+json">'+structured+'</script>' if structured else ''}</head><body style="--accent:{p['color']};--paper:{p['background']}"><a class="skip" href="#contenido">Ir al contenido</a><header class="site-header"><a class="brand" href="/"><img src="/assets/{p['icon']}.svg" width="38" height="38" alt="">{esc(p['title'])}<span class="brand-dot">.</span></a><nav aria-label="Principal">{nav}</nav></header><main id="contenido">{body}</main><footer><a class="brand" href="/">{esc(p['title'])}.</a><p>Contenido gratuito. Fuentes visibles. Cuentas claras.</p><div><a href="/metodo/">Cómo trabajamos</a><a href="/privacidad/">Privacidad</a>{privacy_control}<a href="/sitemap.xml">Mapa del sitio</a></div><small>© {dt.datetime.now(UTC).year} {esc(p['title'])}</small></footer></body></html>'''
+    if profile == "deportes":
+        document = document.replace('<body style=', '<body class="sports-app" style=', 1)
+        document = document.split("<footer>", 1)[0] + '<footer class="sports-footer"><a href="/privacidad/">Privacidad</a><a href="/metodo/">Créditos</a>' + privacy_control + '</footer></body></html>'
+    return document
 
 
 def field(name, label, value, low, high, step="1", suffix=""):
@@ -444,32 +451,24 @@ def render(root):
         strip = f'<section class="trend-strip"><p class="eyebrow">EL RADAR DEL TEMA</p><ul>{pills}</ul><p class="small">Consultado: {esc(ranking.get("updated", ""))}. Señales de búsquedas y noticias, no visitas a esta web.</p></section>'
         body = hero + strip + body[len(hero):]
     if profile == "deportes":
-        hero = hero.replace('href="#herramientas"', 'href="#resultados"').replace("Empezar a calcular", "Consultar resultados").replace("Sin registro · Gratis · A tu ritmo", "Sin registro · Datos abiertos · Fuentes enlazadas").replace("una casa y su consumo eléctrico", "un balón y un circuito")
-        hero = hero.replace("W × h ÷ 1000", "Cada dato, con fecha").replace("La energía que realmente utilizas.", "Consulta el estado de la fuente.")
-        hero = hero.replace('href="#resultados"', 'href="#partidos"').replace('Consultar resultados', 'Ver partidos por fecha')
-        body = hero + calendar_html() + sports_html(read_json(root/"sports.json", {}))
+        body = football_quick_links() + '<h1 class="sport-title">Fútbol</h1>' + calendar_html()
     save("/", p["seo_title"], p["description"], body, {"@context": "https://schema.org", "@type": "WebSite", "name": p["title"], "url": base+"/", "inLanguage": "es"})
     if profile == "deportes":
         sports = read_json(root/"sports.json", {})
-        save("/equipo/", "Últimos resultados y próximos partidos de un equipo", "Consulta los cinco últimos partidos y los cinco próximos de un club o selección, con resultados y horarios de España peninsular.", '<section class="team-history page-heading" data-team-history aria-busy="false"><a class="source-link" href="/partidos/">← Calendario de partidos</a><p class="eyebrow">EL EQUIPO, PARTIDO A PARTIDO</p><h1>Resultados y próximos partidos.</h1><p class="intro" data-team-status role="status" aria-live="polite">Pulsa un equipo en el calendario para consultar su ficha.</p><div data-team-content></div><noscript><p>Activa JavaScript para consultar la ficha actualizada del equipo.</p></noscript></section><script src="/assets/team.js" defer></script>')
+        save("/equipo/", "Últimos resultados y próximos partidos de un equipo", "Los cinco últimos resultados y los cinco próximos partidos de un club o selección.", '<section class="team-history" data-team-history aria-busy="false"><a class="back-link" href="/partidos/">← Partidos</a><h1>Equipo</h1><p data-team-status class="data-status" role="status" aria-live="polite">Cargando…</p><div data-team-content></div><noscript>Activa JavaScript para ver los partidos.</noscript></section><script src="/assets/team.js" defer></script>')
         team_page = out/"equipo/index.html"
         team_page.write_text(team_page.read_text(encoding="utf-8").replace("</head>", '<meta name="robots" content="noindex,follow"></head>'), encoding="utf-8")
-        save("/partidos/", "Qué partidos se juegan en la fecha que elijas", "Calendario de fútbol por fecha: ligas, Champions, Europa League y selecciones, con horarios de España peninsular.", '<section class="page-heading"><h1>Tu día de fútbol.</h1><p class="intro">Elige una fecha y consulta los partidos publicados de clubes y selecciones.</p></section>'+calendar_html())
-        save("/futbol/", "Resultados de ligas europeas, Champions y Europa League", "Siete ligas europeas, Champions League, Europa League y calendario de selecciones: partidos, horarios y fuentes.", '<section class="page-heading"><h1>Fútbol de clubes y selecciones</h1><p class="intro">Elige una competición o consulta todos los partidos de un día.</p><a class="button" href="/partidos/">Partidos por fecha →</a></section>'+leagues_html(sports))
-        save("/futbol/selecciones/", "Partidos internacionales de selecciones por fecha", "Amistosos, Mundial, Eurocopa, Nations League y clasificatorios. Calendario de selecciones con banderas y horarios.", '<section class="page-heading"><h1>Las selecciones, en el calendario.</h1><p class="intro">Consulta partidos internacionales y horarios de España peninsular.</p></section>'+calendar_html("selecciones"))
+        save("/partidos/", "Partidos por fecha", "Horarios y resultados de fútbol por fecha.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
+        save("/futbol/", "Fútbol: partidos, clasificación y goleadores", "Calendario de ligas europeas, Champions League, Europa League y selecciones.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
+        save("/futbol/selecciones/", "Partidos de selecciones", "Resultados y horarios de selecciones internacionales.", football_quick_links("selecciones")+'<h1 class="sport-title">Selecciones</h1>'+calendar_html("selecciones"))
         for code, (route, country, name, _) in LEAGUES.items():
-            league_data = sports.get("leagues", {}).get(code)
-            if code == "BL1" and not league_data:
-                league_data = sports.get("football", {})
-            available = bool(league_data and league_data.get("matches"))
-            body_league = f'<section class="page-heading"><h1>Resultados de {esc(name)}</h1><p class="intro">{esc(country)} · resultados y próximos partidos disponibles en la fuente.</p></section>'+calendar_html(code)+leagues_html(sports, code)
-            save(f"/futbol/{route}/", f"Resultados de {name} y próximos partidos", f"Consulta la disponibilidad de los marcadores de {name}, sus fechas y su fuente de datos.", body_league)
-            if not available:
-                pending = out/f"futbol/{route}/index.html"
-                pending.write_text(pending.read_text(encoding="utf-8").replace("</head>", '<meta name="robots" content="noindex,follow"></head>'), encoding="utf-8")
-        football_only = {k: v for k, v in sports.items() if k in {"football", "errors"}}
-        f1_only = {k: v for k, v in sports.items() if k in {"f1", "errors"}}
-        save("/formula-1/", "Resultados de la última carrera de Fórmula 1", "Clasificación y puntos de la última carrera disponible en jolpica-f1, con fecha y fuente.", '<section class="page-heading"><h1>Resultados de Fórmula 1</h1><p class="intro">La última carrera disponible en jolpica-f1, con piloto, equipo y puntos.</p>'+sports_html(f1_only, "f1")+'</section>')
+            save(f"/futbol/{route}/", f"{name}: partidos y resultados", f"Horarios, resultados, clasificación y goleadores de {name}.", football_quick_links(code)+'<h1 class="sport-title">'+esc(name)+'</h1>'+calendar_html(code))
+        for kind, label in [("clasificacion", "Tabla de posiciones"), ("goleadores", "Goleadores")]:
+            save('/'+kind+'/', label, label+' de las ligas europeas y competiciones internacionales de fútbol.', football_quick_links()+competition_table_html(kind))
+            path = out/kind/"index.html"
+            path.write_text(path.read_text(encoding="utf-8").replace("</head>", '<meta name="robots" content="noindex,follow"></head>'), encoding="utf-8")
+        save("/tenis/", "Tenis: partidos y resultados ATP y WTA", "Calendario de tenis por fecha, individuales y dobles ATP y WTA, con resultados por sets.", '<h1 class="sport-title">Tenis</h1>'+tennis_html())
+        save("/formula-1/", "Fórmula 1: resultados", "Resultados de la última carrera de Fórmula 1 disponible.", '<h1 class="sport-title">Fórmula 1</h1>'+f1_compact_html(sports.get("f1", {})))
     for tid, title, desc in p["tools"]:
         save(f"/calculadoras/{tid}/", title, desc, f'<section class="page-heading"><a href="/">← Inicio</a><p class="eyebrow">HERRAMIENTA GRATUITA</p><h1>{esc(title)}</h1>{tool_page(tid)}</section>')
     for article in articles:
@@ -506,6 +505,8 @@ def render(root):
     if profile == "deportes":
         method = method.replace("No reutilizamos los escudos de los clubes.", "Las imágenes pequeñas de clubes y selecciones se sirven desde ESPN, como se explica debajo.")
         method = method.replace('</article>', '<h2>Ficha de cada equipo</h2><p>Al pulsar el nombre de un club o selección, su ficha consulta los cinco últimos partidos finalizados y los cinco próximos publicados en ESPN, entre todas las competiciones que la fuente tenga disponibles para ese equipo. Los resultados se ordenan del más reciente al más antiguo y los próximos partidos del más cercano al más lejano, respecto al momento actual. Si la fuente no publica cinco, se muestran solo los disponibles. Al comienzo de la temporada se consulta también la anterior si faltan resultados. La ficha se reutiliza durante unos quince minutos y funciona aunque el PC esté apagado.</p></article>')
+    if profile == "deportes":
+        method = method.replace('</article>', '<h2>Tenis y tablas de fútbol</h2><p>Las tablas de posiciones, goleadores y el tenis consultan ESPN. Tenis incluye ATP y WTA, individuales y dobles, con sus resultados por sets y fechas de España peninsular. Las consultas en Cloudflare se reutilizan durante unos quince minutos. Si la clasificación no se puede descargar desde Cloudflare, se sirve la copia que guarda el publicador periódico, con su fecha real. Esta copia se renueva cada dos horas mientras el PC esté encendido. Si falta una actualización, se conserva la fecha anterior y se indica el retraso.</p></article>')
     save("/metodo/", "Cómo trabajamos", "Nuestro método editorial y los límites de nuestras calculadoras.", method)
     privacy = '<article class="reading"><p class="eyebrow">PRIVACIDAD</p><h1>Tus cuentas se quedan contigo.</h1><p>Las calculadoras se ejecutan en tu navegador. Esta versión no tiene formularios de registro, cookies publicitarias, seguimiento analítico ni servicios externos de cálculo.</p><h2>Alojamiento</h2><p>El proveedor de alojamiento puede procesar información técnica de las solicitudes, como la dirección IP, para entregar la web y proteger su infraestructura. Eso no ofrece tu conexión como proxy ni permite que terceros naveguen usando la IP de tu casa.</p><h2>Cuando cambie el sitio</h2><p>Si añadimos publicidad, analíticas o formularios, actualizaremos esta información y los mecanismos de consentimiento que correspondan antes de activarlos.</p></article>'
     if profile == "deportes":
@@ -517,7 +518,7 @@ def render(root):
     save("/404/", "Página no encontrada", "La página que buscas no está aquí.", '<section class="page-heading"><h1>Ese enlace se ha perdido.</h1><p>Vuelve al inicio para encontrar las calculadoras y las guías.</p><a class="button" href="/">Ir al inicio →</a></section>')
     (out/"404.html").write_text((out/"404/index.html").read_text(encoding="utf-8"), encoding="utf-8")
     (out/"robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n", encoding="utf-8")
-    sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + "".join(f'<url><loc>{esc(base+path)}</loc></url>' for path in paths if path not in {"/404/", "/equipo/"}) + '</urlset>'
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + "".join(f'<url><loc>{esc(base+path)}</loc></url>' for path in paths if path not in {"/404/", "/equipo/", "/clasificacion/", "/goleadores/"}) + '</urlset>'
     (out/"sitemap.xml").write_text(sitemap, encoding="utf-8")
     (out/"_headers").write_text("/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n", encoding="utf-8")
     pub = ads.get("publisher_id", "").removeprefix("ca-")
@@ -529,10 +530,11 @@ def render(root):
     write_json(out/"contenido.json", {"site": p["title"], "articles": [{"title": a["title"], "url": f'/{"recetas" if a["kind"]=="recipe" else "guias"}/{a["id"]}/'} for a in articles]})
     if profile == "deportes":
         write_json(out/"deportes.json", read_json(root/"sports.json", {}))
+        write_json(out/"clasificaciones.json", read_json(root/"tables.json", {"competitions": {}}))
         worker = Path(__file__).with_name("calendar_worker.mjs")
         if worker.exists():
             shutil.copy2(worker, out/"_worker.js")
-            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo"], "exclude": []})
+            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo", "/api/tabla", "/api/tenis"], "exclude": []})
     for obsolete in set(read_json(root/"generated-pages.json", []))-set(paths):
         if re.fullmatch(r"/(?:guias|recetas)/[a-z0-9-]+/", obsolete):
             stale = out/obsolete.strip("/")/"index.html"
@@ -542,17 +544,50 @@ def render(root):
     return len(paths)
 
 
+def football_quick_links(selected="todas"):
+    links = [("todas", "/futbol/", "Todos")]
+    links += [(code, "/futbol/"+value[0]+"/", value[2]) for code, value in LEAGUES.items()]
+    links.append(("selecciones", "/futbol/selecciones/", "Selecciones"))
+    return '<nav class="quick-competitions" aria-label="Competiciones de fútbol">'+''.join('<a href="'+url+'"'+(' aria-current="page"' if code == selected else '')+'>'+esc(name)+'</a>' for code, url, name in links)+'</nav>'
+
+
+def date_controls(filters):
+    return '<form class="calendar-form"><label>Fecha<input type="date" name="fecha" min="2000-01-01" max="2099-12-31" required></label>'+filters+'<button class="button" type="submit">Ver</button></form><div class="calendar-days"><button type="button" data-day-step="-1" aria-label="Ver el día anterior">← Anterior</button><button type="button" data-today>Hoy</button><button type="button" data-day-step="1" aria-label="Ver el día siguiente">Siguiente →</button><span>Hora peninsular</span></div>'
+
+
+def competition_table_html(kind):
+    choices = [(code, value[2]) for code, value in LEAGUES.items()] + list(NATIONAL_COMPETITIONS.items())
+    options = ''.join('<option value="'+esc(code)+'">'+esc(name)+'</option>' for code, name in choices)
+    return '<section data-competition-table="'+kind+'" aria-busy="false"><h1 class="sport-title">'+('Tabla de posiciones' if kind == 'clasificacion' else 'Goleadores')+'</h1><form class="table-form"><label>Competición<select name="competicion">'+options+'</select></label><button class="button" type="submit">Ver</button></form><div class="competition-actions"><a data-table-link="clasificacion" href="/clasificacion/?competicion=PD">Tabla de posiciones</a><a data-table-link="goleadores" href="/goleadores/?competicion=PD">Tabla de goleadores</a></div><p data-data-status class="data-status" role="status" aria-live="polite">Cargando…</p><div data-data-list></div></section><script src="/assets/sports-data.js" defer></script>'
+
+
+def tennis_html():
+    filters = '<label>Circuito<select name="circuito"><option value="todos">ATP y WTA</option><option value="atp">ATP</option><option value="wta">WTA</option></select></label><label>Modalidad<select name="modalidad"><option value="todas">Todas</option><option value="singles">Individuales</option><option value="doubles">Dobles</option></select></label>'
+    return '<section class="calendar tennis-calendar" data-tennis aria-busy="false">'+date_controls(filters)+'<p class="data-status" data-data-status role="status" aria-live="polite">Cargando tenis…</p><div data-data-list></div><noscript>Activa JavaScript para consultar el tenis.</noscript></section><script src="/assets/sports-data.js" defer></script>'
+
+
+def f1_compact_html(data):
+    result = '<section class="fixture-competition"><h2>'+esc(data.get("race", "Última carrera"))+'</h2><p class="data-status">'+esc(match_date(data.get("date", "")))+'</p>'
+    if not data.get("results"):
+        return result+'<p>No hay resultados disponibles.</p></section>'
+    result += '<div class="table-scroll" role="region" aria-label="Resultado de Fórmula 1" tabindex="0"><table class="sports-table"><thead><tr><th scope="col">#</th><th scope="col">Piloto</th><th scope="col">Equipo</th><th scope="col">Pts</th></tr></thead><tbody>'
+    for row in data["results"]:
+        result += '<tr><td>'+esc(row["position"])+'</td><th scope="row">'+esc(row["driver"])+'</th><td>'+esc(row["constructor"])+'</td><td>'+esc(row["points"])+'</td></tr>'
+    return result+'</tbody></table></div></section>'
+
+
 def calendar_html(selected="todas"):
     choices = [("todas", "Todos los partidos"), ("clubes", "Solo clubes"), ("selecciones", "Solo selecciones")]
     choices += [(code, value[2]) for code, value in LEAGUES.items()]
     choices += list(NATIONAL_COMPETITIONS.items())
     options = "".join(f'<option value="{esc(code)}"'+(' selected' if selected == code else '')+f'>{esc(name)}</option>' for code, name in choices)
-    return '<section id="partidos" class="calendar" data-fixtures aria-busy="false"><div class="section-heading"><div><p class="eyebrow">ELIGE TU DÍA</p><h2>¿Qué partidos se juegan?</h2></div><p>Clubes y selecciones. Horas de España peninsular.</p></div><form class="calendar-form"><label>Fecha<input type="date" name="fecha" min="2000-01-01" max="2099-12-31" required></label><label>Competición<select name="competicion">'+options+'</select></label><button class="button" type="submit">Ver partidos ↗</button></form><div class="calendar-days"><button type="button" data-day-step="-1" aria-label="Ver el día anterior">← Día anterior</button><button type="button" data-today>Hoy</button><button type="button" data-day-step="1" aria-label="Ver el día siguiente">Día siguiente →</button></div><p class="calendar-status" data-fixtures-status role="status" aria-live="polite">Selecciona una fecha para consultar los partidos.</p><div data-fixtures-list></div><noscript><p>Activa JavaScript para consultar el calendario por fecha. Los resultados periódicos siguen disponibles debajo.</p></noscript><script src="/assets/calendar.js" defer></script></section>'
+    return '<section id="partidos" class="calendar" data-fixtures aria-busy="false">'+date_controls('<label>Competición<select name="competicion">'+options+'</select></label>')+'<p class="calendar-status" data-fixtures-status role="status" aria-live="polite">Cargando partidos…</p><div data-fixtures-list></div><noscript>Activa JavaScript para consultar los partidos.</noscript><script src="/assets/calendar.js" defer></script></section>'
+
 
 
 def sports_request(url):
     parsed = urllib.parse.urlparse(url)
-    if parsed.scheme != "https" or parsed.hostname not in {"api.openligadb.de", "api.jolpi.ca", "raw.githubusercontent.com", "site.api.espn.com"}:
+    if parsed.scheme != "https" or parsed.hostname not in {"api.openligadb.de", "api.jolpi.ca", "raw.githubusercontent.com", "site.api.espn.com", "site.web.api.espn.com"}:
         raise ValueError("Fuente deportiva no autorizada.")
     request = urllib.request.Request(url, headers={"User-Agent": "MarcadorClaro/1.0 Python/3.11"})
     with urllib.request.urlopen(request, timeout=20) as response:
@@ -623,6 +658,34 @@ def recent_matches(matches):
     return finished + upcoming
 
 
+def update_tables(root):
+    """The native publisher keeps a dated copy when the edge cannot reach standings."""
+    slugs = {"PD": "esp.1", "SA": "ita.1", "PL": "eng.1", "FL1": "fra.1", "DED": "ned.1", "PPL": "por.1", "BL1": "ger.1", "CL": "uefa.champions", "EL": "uefa.europa"}
+    slugs.update({"WORLD": "fifa.world", "EURO": "uefa.euro", "NATIONS": "uefa.nations", "WQ_EU": "fifa.worldq.uefa", "WQ_SA": "fifa.worldq.conmebol", "WQ_NA": "fifa.worldq.concacaf", "WQ_AF": "fifa.worldq.caf", "WQ_AS": "fifa.worldq.afc", "WQ_OC": "fifa.worldq.ofc", "COPA": "conmebol.america", "GOLD": "concacaf.gold", "AFCON": "caf.nations", "ASIAN": "afc.asian.cup"})
+    result = read_json(root/"tables.json", {"competitions": {}})
+    def compact(node):
+        output = {k: node[k] for k in ("name", "season") if k in node}
+        if isinstance(node.get("children"), list):
+            output["children"] = [compact(c) for c in node["children"]]
+        if isinstance(node.get("standings", {}).get("entries"), list):
+            output["standings"] = {"entries": [{"team": {"id": entry["team"].get("id"), "displayName": entry["team"].get("displayName"), "logo": entry["team"].get("logo") or next((logo.get("href", "") for logo in entry["team"].get("logos", []) if logo.get("href")), "")}, "stats": [{"name": s.get("name"), "value": s.get("value")} for s in entry.get("stats", []) if s.get("name") in {"rank", "gamesPlayed", "wins", "ties", "losses", "pointsFor", "pointsAgainst", "pointDifferential", "points"}]} for entry in node["standings"]["entries"] if entry.get("team")]}
+        return output
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {pool.submit(sports_request, "https://site.web.api.espn.com/apis/v2/sports/soccer/"+slug+"/standings"): code for code, slug in slugs.items()}
+        for future in as_completed(futures):
+            code = futures[future]
+            try:
+                data = future.result()
+                if not isinstance(data.get("children"), list) and not data.get("standings"):
+                    raise ValueError("Sin tabla")
+                result["competitions"][code] = {"updated": now_iso(), "data": compact(data), "error": None}
+            except Exception as exc:
+                old = result["competitions"].get(code, {})
+                result["competitions"][code] = {**old, "error": type(exc).__name__}
+    write_json(root/"tables.json", result)
+    return result
+
+
 def update_sports(root):
     previous = read_json(root/"sports.json", {})
     previous["errors"] = []
@@ -673,6 +736,7 @@ def update_sports(root):
     if not previous.get("football") and not previous.get("f1") and not previous["leagues"]:
         raise RuntimeError("No se han podido obtener resultados deportivos.")
     write_json(root/"sports.json", previous)
+    update_tables(root)
     return previous
 
 

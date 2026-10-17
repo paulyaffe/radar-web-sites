@@ -14,7 +14,6 @@
   }
   function section(part,future){
     const box=el('section',undefined,'team-history-section');box.append(el('h2',future?'Próximos 5 partidos':'Últimos 5 partidos'));
-    box.append(el('p',future?'Por disputarse · del más cercano al más lejano':'Finalizados · del más reciente al más antiguo','score-meta'));
     if(part.error)box.append(el('p',part.error+(part.stale?' Se conserva la última copia disponible.':''),'calendar-warning'));
     if(!part.matches.length)box.append(el('p',part.error?'La fuente no permite confirmar esta lista ahora.':future?'Todavía no hay próximos partidos publicados.':'No hay resultados finalizados publicados.','calendar-empty'));
     for(const m of part.matches){
@@ -26,7 +25,7 @@
       row.append(time,team(m.home,m.home_icon,m.national,m.home_id,m.competition),score,team(m.away,m.away_icon,m.national,m.away_id,m.competition));box.append(row);
     }
     if(part.matches.length>0&&part.matches.length<5&&!part.error)box.append(el('p','La fuente solo publica '+part.matches.length+(future?' próximos partidos.':' partidos finalizados en las temporadas consultadas.'),'small'));
-    if(part.updated)box.append(el('p','Última consulta correcta: '+when({date:part.updated,time_confirmed:true})+'.','small'));
+    if(part.stale&&part.updated)box.append(el('p','Copia del '+when({date:part.updated,time_confirmed:true})+'.','small'));
     return box;
   }
   async function load(){
@@ -38,10 +37,9 @@
       if(!response.ok||!data.team||!data.past||!data.future)throw Error(data.error||'No se ha podido consultar este equipo.');
       document.title=data.team.name+' · últimos y próximos partidos | Marcador claro';
       heading.replaceChildren(team(data.team.name,data.team.icon,data.team.national));
-      status.textContent=(data.team.national?'Selección nacional':'Club')+' · Todas las competiciones disponibles · Horas de España peninsular.';
+      status.textContent=(data.team.national?'Selección':'Club')+' · Hora peninsular';
       const grid=el('div',undefined,'team-history-grid');grid.append(section(data.past,false),section(data.future,true));
-      const source=el('a','Resultados y calendario en ESPN','source-link');source.href=data.source;source.rel='noopener';
-      content.replaceChildren(grid,source,el('p','Datos reutilizados durante unos quince minutos. Los próximos horarios y la lista de partidos pueden cambiar.','small'));
+      content.replaceChildren(grid);
     }catch(e){status.textContent=e.name==='TimeoutError'?'La consulta está tardando demasiado. Inténtalo de nuevo.':e.message;content.replaceChildren(el('p','Vuelve al calendario y selecciona el equipo para reintentar la consulta.','calendar-warning'));}
     finally{root.setAttribute('aria-busy','false');}
   }
