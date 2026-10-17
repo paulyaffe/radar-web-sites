@@ -1,4 +1,4 @@
-// Cloudflare Pages: only /api/partidos uses this Worker; other requests stay static.
+// Cloudflare Pages: fixture and team APIs; other requests stay static.
 export const COMPETITIONS = {
   PD: ['La Liga', 'esp.1', false], SA: ['Serie A', 'ita.1', false],
   PL: ['Premier League', 'eng.1', false], FL1: ['Ligue 1', 'fra.1', false],
@@ -45,12 +45,13 @@ function score(value) {
   const s = typeof value === 'object' && value ? value.value : value;
   return /^\d{1,2}$/.test(String(s ?? '')) ? Number(s) : null;
 }
-export function normalizeEvents(data, code, day) {
+function teamId(value) { return /^[1-9]\d{0,8}$/.test(String(value || '')) ? String(value) : ''; }
+export function normalizeEvents(data, code, day, nationalOverride) {
   if (!Array.isArray(data?.events)) throw new Error('Respuesta sin calendario');
-  const national = COMPETITIONS[code][2];
+  const national = nationalOverride ?? COMPETITIONS[code]?.[2] ?? false;
   const result = [];
   for (const event of data.events.slice(0,200)) {
-    if (madridDay(event.date) !== day) continue;
+    if (!madridDay(event.date) || (day && madridDay(event.date) !== day)) continue;
     const competition = event.competitions?.[0];
     const home = competition?.competitors?.find(t => t.homeAway === 'home');
     const away = competition?.competitors?.find(t => t.homeAway === 'away');
@@ -58,16 +59,21 @@ export function normalizeEvents(data, code, day) {
     const status = event.status?.type || competition.status?.type || {};
     const postponed = /POSTPON|CANCEL|ABANDON|SUSPEND|DELAY/i.test(status.name || '');
     const played = !postponed && (status.state === 'in' || status.state === 'post');
-    const finished = status.completed === true && !postponed;
+    const finished = status.completed === true && status.state === 'post' && !postponed;
     const label = /POSTPON/i.test(status.name || '') ? 'Aplazado' :
       /CANCEL|ABANDON/i.test(status.name || '') ? 'Cancelado' :
       postponed ? 'Suspendido o retrasado' : finished ? 'Finalizado' :
       status.state === 'in' ? 'En curso · dato de la fuente' : 'Programado';
     result.push({id:String(event.id), date:event.date, competition:code,
+      competition_name:COMPETITIONS[code]?.[0] || String(event.league?.name || 'Otra competición'),
       home:home.team.displayName, away:away.team.displayName,
+      home_id:teamId(home.team.id), away_id:teamId(away.team.id),
       home_icon:teamIcon(home.team,national), away_icon:teamIcon(away.team,national),
       national, home_score:played ? score(home.score) : null,
       away_score:played ? score(away.score) : null, finished, status:label,
+      state:status.state, time_confirmed:event.timeValid !== false && competition.timeValid !== false,
+      home_penalties:played ? score(home.shootoutScore) : null,
+      away_penalties:played ? score(away.shootoutScore) : null,
       venue:String(competition?.venue?.fullName || '')});
   }
   return result;
@@ -76,16 +82,19 @@ function json(value, status=200) {
   return Response.json(value, {status, headers:{'Cache-Control':'no-store',
     'X-Content-Type-Options':'nosniff', 'X-Robots-Tag':'noindex'}});
 }
-async function queryDay(code, day, selectedDay) {
-  const upstream = new URL('https://site.api.espn.com/apis/site/v2/sports/soccer/' + COMPETITIONS[code][1] + '/scoreboard');
-  upstream.searchParams.set('dates', day.replaceAll('-',''));
+async function upstreamJson(upstream) {
   const response = await fetch(upstream, {headers:{Accept:'application/json'},
     signal:AbortSignal.timeout(9000), redirect:'manual'});
   if (!response.ok) throw new Error('Fuente HTTP '+response.status);
   if (Number(response.headers.get('Content-Length') || 0) > 2_000_000) throw new Error('Respuesta demasiado grande');
   const raw = await response.text();
   if (raw.length > 2_000_000) throw new Error('Respuesta demasiado grande');
-  return normalizeEvents(JSON.parse(raw), code, selectedDay);
+  return JSON.parse(raw);
+}
+async function queryDay(code, day, selectedDay) {
+  const upstream = new URL('https://site.api.espn.com/apis/site/v2/sports/soccer/' + COMPETITIONS[code][1] + '/scoreboard');
+  upstream.searchParams.set('dates', day.replaceAll('-',''));
+  return normalizeEvents(await upstreamJson(upstream), code, selectedDay);
 }
 async function competitionDay(code, day, old) {
   const yesterday = new Date(Date.parse(day+'T12:00:00Z')-86400000).toISOString().slice(0,10);
@@ -114,7 +123,7 @@ export async function fixtures(request, ctx={waitUntil:()=>{}}) {
   if (!codes.length) return json({error:'Competición no disponible.'},400);
   // Groups keep each request below the free plan's subrequest limit.
   const cache = globalThis.caches?.default;
-  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=1');
+  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=2');
   let cached;
   try { const response = await cache?.match(key); cached = response && await response.json(); } catch { /* cache is optional */ }
   if (cached && Date.now()-Date.parse(cached.checked_at) < FRESH_MS) return json(cached);
@@ -128,9 +137,107 @@ export async function fixtures(request, ctx={waitUntil:()=>{}}) {
   }
   return json(payload, competitions.every(c=>c.error && !c.matches.length) ? 503 : 200);
 }
+
+// Resolve names from the periodic OpenFootball copy only inside its league.
+// Known spelling variants still have to match a team in ESPN's league roster.
+export function nameKey(value) {
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+    .replace(/f\.c\./g,'fc').replace(/[^a-z0-9 ]/g,' ')
+    .split(/\s+/).filter(s=>s && !/^(fc|cf|afc|ac|as|acf|bc|cfc|ss|ssc|us|ud|sc|sbv|cd|cs|gd|calcio|\d+)$/.test(s)).join(' ');
+}
+const ALIASES = {
+  'deportivo a coruna':'deportivo', 'deportivo alaves':'alaves', 'espanyol barcelona':'espanyol', 'villareal':'villarreal', 'ca osasuna':'osasuna',
+  'internazionale milano':'internazionale', 'olympique lyonnais':'lyon', 'olympique de marseille':'marseille',
+  'racing club de lens':'lens', 'strasbourg alsace':'strasbourg', 'rc strasbourg alsace':'strasbourg', 'stade brestois':'brest',
+  'lille osc':'lille', 'angers sco':'angers', 'ogc nice':'nice', 'es troyes':'troyes',
+  'ajax':'ajax amsterdam', 'az':'az alkmaar', 'twente':'twente', 'cambuur leeuwarden':'cambuur',
+  'willem ii tilburg':'willem ii', 'sport lisboa e benfica':'benfica', 'sporting clube de braga':'braga',
+  'sporting clube de portugal':'sporting', 'estrela da amadora':'estrela', 'estoril praia':'estoril',
+  'vitoria guimaraes':'vitoria de guimaraes', 'koln':'cologne', 'fsv mainz':'mainz',
+  'bayern munchen':'bayern munich', 'hamburger sv':'hamburg sv', 'sv werder bremen':'werder bremen'
+};
+export function resolveTeam(data, name) {
+  const key = nameKey(name); const target = ALIASES[key] || key;
+  const teams = (data?.sports || []).flatMap(s=>(s.leagues || []).flatMap(l=>(l.teams || []).map(t=>t.team)));
+  const matches = teams.filter(t=>t && [t.displayName,t.shortDisplayName,t.name,t.location].some(n=>nameKey(n) === target));
+  if (matches.length !== 1 || !teamId(matches[0].id)) throw Error('No se ha podido identificar este equipo en la fuente.');
+  return teamId(matches[0].id);
+}
+async function cachedRoster(origin, code, ctx) {
+  const cache = globalThis.caches?.default;
+  const key = new Request(origin+'/api/equipo?plantilla='+code+'&v=1');
+  try { const old = await cache?.match(key); if(old) return await old.json(); } catch {}
+  const data = await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/teams?limit=100');
+  if (!Array.isArray(data?.sports)) throw Error('Plantilla no disponible.');
+  if (cache) ctx.waitUntil(cache.put(key,new Response(JSON.stringify(data),{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
+  return data;
+}
+export function scheduleRows(data, id) {
+  if (teamId(data?.team?.id) !== id || typeof data.team.isNational !== 'boolean' || typeof data.team.displayName !== 'string') throw Error('El equipo de la respuesta no coincide.');
+  const rows = [];
+  if (!Array.isArray(data.events)) throw Error('Respuesta sin partidos.');
+  for (const event of data.events.slice(0,400)) {
+    const code = Object.keys(COMPETITIONS).find(c=>COMPETITIONS[c][1] === event.league?.slug) || '';
+    for (const row of normalizeEvents({events:[event]},code,undefined,data.team.isNational)) {
+      if (row.home_id === id || row.away_id === id) rows.push(row);
+    }
+  }
+  return rows;
+}
+export function selectFive(rows, future, now=Date.now()) {
+  const unique = [...new Map(rows.map(m=>[m.id,m])).values()];
+  return unique.filter(m=>future ? !m.finished && m.state === 'pre' && m.status !== 'Cancelado' && Date.parse(m.date)>=now :
+    m.finished && Date.parse(m.date)<=now)
+    .sort((a,b)=>future ? Date.parse(a.date)-Date.parse(b.date) : Date.parse(b.date)-Date.parse(a.date)).slice(0,5);
+}
+async function schedulePart(id, future, old) {
+  const rows = []; let data, error;
+  try {
+    const base='https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/'+id+'/schedule';
+    const fetched = await upstreamJson(base+'?fixture='+future);
+    rows.push(...scheduleRows(fetched,id));
+    data = fetched;
+    const year = Number(data.season?.year);
+    // Early in a season, include the preceding season to find five real results.
+    if (!future && selectFive(rows,false).length<5 && year>=2001 && year<=2099) {
+      const previous = await upstreamJson(base+'?fixture=false&season='+(year-1));
+      rows.push(...scheduleRows(previous,id));
+    }
+  } catch (e) { error='No se ha podido renovar toda esta lista.'; console.warn('Equipo '+id+': '+String(e.message)); }
+  if (error && old?.matches) rows.push(...old.matches.filter(m=>!rows.some(r=>r.id === m.id)));
+  return {data, part:{matches:selectFive(rows,future), updated:error ? old?.updated || null : new Date().toISOString(),
+    stale:Boolean(error && old), error:error || null}};
+}
+export async function teamHistory(request, ctx={waitUntil:()=>{}}) {
+  if(request.method !== 'GET') return json({error:'Método no permitido'},405);
+  const url=new URL(request.url), supplied=url.searchParams.get('id'), name=url.searchParams.get('nombre');
+  const code=url.searchParams.get('competicion'); let id=teamId(supplied);
+  if ((supplied && !id) || (!id && (!name || name.length>100 || !COMPETITIONS[code]))) return json({error:'Equipo no válido.'},400);
+  try {
+    if (!id) id=resolveTeam(await cachedRoster(url.origin,code,ctx),name);
+  } catch { return json({error:'No se ha podido identificar el equipo. Vuelve a intentarlo desde el calendario por fecha.'},503); }
+  const cache=globalThis.caches?.default, key=new Request(url.origin+'/api/equipo?id='+id+'&v=1'); let old;
+  try { const response=await cache?.match(key); old=response && await response.json(); } catch {}
+  if(old && Date.now()-Date.parse(old.checked_at)<FRESH_MS) return json(old);
+  const [past,future]=await Promise.all([schedulePart(id,false,old?.past),schedulePart(id,true,old?.future)]);
+  const data=past.data || future.data;
+  if (!data?.team || teamId(data.team.id)!==id) {
+    if(old) return json({...old,complete:false,past:{...old.past,stale:true,error:'No se ha podido renovar esta lista.'},future:{...old.future,stale:true,error:'No se ha podido renovar esta lista.'}});
+    return json({error:'La fuente no está disponible. Inténtalo más tarde.'},503);
+  }
+  const national=data.team.isNational;
+  const payload={team:{id,name:data.team.displayName,icon:teamIcon(data.team,national),national},
+    past:past.part,future:future.part,checked_at:new Date().toISOString(),
+    complete:!past.part.error && !future.part.error,
+    source:'https://www.espn.com/soccer/team/results/_/id/'+id,
+    attribution:'Datos de ESPN. Todas las competiciones disponibles para este equipo. Horarios sujetos a cambios.'};
+  if(cache && payload.complete) ctx.waitUntil(cache.put(key,new Response(JSON.stringify(payload),{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
+  return json(payload);
+}
 export default {
   async fetch(request, env, ctx) {
     if (new URL(request.url).pathname === '/api/partidos') return fixtures(request,ctx);
+    if (new URL(request.url).pathname === '/api/equipo') return teamHistory(request,ctx);
     return env.ASSETS.fetch(request);
   }
 };

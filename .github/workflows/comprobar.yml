@@ -28,6 +28,7 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/calendar_worker.mjs
+      - run: node tests/team_worker.mjs
       - run: python update.py --force
       - name: Comprobar SEO y archivos públicos
         run: |
@@ -54,7 +55,7 @@ jobs:
           sports = json.loads(Path('sites/deportes/sports.json').read_text())
           assert {'PD','SA','PL','FL1','DED','PPL','BL1','CL','EL'} <= set(sports['leagues'])
           assert Path('sites/deportes/dist/_worker.js').is_file()
-          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos']
+          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos', '/api/equipo']
           for route in ('partidos','futbol/champions-league','futbol/europa-league','futbol/selecciones'):
               assert Path('sites/deportes/dist',route,'index.html').is_file()
           print('Cuatro webs, SEO, AdSense, nueve competiciones de clubes y calendario internacional comprobados. Esta tarea no publica.')

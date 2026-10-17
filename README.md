@@ -85,3 +85,15 @@ dominios comprados. La ejecución usa runners Linux estándar, no runners de pag
 
 Referencias: https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/
 https://developers.cloudflare.com/pages/platform/limits/
+
+## Ficha de clubes y selecciones
+
+Al pulsar un equipo se abre `/equipo/`, con los cinco últimos partidos finalizados
+y los cinco próximos publicados, entre todas sus competiciones en ESPN. La API
+`/api/equipo` consulta resultados y calendario por separado, conserva resultados
+0–0 reales y no asigna marcadores a partidos por disputar. Si faltan cinco
+resultados al inicio de temporada, consulta también la temporada anterior.
+No inventa próximos encuentros cuando la fuente publica menos de cinco.
+Funciona en Cloudflare con el PC apagado y reutiliza consultas unos quince minutos.
+
+Comprobaciones: `node tests/team_worker.mjs` (desde el paquete Cloudflare).

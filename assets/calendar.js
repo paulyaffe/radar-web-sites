@@ -8,7 +8,7 @@
   const time=new Intl.DateTimeFormat('es-ES',{timeZone:zone,day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
   function matchDate(value){const p=Object.fromEntries(time.formatToParts(new Date(value)).map(x=>[x.type,x.value]));return p.day+'/'+p.month+'/'+p.year+' '+p.hour+':'+p.minute;}
   function el(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;}
-  function team(name,icon,national){const n=el('span',undefined,'fixture-team');if(icon){const img=el('img');img.src=icon;img.alt='';img.width=24;img.height=national?16:24;img.loading='lazy';img.referrerPolicy='no-referrer';img.className=national?'team-icon flag-icon':'team-icon';img.addEventListener('error',()=>img.remove(),{once:true});n.append(img);}n.append(el('span',name));return n;}
+  function team(name,icon,national,id,code){const n=el('a',undefined,'fixture-team team-link');const q=new URLSearchParams({competicion:code});q.set(id?'id':'nombre',id||name);n.href='/equipo/?'+q;n.title='Ver últimos y próximos partidos de '+name;if(icon){const img=el('img');img.src=icon;img.alt='';img.width=24;img.height=national?16:24;img.loading='lazy';img.referrerPolicy='no-referrer';img.className=national?'team-icon flag-icon':'team-icon';img.addEventListener('error',()=>img.remove(),{once:true});n.append(img);}n.append(el('span',name));return n;}
   function render(data){
     const competitions=data.flatMap(d=>d.competitions||[]);const problems=competitions.filter(c=>c.error);
     const count=competitions.reduce((n,c)=>n+c.matches.length,0);const fragment=document.createDocumentFragment();
@@ -23,7 +23,7 @@
       for(const m of c.matches){
         const row=el('article',undefined,'fixture-row');const when=el('div',undefined,'fixture-time');const clock=el('time',matchDate(m.date));clock.dateTime=m.date;when.append(clock,el('small',m.status));
         const score=m.home_score==null||m.away_score==null?'—':m.home_score+' – '+m.away_score;
-        row.append(when,team(m.home,m.home_icon,m.national),el('strong',score,'fixture-score'),team(m.away,m.away_icon,m.national));box.append(row);
+        row.append(when,team(m.home,m.home_icon,m.national,m.home_id,c.code),el('strong',score,'fixture-score'),team(m.away,m.away_icon,m.national,m.away_id,c.code));box.append(row);
       }
       const source=el('a','Calendario de '+c.name+' en ESPN','source-link');source.href=c.source;source.rel='noopener';box.append(source);fragment.append(box);
     }

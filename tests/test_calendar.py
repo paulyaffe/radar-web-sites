@@ -38,11 +38,24 @@ class CalendarTests(unittest.TestCase):
                 self.assertIn('https://marcador-claro-paul.pages.dev/'+route+'/', text)
                 self.assertIn('/assets/calendar.js', text)
             self.assertTrue((root/"dist/_worker.js").is_file())
-            self.assertEqual(engine.read_json(root/"dist/_routes.json")["include"], ["/api/partidos"])
+            self.assertEqual(engine.read_json(root/"dist/_routes.json")["include"], ["/api/partidos", "/api/equipo"])
+            team = (root/"dist/equipo/index.html").read_text(encoding="utf-8")
+            self.assertIn('/assets/team.js', team)
+            self.assertIn('noindex,follow', team)
+            self.assertNotIn('/equipo/', (root/"dist/sitemap.xml").read_text(encoding="utf-8"))
             self.assertIn("Champions League", (root/"dist/index.html").read_text(encoding="utf-8"))
             self.assertIn('google.com', (root/"dist/ads.txt").read_text())
             engine.render(root)
             self.assertTrue((root/"dist/_worker.js").is_file())
+
+    def test_team_links_preserve_names_and_do_not_accept_html(self):
+        link = engine.football_team('A & B <script>', 'PD')
+        self.assertIn('/equipo/?', link)
+        self.assertIn('nombre=A+%26+B+%3Cscript%3E', link)
+        self.assertNotIn('<script>', link)
+        link = engine.football_team('Real Madrid', 'PD', '86')
+        self.assertIn('id=86', link)
+        self.assertNotIn('nombre=', link)
 
     def test_operational_generator_has_the_same_calendar_code(self):
         root = Path(engine.__file__).parent
