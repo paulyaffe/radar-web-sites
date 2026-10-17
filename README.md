@@ -12,6 +12,26 @@ Los logotipos PNG de 600 x 160 píxeles para los mensajes de AdSense están en
 `assets/logo-casa-en-vatios.png` y `assets/logo-marcador-claro.png`.
 Las actualizaciones conservan estos archivos en el alojamiento.
 
+## Calendario de Marcador claro
+
+`/partidos/` permite elegir fecha y competición. Incluye las siete ligas,
+Champions League, Europa League y catorce calendarios de selecciones masculinas:
+amistosos, Mundial, Eurocopa, UEFA Nations League, seis clasificatorios del
+Mundial, Copa América, Copa Oro, Copa Africana de Naciones y Copa Asiática.
+Los escudos se muestran a 24 × 24 píxeles y las banderas a 24 × 16.
+Fechas y horas: `dd/mm/aa hh:mm`, zona Europe/Madrid y cambios de hora incluidos.
+
+`calendar_worker.mjs` se copia a `sites/deportes/dist/_worker.js` en cada
+generación. `_routes.json` limita su ejecución a `/api/partidos`; los demás
+archivos siguen siendo estáticos. El calendario consulta ESPN desde Cloudflare
+sin cuentas ni claves adicionales, por lo que funciona con el PC apagado.
+Agrupa las consultas en clubes y selecciones, reutiliza resultados unos quince
+minutos y señala fallos parciales. No promete marcadores oficiales en directo.
+Las copias periódicas de las páginas y de `deportes.json` siguen dependiendo
+del publicador Windows, mientras GitHub no esté conectado.
+
+Pruebas: `python -m unittest discover -s tests` y `node tests/calendar_worker.mjs`.
+
 ## Generar
 
 Python 3.11 o posterior, sin paquetes externos:

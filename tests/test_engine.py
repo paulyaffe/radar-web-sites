@@ -145,7 +145,7 @@ class Publishing(unittest.TestCase):
         with patch.object(engine, "sports_request", side_effect=TimeoutError):
             result = engine.update_sports(self.root)
         self.assertEqual(result["football"]["updated"], previous["football"]["updated"])
-        self.assertEqual(len(result["errors"]), 11)
+        self.assertEqual(len(result["errors"]), 13)
 
     def test_openfootball_score_formats_and_unconfirmed_matches(self):
         matches = engine.openfootball_matches({"matches": [

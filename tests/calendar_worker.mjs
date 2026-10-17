@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import worker, {COMPETITIONS,fixtures,normalizeEvents,madridDay,teamIcon,validDate} from '../calendar_worker.mjs';
+const day='2026-10-20';
+function event(id,date='2026-10-20T18:00Z',state='pre',national=false){return {id,date,status:{type:{state,completed:state==='post',name:state==='post'?'STATUS_FULL_TIME':'STATUS_SCHEDULED'}},competitions:[{competitors:[{homeAway:'home',score:'0',team:{displayName:'Local <script>',logo:national?'https://a.espncdn.com/i/teamlogos/countries/500/esp.png':'https://a.espncdn.com/i/teamlogos/soccer/500/1.png'}},{homeAway:'away',score:'1',team:{displayName:'Visitante',logo:national?'https://a.espncdn.com/i/teamlogos/countries/500/fra.png':'https://a.espncdn.com/i/teamlogos/soccer/500/2.png'}}]}]};}
+assert.equal(validDate('2026-02-30'),false);assert.equal(validDate('2028-02-29'),true);assert.equal(validDate('../2026-10-20'),false);
+assert.equal(madridDay('2026-10-19T22:30Z'),day);
+assert.equal(madridDay('2026-12-19T23:30Z'),'2026-12-20');
+let rows=normalizeEvents({events:[event('a')]},'CL',day);assert.equal(rows[0].home_score,null);assert.equal(rows[0].away_score,null);
+rows=normalizeEvents({events:[event('a',undefined,'post')]},'CL',day);assert.equal(rows[0].home_score,0);assert.equal(rows[0].away_score,1);
+assert.equal(normalizeEvents({events:[event('b','2026-10-20T22:30Z')]},'CL',day).length,0);
+assert.equal(teamIcon({logo:'https://evil.invalid/flag.png'},true),'');assert.equal(teamIcon({logo:'https://a.espncdn.com/i/teamlogos/soccer/500/164.png'},true),'');
+rows=normalizeEvents({events:[event('c',undefined,'pre',true)]},'FRIENDLY',day);assert.equal(rows[0].national,true);assert.ok(rows[0].home_icon.includes('/countries/'));
+const originalFetch=globalThis.fetch;const originalCaches=globalThis.caches;const cache=new Map();
+globalThis.caches={default:{match:async key=>cache.get(key.url)?.clone(),put:async(key,r)=>cache.set(key.url,r.clone())}};
+let calls=0;globalThis.fetch=async url=>{calls++;const date=new URL(url).searchParams.get('dates');return Response.json({events:date==='20261019'?[event('midnight','2026-10-19T22:30Z'),event('wrong','2026-10-19T15:00Z')]:[event('a')]});};
+const waiting=[];const ctx={waitUntil:p=>waiting.push(p)};
+let response=await fixtures(new Request('https://site.test/api/partidos?fecha='+day+'&competicion=CL'),ctx);
+assert.equal(response.status,200);let body=await response.json();assert.equal(body.complete,true);assert.equal(body.competitions[0].matches.length,2);assert.equal(calls,2);await Promise.all(waiting);
+response=await fixtures(new Request('https://site.test/api/partidos?competicion=CL&fecha='+day),ctx);await response.json();assert.equal(calls,2,'cache key must not depend on query order');
+response=await fixtures(new Request('https://site.test/api/partidos?fecha=2026-02-30&competicion=CL'),ctx);assert.equal(response.status,400);assert.equal(calls,2);
+globalThis.fetch=async()=>{throw Error('offline');};response=await fixtures(new Request('https://site.test/api/partidos?fecha=2026-10-21&competicion=CL'),ctx);assert.equal(response.status,503);body=await response.json();assert.equal(body.complete,false);assert.ok(body.competitions[0].error);
+response=await worker.fetch(new Request('https://site.test/ads.txt'),{ASSETS:{fetch:async()=>new Response('publisher unchanged')}},ctx);assert.equal(await response.text(),'publisher unchanged');
+response=await fixtures(new Request('https://site.test/api/partidos',{method:'POST'}),ctx);assert.equal(response.status,405);
+assert.equal(Object.values(COMPETITIONS).filter(c=>!c[2]).length,9);assert.equal(Object.values(COMPETITIONS).filter(c=>c[2]).length,14);
+globalThis.fetch=originalFetch;globalThis.caches=originalCaches;
+console.log('Calendario: fechas de Madrid, cambio horario, cero real frente a programado, banderas, limites, cache, fallos y assets verificados.');
