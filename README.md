@@ -100,8 +100,8 @@ Comprobaciones: `node tests/team_worker.mjs` (desde el paquete Cloudflare).
 
 ## Marcador dedicado al fútbol
 
-La portada entra al calendario y ofrece accesos a Partidos, Posiciones y
-Goleadores. Incluye siete ligas europeas, Champions League, Europa League,
+La portada entra al calendario. Los enlaces a posiciones y goleadores aparecen
+debajo del título de cada competición. Incluye siete ligas europeas, Champions League, Europa League,
 MLS (Estados Unidos), Liga MX (México), Liga AUF Uruguaya, Liga Profesional
 Argentina y Brasileirão Serie A, además de las competiciones de selecciones.
 Las ligas nuevas se incluyen en los filtros, las fichas de equipos, la navegación
