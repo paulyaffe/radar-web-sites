@@ -1,7 +1,6 @@
 (function(){
   'use strict';
-  const tableRoot=document.querySelector('[data-competition-table]'),tennisRoot=document.querySelector('[data-tennis]');if(!tableRoot&&!tennisRoot)return;
-  const zone='Europe/Madrid',dateFmt=new Intl.DateTimeFormat('sv-SE',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'});
+  const tableRoot=document.querySelector('[data-competition-table]');if(!tableRoot)return;
   const clock=new Intl.DateTimeFormat('es-ES',{timeZone:zone,day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
   function el(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);if(cls)n.className=cls;return n;}
   function dateLabel(value,confirmed=true){const p=Object.fromEntries(clock.formatToParts(new Date(value)).map(x=>[x.type,x.value]));return p.day+'/'+p.month+'/'+p.year+(confirmed?' '+p.hour+':'+p.minute:' · Hora sin confirmar');}
@@ -52,30 +51,5 @@
     }
     form.addEventListener('submit',e=>{e.preventDefault();load();});select.addEventListener('change',load);load();
     setInterval(()=>{if(!document.hidden)load();},15*60*1000);
-  }
-  if(tennisRoot){
-    const form=tennisRoot.querySelector('form'),date=form.elements.fecha,tour=form.elements.circuito,mode=form.elements.modalidad,status=tennisRoot.querySelector('[data-data-status]'),list=tennisRoot.querySelector('[data-data-list]');let controller,version=0;
-    const params=new URLSearchParams(location.search);date.value=params.get('fecha')||dateFmt.format(Date.now());if(['todos','atp','wta'].includes(params.get('circuito')))tour.value=params.get('circuito');if(['todas','singles','doubles'].includes(params.get('modalidad')))mode.value=params.get('modalidad');
-    function player(p){const n=el('span',undefined,'tennis-player'+(p.winner?' tennis-winner':''));p.flags.forEach(f=>n.append(icon(f,true)));n.append(el('span',p.name));return n;}
-    function render(data,errors){
-      let matches=data.flatMap(d=>d.matches).filter(m=>mode.value==='todas'||m.doubles===(mode.value==='doubles'));matches.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
-      status.textContent=matches.length+' partidos · '+dateLabel(date.value+'T12:00:00Z').slice(0,8)+' · España peninsular';const fragment=document.createDocumentFragment();
-      if(!matches.length&&(errors.length||data.some(d=>d.stale)))status.textContent='';
-      const groups=new Map();for(const m of matches){const key=m.tour+' · '+m.tournament+' · '+(m.doubles?'Dobles':'Individuales');if(!groups.has(key))groups.set(key,[]);groups.get(key).push(m);}
-      for(const [key,rows]of groups){const box=el('section',undefined,'fixture-competition');box.append(el('h2',key.replace(/^atp/,'ATP').replace(/^wta/,'WTA')));
-        for(const m of rows){const row=el('article',undefined,'tennis-match'),meta=el('div',undefined,'tennis-meta');meta.append(el('time',dateLabel(m.date,m.time_confirmed)),el('small',m.status));row.append(meta);
-          m.players.forEach(p=>{const line=el('div',undefined,'tennis-line'),sets=el('span',undefined,'tennis-sets');p.sets.forEach(s=>{const set=el('span',s.score??'—');if(s.tie!==null)set.append(el('sup',s.tie));sets.append(set);});line.append(player(p),sets);row.append(line);});box.append(row);
-        }fragment.append(box);
-      }
-      list.replaceChildren(fragment);tennisRoot.setAttribute('aria-busy','false');
-    }
-    async function load(){
-      if(!form.reportValidity())return;const v=++version;controller?.abort();controller=new AbortController();status.textContent='';tennisRoot.setAttribute('aria-busy','true');list.replaceChildren();history.replaceState(null,'','?'+new URLSearchParams({fecha:date.value,circuito:tour.value,modalidad:mode.value}));
-      const groups=tour.value==='todos'?['atp','wta']:[tour.value];const values=await Promise.allSettled(groups.map(async t=>{const r=await fetch('/api/tenis?'+new URLSearchParams({fecha:date.value,circuito:t}),{signal:controller.signal});const d=await r.json();if(!r.ok||!Array.isArray(d.matches))throw Error(d.error||'No disponible');return d;}));
-      if(v!==version)return;render(values.filter(x=>x.status==='fulfilled').map(x=>x.value),values.filter(x=>x.status==='rejected'));
-    }
-    form.addEventListener('submit',e=>{e.preventDefault();load();});[date,tour,mode].forEach(n=>n.addEventListener('change',load));
-    tennisRoot.querySelectorAll('[data-day-step]').forEach(b=>b.addEventListener('click',()=>{const d=new Date(date.value+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+Number(b.dataset.dayStep));date.value=d.toISOString().slice(0,10);load();}));
-    tennisRoot.querySelector('[data-today]').addEventListener('click',()=>{date.value=dateFmt.format(Date.now());load();});load();setInterval(()=>{if(!document.hidden)load();},15*60*1000);
   }
 })();

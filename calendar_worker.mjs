@@ -5,6 +5,10 @@ export const COMPETITIONS = {
   DED: ['Eredivisie', 'ned.1', false], PPL: ['Primeira Liga', 'por.1', false],
   BL1: ['Bundesliga', 'ger.1', false], CL: ['Champions League', 'uefa.champions', false],
   EL: ['Europa League', 'uefa.europa', false],
+  MLS: ['MLS', 'usa.1', false], MEX: ['Liga MX', 'mex.1', false],
+  URU: ['Liga AUF Uruguaya', 'uru.1', false],
+  ARG: ['Liga Profesional Argentina', 'arg.1', false],
+  BRA: ['Brasileirão Serie A', 'bra.1', false],
   FRIENDLY: ['Amistosos internacionales', 'fifa.friendly', true],
   WORLD: ['Mundial', 'fifa.world', true], EURO: ['Eurocopa', 'uefa.euro', true],
   NATIONS: ['UEFA Nations League', 'uefa.nations', true],
@@ -176,7 +180,7 @@ export async function fixtures(request, ctx={waitUntil:()=>{}}) {
   if (!codes.length) return json({error:'Competición no disponible.'},400);
   // Groups keep each request below the free plan's subrequest limit.
   const cache = globalThis.caches?.default;
-  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=2');
+  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=3');
   let cached;
   try { const response = await cache?.match(key); cached = response && await response.json(); } catch { /* cache is optional */ }
   if (cached && Date.now()-Date.parse(cached.checked_at) < FRESH_MS) return json(cached);
@@ -351,44 +355,13 @@ export async function competitionTable(request,ctx={waitUntil:()=>{}},env={}) {
     }
     if(type==='clasificacion' && !Array.isArray(data?.children) && !data?.standings)throw Error('Respuesta sin clasificación');
     const season=data.season;const seasonLabel=typeof season==='object'?season?.displayName || season?.name || season?.year : season;
+    // ESPN can identify a league and season while publishing no player statistics.
+    const noScorerCoverage=type==='goleadores' && !Array.isArray(data.stats) && Boolean(data.league && data.season);
     return {competition:code,name:COMPETITIONS[code][0],type,season:String(seasonLabel || ''),
-      groups:type==='clasificacion'?normalizeStandings(data,code):[],scorers:type==='goleadores'?normalizeScorers(data,code):[],
+      groups:type==='clasificacion'?normalizeStandings(data,code):[],scorers:type==='goleadores'&&!noScorerCoverage?normalizeScorers(data,code):[],
+      ...(noScorerCoverage?{available:false}:{}),
       ...(snapshot?{updated:snapshot.updated,stale:Boolean(snapshot.error)||Date.now()-Date.parse(snapshot.updated)>6*3600000,
         ...(snapshot.error?{error:'No se ha podido renovar esta tabla. Se conserva su fecha original.'}:{})}:{})};
-  });
-}
-export function normalizeTennis(data,tour,day) {
-  if(!Array.isArray(data?.events))throw Error('Respuesta sin tenis');
-  const rows=[];
-  for(const event of data.events.slice(0,50))for(const group of (event.groupings || []).slice(0,8)){
-    const doubles=/doubles/.test(group.grouping?.slug || '');
-    for(const match of (group.competitions || []).slice(0,600)){
-      if(madridDay(match.date)!==day || match.competitors?.length!==2)continue;
-      const state=match.status?.type || {},played=state.state==='in'||state.state==='post';
-      const players=[...match.competitors].sort((a,b)=>(a.order||0)-(b.order||0)).map(p=>({
-        name:String(p.athlete?.displayName || p.roster?.displayName || p.team?.displayName || 'Por confirmar'),
-        flags:(p.athlete?[p.athlete]:p.roster?.athletes || []).map(a=>teamIcon({logo:a.flag?.href},true)).filter(Boolean),
-        winner:p.winner===true,sets:played?(p.linescores || []).slice(0,5).map(s=>({score:score(s),tie:score(s.tiebreak)})):[]
-      }));
-      rows.push({id:tour+'-'+event.id+'-'+match.id,date:match.date,time_confirmed:match.timeValid!==false,tour,
-        tournament:String(event.name || tour.toUpperCase()),doubles,round:String(match.round?.displayName || ''),players,
-        status:/RETIRED/i.test(state.name)?'Retiro':/WALKOVER/i.test(state.name)?'Incomparecencia':/POSTPON|DELAY|SUSPEND/i.test(state.name)?'Aplazado':
-          /CANCEL/i.test(state.name)?'Cancelado':state.completed?'Finalizado':state.state==='in'?'En juego':'Programado'});
-    }
-  }
-  return rows.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
-}
-export async function tennisFixtures(request,ctx={waitUntil:()=>{}}) {
-  if(request.method!=='GET')return json({error:'Método no permitido'},405);
-  const url=new URL(request.url),day=url.searchParams.get('fecha') || madridDay(Date.now()),tour=url.searchParams.get('circuito') || 'atp';
-  if(!validDate(day)||!['atp','wta'].includes(tour))return json({error:'Fecha o circuito no válido.'},400);
-  return cachedData(url,'/api/tenis?fecha='+day+'&circuito='+tour+'&v=1',ctx,async()=>{
-    const previous=new Date(Date.parse(day+'T12:00:00Z')-86400000).toISOString().slice(0,10),rows=[];
-    for(const date of [day,previous]){
-      const data=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/tennis/'+tour+'/scoreboard?dates='+date.replaceAll('-',''),6_000_000);
-      rows.push(...normalizeTennis(data,tour,day));
-    }
-    return {date:day,tour,timezone:TZ,matches:[...new Map(rows.map(m=>[m.id,m])).values()]};
   });
 }
 export function athleteNationality(athlete) {
@@ -418,7 +391,6 @@ export default {
     if (new URL(request.url).pathname === '/api/partidos') return fixtures(request,ctx);
     if (new URL(request.url).pathname === '/api/equipo') return teamHistory(request,ctx);
     if (new URL(request.url).pathname === '/api/tabla') return competitionTable(request,ctx,env);
-    if (new URL(request.url).pathname === '/api/tenis') return tennisFixtures(request,ctx);
     if (new URL(request.url).pathname === '/api/banderas') return playerFlags(request,ctx);
     return env.ASSETS.fetch(request);
   }

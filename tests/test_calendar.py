@@ -31,14 +31,14 @@ class CalendarTests(unittest.TestCase):
             config["adsense"] = {"publisher_id": "pub-7901739911277041", "enabled": True, "google_cmp_ready": True}
             engine.write_json(root/"site.json", config)
             engine.render(root)
-            for route in ("partidos", "futbol/champions-league", "futbol/europa-league", "futbol/selecciones"):
+            for route in ("partidos", "futbol/champions-league", "futbol/europa-league", "futbol/selecciones", "futbol/mls", "futbol/liga-mx", "futbol/liga-uruguaya", "futbol/liga-argentina", "futbol/brasileirao"):
                 text = (root/"dist"/route/"index.html").read_text(encoding="utf-8")
                 self.assertIn('name="fecha"', text)
                 self.assertIn('ca-pub-7901739911277041', text)
                 self.assertIn('https://marcador-claro-paul.pages.dev/'+route+'/', text)
                 self.assertIn('/assets/calendar.js', text)
             self.assertTrue((root/"dist/_worker.js").is_file())
-            self.assertEqual(engine.read_json(root/"dist/_routes.json")["include"], ["/api/partidos", "/api/equipo", "/api/tabla", "/api/tenis", "/api/banderas"])
+            self.assertEqual(engine.read_json(root/"dist/_routes.json")["include"], ["/api/partidos", "/api/equipo", "/api/tabla", "/api/banderas"])
             team = (root/"dist/equipo/index.html").read_text(encoding="utf-8")
             self.assertIn('/assets/team.js', team)
             self.assertIn('noindex,follow', team)
@@ -48,14 +48,27 @@ class CalendarTests(unittest.TestCase):
             for removed in ('class="hero"', 'ELIGE TU DÍA', '¿Qué partidos se juegan?', 'Fuentes enlazadas', 'Ilustración de un balón'):
                 self.assertNotIn(removed, home)
             self.assertIn('class="sports-app"', home)
-            self.assertIn('href="/tenis/"', home)
-            for route in ('clasificacion', 'goleadores', 'tenis'):
+            self.assertNotIn('href="/tenis/"', home)
+            self.assertNotIn('href="/formula-1/"', home)
+            for route in ('clasificacion', 'goleadores'):
                 page = (root/"dist"/route/"index.html").read_text(encoding="utf-8")
                 self.assertIn('/assets/sports-data.js', page)
                 self.assertIn('ca-pub-7901739911277041', page)
             self.assertIn('google.com', (root/"dist/ads.txt").read_text())
+            # Old generated pages must disappear even when dist is reused by the publisher.
+            for route in ('tenis', 'formula-1'):
+                stale = root/'dist'/route/'index.html'
+                stale.parent.mkdir(parents=True, exist_ok=True)
+                stale.write_text('old non-football page')
             engine.render(root)
             self.assertTrue((root/"dist/_worker.js").is_file())
+            for route in ('tenis', 'formula-1'):
+                self.assertFalse((root/'dist'/route/'index.html').exists())
+                self.assertNotIn('/'+route+'/', (root/'dist/sitemap.xml').read_text())
+                self.assertIn('/'+route+'/* /futbol/ 301', (root/'dist/_redirects').read_text())
+            for code in ('MLS','MEX','URU','ARG','BRA'):
+                self.assertIn('value="'+code+'"', home)
+                self.assertIn('value="'+code+'"', (root/'dist/goleadores/index.html').read_text(encoding='utf-8'))
 
     def test_team_links_preserve_names_and_do_not_accept_html(self):
         link = engine.football_team('A & B <script>', 'PD')

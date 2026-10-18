@@ -54,12 +54,12 @@ jobs:
               ET.parse(site/'dist/sitemap.xml')
               assert 'pub-7901739911277041' in (site/'dist/ads.txt').read_text()
           sports = json.loads(Path('sites/deportes/sports.json').read_text())
-          assert {'PD','SA','PL','FL1','DED','PPL','BL1','CL','EL'} <= set(sports['leagues'])
+          assert {'PD','SA','PL','FL1','DED','PPL','BL1','CL','EL','MLS','MEX','URU','ARG','BRA'} <= set(sports['leagues'])
           assert Path('sites/deportes/dist/_worker.js').is_file()
-          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos', '/api/equipo', '/api/tabla', '/api/tenis', '/api/banderas']
-          for route in ('partidos','futbol/champions-league','futbol/europa-league','futbol/selecciones','tenis','clasificacion','goleadores'):
+          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos', '/api/equipo', '/api/tabla', '/api/banderas']
+          for route in ('partidos','futbol/champions-league','futbol/europa-league','futbol/selecciones','futbol/mls','futbol/liga-mx','futbol/liga-uruguaya','futbol/liga-argentina','futbol/brasileirao','clasificacion','goleadores'):
               assert Path('sites/deportes/dist',route,'index.html').is_file()
-          print('Cuatro webs, SEO, AdSense, nueve competiciones de clubes y calendario internacional comprobados. Esta tarea no publica.')
+          print('Cuatro webs, SEO, AdSense, catorce competiciones de clubes y calendario internacional comprobados. Esta tarea no publica.')
           PY
       - uses: actions/upload-artifact@v4
         with:

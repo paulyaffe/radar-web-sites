@@ -1,14 +1,9 @@
 import assert from 'node:assert/strict';
-import worker,{normalizeStandings,normalizeScorers,normalizeTennis,competitionTable,tennisFixtures,playerFlags,athleteNationality} from '../calendar_worker.mjs';
+import worker,{normalizeStandings,normalizeScorers,competitionTable,playerFlags,athleteNationality} from '../calendar_worker.mjs';
 const table={season:2026,children:[{name:'Grupo A',standings:{entries:[{team:{id:'86',displayName:'Real Madrid'},stats:[{name:'points',value:0},{name:'gamesPlayed',value:0},{name:'rank',value:1}]}]}},{name:'Grupo B',standings:{entries:[{team:{id:'83',displayName:'Barcelona'},stats:[{name:'points',value:9}]}]}}]};
 const groups=normalizeStandings(table,'CL');assert.equal(groups.length,2);assert.equal(groups[0].rows[0].points,0);assert.equal(groups[0].rows[0].played,0);assert.equal(groups[0].rows[0].won,null,'Missing statistics must not turn into zero');assert.equal(groups[1].rows[0].team.id,'83');
 const stats={season:{displayName:'2026-27'},stats:[{name:'assistsLeaders',leaders:[{athlete:{displayName:'Wrong',statistics:[{name:'goalAssists',value:20}]}}]},{name:'goalsLeaders',leaders:[{athlete:{displayName:'First',team:{id:'86',displayName:'Madrid'},statistics:[{name:'totalGoals',value:4},{name:'appearances',value:2}]}},{athlete:{displayName:'Second',statistics:[{name:'totalGoals',value:8}]}},{athlete:{displayName:'Missing',statistics:[]}}]}]};
 const scorers=normalizeScorers(stats,'PD');assert.equal(scorers.length,2);assert.equal(scorers[0].name,'Second');assert.equal(scorers[0].goals,8);assert.equal(scorers[0].played,null);assert.throws(()=>normalizeScorers({},'PD'));
-function match(id,date,state='post'){return{id,date,timeValid:true,status:{type:{state,completed:state==='post',name:state==='post'?'STATUS_FINAL':'STATUS_SCHEDULED'}},competitors:[{order:1,athlete:{displayName:'A',flag:{href:'https://a.espncdn.com/i/teamlogos/countries/500/esp.png'}},winner:true,linescores:[{value:7,tiebreak:7},{value:6}]},{order:2,athlete:{displayName:'B'},linescores:[{value:6,tiebreak:5},{value:0}]}]};}
-const day='2026-10-20',tennis={events:[{id:'t1',name:'Madrid',date:'2026-10-01T00:00Z',groupings:[{grouping:{slug:'mens-singles'},competitions:[match('1','2026-10-19T22:30Z'),match('outside','2026-10-19T16:00Z'),match('2','2026-10-20T19:00Z','pre')]}]}]};
-let rows=normalizeTennis(tennis,'atp',day);assert.equal(rows.length,2,'Filter match date in Madrid, not the tournament start date');assert.equal(rows[0].players[0].sets[0].tie,7);assert.equal(rows[0].players[1].sets[1].score,0);assert.equal(rows[1].players[0].sets.length,0,'Hide scheduled dummy sets');assert.ok(rows[0].players[0].flags[0].includes('/countries/'));
-const double=match('d','2026-10-20T12:00Z');delete double.competitors[0].athlete;double.competitors[0].roster={displayName:'A / C',athletes:[{flag:{href:'https://bad.invalid/flag.png'}}]};
-rows=normalizeTennis({events:[{id:'d',name:'Doubles',groupings:[{grouping:{slug:'womens-doubles'},competitions:[double]}]}]},'wta',day);assert.equal(rows[0].doubles,true);assert.equal(rows[0].players[0].name,'A / C');assert.equal(rows[0].players[0].flags.length,0);
 const originalFetch=globalThis.fetch,originalCaches=globalThis.caches,cache=new Map(),pending=[];let calls=0;
 globalThis.caches={default:{match:async k=>cache.get(k.url)?.clone(),put:async(k,r)=>cache.set(k.url,r.clone())}};const ctx={waitUntil:p=>pending.push(p)};
 globalThis.fetch=async value=>{calls++;return Response.json(String(value).includes('statistics')?stats:table);};
@@ -17,14 +12,12 @@ response=await competitionTable(new Request('https://site.test/api/tabla?tipo=cl
 response=await competitionTable(new Request('https://site.test/api/tabla?tipo=goleadores&competicion=PD'),ctx);body=await response.json();assert.equal(body.scorers[0].goals,8);assert.equal(body.type,'goleadores');await Promise.all(pending);
 response=await competitionTable(new Request('https://site.test/api/tabla?tipo=foo&competicion=PD'),ctx);assert.equal(response.status,400);
 response=await competitionTable(new Request('https://site.test/api/tabla?tipo=goleadores&competicion=http://bad'),ctx);assert.equal(response.status,400);
+globalThis.fetch=async()=>Response.json({season:{year:2026},league:{slug:'uru.1'}});
+response=await competitionTable(new Request('https://site.test/api/tabla?tipo=goleadores&competicion=URU'),ctx);body=await response.json();
+assert.equal(response.status,200);assert.equal(body.available,false);assert.deepEqual(body.scorers,[],'Missing provider coverage must not produce invented players or goals');await Promise.all(pending);
 const key=[...cache.keys()].find(k=>k.includes('tipo=clasificacion')),old=await cache.get(key).clone().json();old.updated='2000-01-01T00:00:00Z';old.checked_at=old.updated;cache.set(key,Response.json(old));globalThis.fetch=async()=>{throw Error('offline');};
 response=await competitionTable(new Request('https://site.test/api/tabla?tipo=clasificacion&competicion=PD'),ctx);body=await response.json();assert.equal(body.stale,true);assert.equal(body.updated,old.updated);assert.equal(body.groups.length,2);
 cache.clear();const copyDate='2026-10-17T20:00:00Z';response=await worker.fetch(new Request('https://site.test/api/tabla?tipo=clasificacion&competicion=PD'),{ASSETS:{fetch:async()=>Response.json({competitions:{PD:{updated:copyDate,data:table}}})}},ctx);body=await response.json();assert.equal(body.updated,copyDate,'A fallback must preserve the actual snapshot date');assert.equal(body.groups.length,2);await Promise.all(pending);
-cache.clear();response=await tennisFixtures(new Request('https://site.test/api/tenis?fecha='+day+'&circuito=atp'),ctx);assert.equal(response.status,503);
-globalThis.fetch=async()=>Response.json(tennis);response=await tennisFixtures(new Request('https://site.test/api/tenis?fecha='+day+'&circuito=atp'),ctx);body=await response.json();assert.equal(body.matches.length,2,'Deduplicate overlapping tournament responses');await Promise.all(pending);
-response=await tennisFixtures(new Request('https://site.test/api/tenis?fecha=2026-02-30&circuito=atp'),ctx);assert.equal(response.status,400);
-response=await tennisFixtures(new Request('https://site.test/api/tenis?circuito=http://bad'),ctx);assert.equal(response.status,400);
-response=await tennisFixtures(new Request('https://site.test/api/tenis',{method:'POST'}),ctx);assert.equal(response.status,405);
 cache.clear();calls=0;
 assert.equal(athleteNationality({flag:{href:'https://a.espncdn.com/i/teamlogos/soccer/500/83.png',alt:'Barcelona'}}).flag,'','Do not use the club crest as nationality');
 assert.equal(athleteNationality({citizenship:'Brazil',flag:{href:'https://bad.invalid/bra.png'}}).flag,'');
@@ -34,4 +27,4 @@ response=await playerFlags(new Request('https://site.test/api/banderas?jugadores
 for(const query of ['', 'jugadores=', 'jugadores=../2', 'jugadores='+Array(11).fill('1').join(',')]){response=await playerFlags(new Request('https://site.test/api/banderas?'+query),ctx);assert.equal(response.status,400);}
 cache.clear();globalThis.fetch=async()=>{throw Error('offline');};response=await playerFlags(new Request('https://site.test/api/banderas?jugadores=231050'),ctx);body=await response.json();assert.equal(body.players[0].flag,'');assert.equal(body.players[0].nationality,'');
 globalThis.fetch=originalFetch;globalThis.caches=originalCaches;
-console.log('Clasificaciones, grupos, goleadores, tenis por día de Madrid, sets, dobles, caché y errores comprobados.');
+console.log('Clasificaciones, grupos, goleadores, caché y errores comprobados.');

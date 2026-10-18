@@ -142,10 +142,15 @@ class Publishing(unittest.TestCase):
     def test_failed_sport_source_keeps_old_date(self):
         previous = {"football": {"updated": "2026-01-01T00:00:00+00:00", "matches": []}}
         engine.write_json(self.root/"sports.json", previous)
-        with patch.object(engine, "sports_request", side_effect=TimeoutError):
+        with patch.object(engine, "sports_request", side_effect=TimeoutError) as request:
             result = engine.update_sports(self.root)
         self.assertEqual(result["football"]["updated"], previous["football"]["updated"])
-        self.assertEqual(len(result["errors"]), 13)
+        self.assertEqual(len(result["errors"]), 17)
+        urls = [call.args[0] for call in request.call_args_list]
+        self.assertFalse(any('jolpi' in url or '/tennis/' in url for url in urls))
+        for league in ('usa.1', 'mex.1', 'uru.1', 'arg.1', 'bra.1'):
+            self.assertTrue(any('/'+league+'/scoreboard' in url for url in urls))
+            self.assertTrue(any('/'+league+'/standings' in url for url in urls))
 
     def test_openfootball_score_formats_and_unconfirmed_matches(self):
         matches = engine.openfootball_matches({"matches": [

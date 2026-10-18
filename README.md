@@ -14,7 +14,7 @@ Las actualizaciones conservan estos archivos en el alojamiento.
 
 ## Calendario de Marcador claro
 
-`/partidos/` permite elegir fecha y competición. Incluye las siete ligas,
+`/partidos/` permite elegir fecha y competición. Incluye las doce ligas,
 Champions League, Europa League y catorce calendarios de selecciones masculinas:
 amistosos, Mundial, Eurocopa, UEFA Nations League, seis clasificatorios del
 Mundial, Copa América, Copa Oro, Copa Africana de Naciones y Copa Asiática.
@@ -98,18 +98,23 @@ Funciona en Cloudflare con el PC apagado y reutiliza consultas unos quince minut
 
 Comprobaciones: `node tests/team_worker.mjs` (desde el paquete Cloudflare).
 
-## Marcador compacto, tablas y tenis
+## Marcador dedicado al fútbol
 
-La portada entra directamente al calendario, con accesos Fútbol / Fórmula 1 /
-Tenis y una fila de competiciones. Las fichas de equipos mantienen cinco
-resultados y cinco próximos partidos. Cada bloque de fútbol enlaza a
-`/clasificacion/?competicion=...` y `/goleadores/?competicion=...`.
-Tenis incluye ATP y WTA, individuales y dobles, filtrados por día de Madrid.
+La portada entra al calendario y ofrece accesos a Partidos, Posiciones y
+Goleadores. Incluye siete ligas europeas, Champions League, Europa League,
+MLS (Estados Unidos), Liga MX (México), Liga AUF Uruguaya, Liga Profesional
+Argentina y Brasileirão Serie A, además de las competiciones de selecciones.
+Las ligas nuevas se incluyen en los filtros, las fichas de equipos, la navegación
+hasta la próxima fecha con partidos y las tablas disponibles en la fuente.
+Posiciones conserva los grupos, conferencias o fases publicados por ESPN.
 
-Las APIs `/api/tabla` y `/api/tenis` reutilizan datos unos quince minutos.
-Si el proveedor de posiciones no responde desde Cloudflare, se usa
-`clasificaciones.json`, con la fecha real de la copia. `update_tables()` renueva
-las posiciones con cada publicación deportiva; conserva la copia anterior
-y marca el fallo cuando una descarga no se completa. La tarea del PC sigue
-publicando cada dos horas cuando está encendido; no se ha activado otro servicio.
-Los créditos y licencias están en `/metodo/`, sin ocupar los resultados.
+Se retiraron tenis y Fórmula 1 de la navegación, el sitemap, las APIs y las
+consultas automáticas. Los enlaces antiguos de esas secciones redirigen a fútbol.
+La regeneración también retira sus páginas antiguas de dist para que el
+publicador no vuelva a subirlas. Las consultas se reutilizan unos quince minutos;
+las copias periódicas siguen publicándose cada dos horas con el PC encendido.
+Las tablas conservan su fecha real cuando se usa la última copia disponible.
+
+Comprobaciones: Python unittest, tests/calendar_worker.mjs,
+tests/team_worker.mjs y tests/sports_data_worker.mjs. Los créditos permanecen
+en /metodo/; no se añaden avisos al calendario.
