@@ -111,12 +111,65 @@ async function competitionDay(code, day, old) {
     source:'https://www.espn.com/soccer/scoreboard/_/league/'+COMPETITIONS[code][1],
     matches:[...rows.values()].sort((a,b)=>a.date.localeCompare(b.date))};
 }
+// The provider publishes either a whitelist of playing days or competition
+// phases. Phase boundaries are not fixtures: use actual events in that case.
+export function calendarDates(data) {
+  const dates = new Set();
+  for (const event of data?.events || []) {
+    const teams = event.competitions?.[0]?.competitors || [];
+    if (!teams.some(t=>t.homeAway==='home' && t.team?.displayName) ||
+        !teams.some(t=>t.homeAway==='away' && t.team?.displayName)) continue;
+    const day = madridDay(event.date); if (validDate(day)) dates.add(day);
+  }
+  return dates;
+}
+export async function competitionCalendar(code, day) {
+  const base = 'https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/scoreboard?dates=';
+  const data = await upstreamJson(base+day.replaceAll('-',''));
+  const league = data.leagues?.[0];
+  if (league?.calendarType === 'day' && league.calendarIsWhitelist === true &&
+      Array.isArray(league.calendar) && league.calendar.every(d=>typeof d==='string' && validDate(d.slice(0,10)))) {
+    const dates = calendarDates(data);
+    for (const value of league.calendar) {
+      // Whitelist entries label a source day, rather than a kickoff. Include
+      // the following Madrid day too; the client verifies real fixtures.
+      const d = value.slice(0,10); dates.add(d);
+      dates.add(new Date(Date.parse(d+'T12:00:00Z')+86400000).toISOString().slice(0,10));
+    }
+    const from = league.calendarStartDate?.slice(0,10), to = league.calendarEndDate?.slice(0,10);
+    if (validDate(from) && validDate(to) && from <= day && day < to)
+      return {dates:[...dates].sort(),from,to};
+  }
+  const year = Number(day.slice(0,4));
+  const annual = await upstreamJson(base+year+'&limit=1000',8_000_000);
+  if (!Array.isArray(annual.events) || annual.events.length >= 1000) throw Error('Calendario anual incompleto');
+  const dates = calendarDates(annual);
+  // The previous UTC year's final evening can fall on 1 January in Madrid.
+  const boundary = await upstreamJson(base+(year-1)+'1231');
+  for (const d of calendarDates(boundary)) if (d.slice(0,4) === String(year)) dates.add(d);
+  return {dates:[...dates].sort(),from:year+'-01-01',to:(year+1)+'-01-01'};
+}
+async function fixtureCalendar(url, code, day, ctx) {
+  if (!COMPETITIONS[code]) return json({error:'Selecciona una competición concreta.'},400);
+  const cache = globalThis.caches?.default;
+  const key = new Request(url.origin+'/api/partidos?calendario=1&competicion='+code+'&fecha='+day+'&v=1');
+  try {
+    const old = await cache?.match(key), data = old && await old.json();
+    if (data && Date.now()-Date.parse(data.checked_at)<FRESH_MS) return json(data);
+  } catch { /* cache is optional */ }
+  try {
+    const payload = {competition:code,...await competitionCalendar(code,day),complete:true,checked_at:new Date().toISOString()};
+    if (cache) ctx.waitUntil(cache.put(key,new Response(JSON.stringify(payload),{headers:{'Content-Type':'application/json','Cache-Control':'public, max-age=900'}})).catch(()=>{}));
+    return json(payload);
+  } catch (e) { console.warn('Fechas '+code+': '+String(e.message)); return json({complete:false,error:'Calendario no disponible.'},503); }
+}
 export async function fixtures(request, ctx={waitUntil:()=>{}}) {
   if (request.method !== 'GET') return json({error:'Método no permitido'},405);
   const url = new URL(request.url);
   const day = url.searchParams.get('fecha') || madridDay(Date.now());
   const choice = url.searchParams.get('competicion') || 'clubes';
   if (!validDate(day)) return json({error:'Selecciona una fecha válida (AAAA-MM-DD).'},400);
+  if (url.searchParams.get('calendario') === '1') return fixtureCalendar(url,choice,day,ctx);
   const codes = choice === 'clubes' || choice === 'selecciones' ?
     Object.keys(COMPETITIONS).filter(c => COMPETITIONS[c][2] === (choice === 'selecciones')) :
     COMPETITIONS[choice] ? [choice] : [];

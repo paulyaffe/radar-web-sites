@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import worker, {COMPETITIONS,fixtures,normalizeEvents,madridDay,teamIcon,validDate} from '../calendar_worker.mjs';
+import worker, {COMPETITIONS,fixtures,normalizeEvents,madridDay,teamIcon,validDate,calendarDates,competitionCalendar} from '../calendar_worker.mjs';
+import {createRequire} from 'node:module';
+const {createNavigator}=createRequire(import.meta.url)('../assets/calendar-navigation.js');
 const day='2026-10-20';
 function event(id,date='2026-10-20T18:00Z',state='pre',national=false){return {id,date,status:{type:{state,completed:state==='post',name:state==='post'?'STATUS_FULL_TIME':'STATUS_SCHEDULED'}},competitions:[{competitors:[{homeAway:'home',score:'0',team:{displayName:'Local <script>',logo:national?'https://a.espncdn.com/i/teamlogos/countries/500/esp.png':'https://a.espncdn.com/i/teamlogos/soccer/500/1.png'}},{homeAway:'away',score:'1',team:{displayName:'Visitante',logo:national?'https://a.espncdn.com/i/teamlogos/countries/500/fra.png':'https://a.espncdn.com/i/teamlogos/soccer/500/2.png'}}]}]};}
 assert.equal(validDate('2026-02-30'),false);assert.equal(validDate('2028-02-29'),true);assert.equal(validDate('../2026-10-20'),false);
@@ -11,6 +13,16 @@ assert.equal(normalizeEvents({events:[event('b','2026-10-20T22:30Z')]},'CL',day)
 assert.equal(teamIcon({logo:'https://evil.invalid/flag.png'},true),'');assert.equal(teamIcon({logo:'https://a.espncdn.com/i/teamlogos/soccer/500/164.png'},true),'');
 rows=normalizeEvents({events:[event('c',undefined,'pre',true)]},'FRIENDLY',day);assert.equal(rows[0].national,true);assert.ok(rows[0].home_icon.includes('/countries/'));
 const originalFetch=globalThis.fetch;const originalCaches=globalThis.caches;const cache=new Map();
+assert.deepEqual([...calendarDates({events:[event('midnight','2026-10-19T22:30Z'),event('winter','2026-12-19T23:30Z'),{date:'2026-10-01'}]})],['2026-10-20','2026-12-20']);
+let calendarCalls=[];
+globalThis.fetch=async url=>{calendarCalls.push(String(url));return Response.json({leagues:[{calendarType:'day',calendarIsWhitelist:true,calendarStartDate:'2026-06-01T00:00Z',calendarEndDate:'2027-06-01T00:00Z',calendar:['2026-10-06T07:00Z','2026-11-12T08:00Z']}],events:[]});};
+let calendar=await competitionCalendar('FRIENDLY',day);
+assert.deepEqual(calendar.dates,['2026-10-06','2026-10-07','2026-11-12','2026-11-13']);assert.equal(calendarCalls.length,1);
+globalThis.fetch=async url=>{const d=new URL(url).searchParams.get('dates');return Response.json(d==='2026'?{events:[...Array.from({length:210},(_,i)=>event('a'+i)),event('later','2026-11-12T18:00Z')]}:d==='20251231'?{events:[event('year-boundary','2025-12-31T23:30Z')]}:{leagues:[{calendarType:'list',calendar:[{entries:[{startDate:'2026-10-01T00:00Z'}]}]}],events:[]});};
+calendar=await competitionCalendar('NATIONS',day);
+assert.deepEqual(calendar.dates,['2026-01-01','2026-10-20','2026-11-12'],'phase boundaries are not matches and annual events are not truncated at 200');
+globalThis.fetch=async()=>Response.json({events:Array.from({length:1000},(_,i)=>event('a'+i))});
+await assert.rejects(()=>competitionCalendar('CL',day),/incompleto/);
 globalThis.caches={default:{match:async key=>cache.get(key.url)?.clone(),put:async(key,r)=>cache.set(key.url,r.clone())}};
 let calls=0;globalThis.fetch=async url=>{calls++;const date=new URL(url).searchParams.get('dates');return Response.json({events:date==='20261019'?[event('midnight','2026-10-19T22:30Z'),event('wrong','2026-10-19T15:00Z')]:[event('a')]});};
 const waiting=[];const ctx={waitUntil:p=>waiting.push(p)};
@@ -22,5 +34,38 @@ globalThis.fetch=async()=>{throw Error('offline');};response=await fixtures(new 
 response=await worker.fetch(new Request('https://site.test/ads.txt'),{ASSETS:{fetch:async()=>new Response('publisher unchanged')}},ctx);assert.equal(await response.text(),'publisher unchanged');
 response=await fixtures(new Request('https://site.test/api/partidos',{method:'POST'}),ctx);assert.equal(response.status,405);
 assert.equal(Object.values(COMPETITIONS).filter(c=>!c[2]).length,9);assert.equal(Object.values(COMPETITIONS).filter(c=>c[2]).length,14);
+// Navigation skips sparse dates, preserves the nearest day across groups and
+// verifies actual fixtures instead of trusting source-day whitelist labels.
+const signal=new AbortController().signal,lookups=[],days=[];
+const index=(code,dates,from='2026-01-01',to='2027-01-01')=>({competition:code,dates,from,to,complete:true});
+const readDay=async date=>{days.push(date);return [{complete:true,competitions:[{matches:date==='2026-11-11'?[]:[{id:'real'}]}]}];};
+let navigate=createNavigator(async(code,anchor)=>{lookups.push([code,anchor]);return index(code,['2026-10-06','2026-11-11','2026-11-12']);});
+let found=await navigate('2026-10-18',1,['NATIONS'],readDay,signal);
+assert.equal(found.date,'2026-11-12');assert.deepEqual(days,['2026-11-11','2026-11-12']);
+found=await navigate('2026-10-18',-1,['NATIONS'],readDay,signal);assert.equal(found.date,'2026-10-06');assert.equal(lookups.length,1,'reuse a fresh index in its covered range');
+navigate=createNavigator(async code=>index(code,code==='NATIONS'?['2026-11-12']:['2026-10-19']));
+found=await navigate('2026-10-18',1,['NATIONS','FRIENDLY'],readDay,signal);assert.equal(found.date,'2026-10-19');
+navigate=createNavigator(async(code,anchor)=>anchor<'2027-01-01'?index(code,[]):index(code,['2027-01-02'],'2027-01-01','2028-01-01'));
+found=await navigate('2026-12-29',1,['CL'],readDay,signal);assert.equal(found.date,'2027-01-02');
+navigate=createNavigator(async(code,anchor)=>anchor>='2027-01-01'?index(code,[],'2027-01-01','2028-01-01'):index(code,['2026-12-30']));
+found=await navigate('2027-01-02',-1,['CL'],readDay,signal);assert.equal(found.date,'2026-12-30');
+// Never jump over a closer fixture outside one competition's current season.
+navigate=createNavigator(async(code,anchor)=>code==='PD'?(anchor<'2026-07-01'?index(code,[],'2025-07-01','2026-07-01'):index(code,['2026-08-01'],'2026-07-01','2027-07-01')):index(code,['2026-11-12']));
+found=await navigate('2026-06-20',1,['PD','NATIONS'],readDay,signal);assert.equal(found.date,'2026-08-01');
+navigate=createNavigator(async code=>({...index(code,[]),complete:false}));
+await assert.rejects(()=>navigate('2026-10-18',1,['NATIONS'],readDay,signal),/incompleto/);
+const aborted=new AbortController();aborted.abort();await assert.rejects(()=>navigate('2026-10-18',1,['NATIONS'],readDay,aborted.signal),{name:'AbortError'});
+navigate=createNavigator(async code=>index(code,['2026-10-19']));
+await assert.rejects(()=>navigate('2026-10-18',1,['NATIONS'],async()=>[{complete:false,competitions:[]}],signal),/incompleto/);
+let emptyQueries=0;
+navigate=createNavigator(async(code,anchor)=>{emptyQueries++;const year=Number(anchor.slice(0,4));return index(code,[],year+'-01-01',(year+1)+'-01-01');});
+assert.equal(await navigate('2026-10-18',1,['WORLD'],readDay,signal),null);assert.ok(emptyQueries<=6,'no endless search when future fixtures have not been published');
+let indexCalls=0;
+globalThis.fetch=async()=>{indexCalls++;return Response.json({leagues:[{calendarType:'day',calendarIsWhitelist:true,calendarStartDate:'2026-01-01',calendarEndDate:'2027-01-01',calendar:['2026-11-12']}],events:[]});};
+response=await fixtures(new Request('https://site.test/api/partidos?calendario=1&fecha='+day+'&competicion=FRIENDLY'),ctx);
+body=await response.json();assert.equal(body.complete,true);assert.equal(body.competition,'FRIENDLY');await Promise.all(waiting);
+response=await fixtures(new Request('https://site.test/api/partidos?competicion=FRIENDLY&fecha='+day+'&calendario=1'),ctx);assert.equal(response.status,200);assert.equal(indexCalls,1);
+response=await fixtures(new Request('https://site.test/api/partidos?calendario=1&fecha='+day+'&competicion=selecciones'),ctx);assert.equal(response.status,400);
+globalThis.fetch=async()=>{throw Error('offline');};response=await fixtures(new Request('https://site.test/api/partidos?calendario=1&fecha=2026-10-21&competicion=CL'),ctx);assert.equal(response.status,503);assert.equal((await response.json()).complete,false);
 globalThis.fetch=originalFetch;globalThis.caches=originalCaches;
-console.log('Calendario: fechas de Madrid, cambio horario, cero real frente a programado, banderas, limites, cache, fallos y assets verificados.');
+console.log('Calendario: fechas de Madrid, cambio horario, marcadores, banderas, caché y salto a partidos entre días, temporadas y años verificados.');
