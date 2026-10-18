@@ -118,3 +118,7 @@ Las tablas conservan su fecha real cuando se usa la última copia disponible.
 Comprobaciones: Python unittest, tests/calendar_worker.mjs,
 tests/team_worker.mjs y tests/sports_data_worker.mjs. Los créditos permanecen
 en /metodo/; no se añaden avisos al calendario.
+
+Las páginas de posiciones y goleadores abren directamente la competición del
+enlace, sin selector ni botón Ver. La comprobación tests/sports_page.mjs ejecuta
+el JavaScript de ambas páginas y verifica que se renderizan filas reales.

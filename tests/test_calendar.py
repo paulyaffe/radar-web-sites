@@ -54,6 +54,10 @@ class CalendarTests(unittest.TestCase):
                 page = (root/"dist"/route/"index.html").read_text(encoding="utf-8")
                 self.assertIn('/assets/sports-data.js', page)
                 self.assertIn('ca-pub-7901739911277041', page)
+                self.assertNotIn('<select', page)
+                self.assertNotIn('<form', page)
+                self.assertNotIn('type="submit"', page)
+                self.assertRegex(page, r'/assets/sports-data\.js\?v=[a-f0-9]{12}')
             self.assertIn('google.com', (root/"dist/ads.txt").read_text())
             # Old generated pages must disappear even when dist is reused by the publisher.
             for route in ('tenis', 'formula-1'):
@@ -68,7 +72,7 @@ class CalendarTests(unittest.TestCase):
                 self.assertIn('/'+route+'/* /futbol/ 301', (root/'dist/_redirects').read_text())
             for code in ('MLS','MEX','URU','ARG','BRA'):
                 self.assertIn('value="'+code+'"', home)
-                self.assertIn('value="'+code+'"', (root/'dist/goleadores/index.html').read_text(encoding='utf-8'))
+                self.assertIn('href="/futbol/'+engine.LEAGUES[code][0]+'/"', (root/'dist/goleadores/index.html').read_text(encoding='utf-8'))
 
     def test_team_links_preserve_names_and_do_not_accept_html(self):
         link = engine.football_team('A & B <script>', 'PD')

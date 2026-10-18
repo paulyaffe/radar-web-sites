@@ -306,7 +306,8 @@ export function normalizeStandings(data, code) {
       const rows=node.standings.entries.slice(0,100).filter(e=>e.team?.displayName).map(e=>({team:simpleTeam(e.team,national),
         rank:statNumber(e.stats,'rank'),played:statNumber(e.stats,'gamesPlayed'),won:statNumber(e.stats,'wins'),
         drawn:statNumber(e.stats,'ties'),lost:statNumber(e.stats,'losses'),for:statNumber(e.stats,'pointsFor'),
-        against:statNumber(e.stats,'pointsAgainst'),difference:statNumber(e.stats,'pointDifferential'),points:statNumber(e.stats,'points')}));
+        against:statNumber(e.stats,'pointsAgainst'),difference:statNumber(e.stats,'pointDifferential'),points:statNumber(e.stats,'points')}))
+        .sort((a,b)=>(a.rank??Infinity)-(b.rank??Infinity));
       if(rows.length)groups.push({name:String(node.name || node.standings.name || COMPETITIONS[code][0]),rows});
     }
     for(const child of (node.children || []).slice(0,100))visit(child,depth+1);
@@ -339,7 +340,7 @@ export async function competitionTable(request,ctx={waitUntil:()=>{}},env={}) {
   const url=new URL(request.url),code=url.searchParams.get('competicion'),type=url.searchParams.get('tipo');
   if(!COMPETITIONS[code] || !['clasificacion','goleadores'].includes(type))return json({error:'Competición o tabla no válida.'},400);
   if(code==='FRIENDLY' && type==='clasificacion')return json({competition:code,name:COMPETITIONS[code][0],type,season:'',groups:[],scorers:[],stale:false});
-  return cachedData(url,'/api/tabla?competicion='+code+'&tipo='+type+'&v=2',ctx,async()=>{
+  return cachedData(url,'/api/tabla?competicion='+code+'&tipo='+type+'&v=3',ctx,async()=>{
     const slug=COMPETITIONS[code][1];
     let data,snapshot;
     try{

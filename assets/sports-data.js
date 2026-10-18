@@ -1,6 +1,7 @@
 (function(){
   'use strict';
   const tableRoot=document.querySelector('[data-competition-table]');if(!tableRoot)return;
+  const zone='Europe/Madrid';
   const clock=new Intl.DateTimeFormat('es-ES',{timeZone:zone,day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
   function el(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);if(cls)n.className=cls;return n;}
   function dateLabel(value,confirmed=true){const p=Object.fromEntries(clock.formatToParts(new Date(value)).map(x=>[x.type,x.value]));return p.day+'/'+p.month+'/'+p.year+(confirmed?' '+p.hour+':'+p.minute:' · Hora sin confirmar');}
@@ -25,11 +26,12 @@
     table.append(thead,body);region.append(table);return region;
   }
   if(tableRoot){
-    const form=tableRoot.querySelector('form'),select=form.elements.competicion,kind=tableRoot.dataset.competitionTable,status=tableRoot.querySelector('[data-data-status]'),list=tableRoot.querySelector('[data-data-list]'),title=tableRoot.querySelector('h1');let controller,version=0;
-    const params=new URLSearchParams(location.search);if([...select.options].some(o=>o.value===params.get('competicion')))select.value=params.get('competicion');
+    const kind=tableRoot.dataset.competitionTable,status=tableRoot.querySelector('[data-data-status]'),list=tableRoot.querySelector('[data-data-list]'),title=tableRoot.querySelector('h1');let controller,version=0;
+    const params=new URLSearchParams(location.search),competition=params.get('competicion')||'PD';
+    tableRoot.querySelector('[data-back-to-matches]').href='/partidos/?'+new URLSearchParams({competicion:competition});
     async function load(){
       const v=++version;controller?.abort();controller=new AbortController();tableRoot.setAttribute('aria-busy','true');status.textContent='';list.replaceChildren();
-      const q=new URLSearchParams({competicion:select.value});history.replaceState(null,'','?'+q);
+      const q=new URLSearchParams({competicion:competition});history.replaceState(null,'','?'+q);
       tableRoot.querySelectorAll('[data-table-link]').forEach(a=>{a.href='/'+a.dataset.tableLink+'/?'+q;a.setAttribute('aria-current',a.dataset.tableLink===kind?'page':'false');});
       try{
         const r=await fetch('/api/tabla?'+q+'&tipo='+kind,{signal:controller.signal}),data=await r.json();if(!r.ok)throw Error(data.error||'No se puede cargar esta tabla.');if(v!==version)return;
@@ -49,7 +51,7 @@
       }catch(e){if(e.name==='AbortError'||v!==version)return;status.textContent='';list.replaceChildren();}
       finally{if(v===version)tableRoot.setAttribute('aria-busy','false');}
     }
-    form.addEventListener('submit',e=>{e.preventDefault();load();});select.addEventListener('change',load);load();
+    load();
     setInterval(()=>{if(!document.hidden)load();},15*60*1000);
   }
 })();

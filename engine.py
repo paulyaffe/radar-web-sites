@@ -562,9 +562,8 @@ def date_controls(filters, match_navigation=False):
 
 
 def competition_table_html(kind):
-    choices = [(code, value[2]) for code, value in LEAGUES.items()] + list(NATIONAL_COMPETITIONS.items())
-    options = ''.join('<option value="'+esc(code)+'">'+esc(name)+'</option>' for code, name in choices)
-    return '<section data-competition-table="'+kind+'" aria-busy="false"><h1 class="sport-title">'+('Tabla de posiciones' if kind == 'clasificacion' else 'Goleadores')+'</h1><form class="table-form"><label>Competición<select name="competicion">'+options+'</select></label><button class="button" type="submit">Ver</button></form><div class="competition-actions"><a data-table-link="clasificacion" href="/clasificacion/?competicion=PD">Tabla de posiciones</a><a data-table-link="goleadores" href="/goleadores/?competicion=PD">Tabla de goleadores</a></div><p data-data-status class="data-status" role="status" aria-live="polite"></p><div data-data-list></div></section><script src="/assets/sports-data.js" defer></script>'
+    version = hashlib.sha256((Path(__file__).parent/'assets/sports-data.js').read_bytes()).hexdigest()[:12]
+    return '<section data-competition-table="'+kind+'" aria-busy="false"><a class="back-link" data-back-to-matches href="/partidos/">← Partidos</a><h1 class="sport-title">'+('Tabla de posiciones' if kind == 'clasificacion' else 'Goleadores')+'</h1><div class="competition-actions"><a data-table-link="clasificacion" href="/clasificacion/?competicion=PD">Tabla de posiciones</a><a data-table-link="goleadores" href="/goleadores/?competicion=PD">Tabla de goleadores</a></div><p data-data-status class="data-status" role="status" aria-live="polite"></p><div data-data-list></div></section><script src="/assets/sports-data.js?v='+version+'" defer></script>'
 
 
 def calendar_html(selected="todas"):

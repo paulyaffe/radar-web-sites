@@ -30,6 +30,7 @@ jobs:
       - run: node tests/calendar_worker.mjs
       - run: node tests/team_worker.mjs
       - run: node tests/sports_data_worker.mjs
+      - run: node tests/sports_page.mjs
       - run: python update.py --force
       - name: Comprobar SEO y archivos públicos
         run: |
