@@ -56,7 +56,7 @@ NATIONAL_COMPETITIONS = {
 }
 PROFILES = {
     "deportes": {
-        "title": "Marcador claro", "eyebrow": "FÚTBOL",
+        "title": "La Jornada", "eyebrow": "FÚTBOL",
         "heading": "El resultado.\nLa fuente. La fecha.",
         "description": "Resultados y horarios de fútbol europeo y americano. Clasificaciones, goleadores y partidos de clubes y selecciones.",
         "color": "#3759a0", "background": "#f2f4f7", "icon": "sport",

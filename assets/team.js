@@ -31,7 +31,7 @@
     try{
       const response=await fetch('/api/equipo?'+query,{signal:AbortSignal.timeout(25000)}),data=await response.json();
       if(!response.ok||!data.team||!data.past||!data.future)throw Error(data.error||'No se ha podido consultar este equipo.');
-      document.title=data.team.name+' · últimos y próximos partidos | Marcador claro';
+      document.title=data.team.name+' · últimos y próximos partidos | La Jornada';
       heading.replaceChildren(team(data.team.name,data.team.icon,data.team.national));
       status.textContent=(data.team.national?'Selección':'Club')+' · Hora peninsular';
       const grid=el('div',undefined,'team-history-grid');grid.append(section(data.past,false),section(data.future,true));

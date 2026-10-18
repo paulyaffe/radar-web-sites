@@ -35,7 +35,7 @@
       tableRoot.querySelectorAll('[data-table-link]').forEach(a=>{a.href='/'+a.dataset.tableLink+'/?'+q;a.setAttribute('aria-current',a.dataset.tableLink===kind?'page':'false');});
       try{
         const r=await fetch('/api/tabla?'+q+'&tipo='+kind,{signal:controller.signal}),data=await r.json();if(!r.ok)throw Error(data.error||'No se puede cargar esta tabla.');if(v!==version)return;
-        title.textContent=data.name;document.title=data.name+' · '+(kind==='clasificacion'?'Tabla de posiciones':'Goleadores')+' | Marcador claro';
+        title.textContent=data.name;document.title=data.name+' · '+(kind==='clasificacion'?'Tabla de posiciones':'Goleadores')+' | La Jornada';
         status.textContent=data.season?'Temporada '+(data.season.match(/20\d{2}(?:[/-]\d{2,4})?/)?.[0]||data.season):'';const fragment=document.createDocumentFragment();
         if(kind==='clasificacion'){
           for(const group of data.groups){if(data.groups.length>1)fragment.append(el('h2',group.name,'table-group-title'));
