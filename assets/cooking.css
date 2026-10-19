@@ -1,0 +1,83 @@
+.cooking-app{background:#fafaf8;color:#292d28;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.cooking-app .site-header{max-width:1080px;padding:14px 22px 0;display:block;border:0;background:#fafaf8;position:sticky;top:0;z-index:5}
+.cooking-app .brand{display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:21px;font-weight:650;letter-spacing:-.6px}
+.cooking-app .brand img{width:28px;height:28px;border-radius:6px}
+.cooking-app .brand-dot{display:none}
+.cooking-app .site-header nav{display:flex;gap:26px;margin-top:10px;border-bottom:1px solid #dedfd9}
+.cooking-app .site-header nav a{padding:9px 1px 10px;border-bottom:2px solid transparent;font-size:14px;font-weight:550;color:#687066}
+.cooking-app .site-header nav a[aria-current=page]{border-color:#a64c35;color:#9c432d}
+.cooking-app .site-header nav a:hover{color:#9c432d}
+.cooking-app main{max-width:1080px;padding:0 22px;min-height:65vh}
+.cooking-app h1,.cooking-app h2,.cooking-app h3{font-family:inherit;letter-spacing:-.35px;line-height:1.3;color:#292d28}
+.cooking-app h1{font-size:24px;font-weight:650;margin:19px 0 15px}
+.cooking-app h2{font-size:18px;font-weight:650;margin:0 0 7px}
+.cooking-app #herramientas,.cooking-app #lecturas{padding:0;margin:0}
+.cooking-tools{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.cooking-tool,.cooking-single{background:white;border:1px solid #e0e2dc;border-radius:10px;padding:20px}
+.cooking-single{max-width:650px;margin:18px auto}
+.cooking-app .tool-intro{font-size:13px;line-height:1.5;color:#677064;margin:0 0 16px;max-width:52ch}
+.cooking-app .calculator{background:transparent;padding:0;border:0;border-radius:0}
+.cooking-app .form-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.cooking-app .form-grid>label{font:500 12px/1.4 system-ui,sans-serif;display:flex;flex-direction:column;justify-content:space-between;min-width:0;gap:5px}
+.cooking-app .input-wrap{background:#fcfcfa;border:1px solid #d9ddd4;border-radius:6px;margin:0}
+.cooking-app .input-wrap input{font:inherit;font-size:15px;padding:9px 8px;min-height:40px}
+.cooking-app .input-wrap>span{padding-right:8px;font-size:12px;color:#71786d}
+.cooking-app .button{padding:9px 17px;min-height:38px;border-radius:6px;background:#a64c35;font:600 13px system-ui,sans-serif;gap:8px}
+.cooking-app input:focus-visible,.cooking-app a:focus-visible,.cooking-app button:focus-visible,.cooking-app summary:focus-visible{outline:2px solid #b7634b;outline-offset:3px}
+.cooking-app .result{margin-top:12px;padding-top:2px}
+.cooking-app .result-row{padding:8px 0;border-color:#eceee8;font-size:13px;gap:12px}
+.cooking-app .result-row strong{font-family:inherit;font-size:16px;font-weight:650;font-variant-numeric:tabular-nums;color:#3e5d43}
+.cooking-app .result-row:last-child{border:0}
+.cooking-app .form-error{font-size:12px;margin:0;color:#a33127}
+.formula-note{border-top:1px solid #eceee8;padding-top:10px;margin-top:7px;color:#697163;font-size:12px}
+.formula-note summary{cursor:pointer;display:list-item}
+.formula-note p{margin:9px 0 0;line-height:1.6}
+.cooking-related{font-size:12px;margin:16px 0;display:grid;gap:7px;color:#74796f}
+.cooking-related a{text-decoration:underline;text-underline-offset:3px}
+.cooking-recipes{display:grid;gap:12px;margin-bottom:20px}
+.cooking-recipe{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:16px;align-items:center;padding:15px;background:white;border:1px solid #e0e2dc;border-radius:9px}
+.cooking-recipe:not(:has(img)){grid-template-columns:minmax(0,1fr) auto}
+.cooking-recipe img{width:96px;height:80px;border-radius:6px;object-fit:cover}
+.cooking-recipe h2{font-size:17px;margin:0 0 5px}
+.cooking-recipe p{font-size:13px;line-height:1.5;color:#697163;margin:0 0 6px;max-width:70ch}
+.cooking-recipe span{font-size:12px;color:#777e72}
+.cooking-recipe .recipe-arrow{font-size:20px;color:#a64c35}
+.cooking-recipe:hover{border-color:#b9c2b3}
+.cooking-app .cooking-footer{max-width:1036px;margin:24px auto 0;padding:14px 0 22px;border-top:1px solid #dedfd9;display:flex;flex-wrap:wrap;gap:10px 20px;font-size:12px;color:#777e72}
+.cooking-app .reading{padding:20px 0 28px;max-width:760px}
+.cooking-app .reading h1{font-size:27px;margin:14px 0}
+.cooking-app .reading h2{font-size:19px;margin:24px 0 10px}
+.cooking-app .reading p,.cooking-app .reading .intro{font-size:14px;line-height:1.65}
+.cooking-app .reading>figure{max-width:210px;float:right;margin:0 0 16px 20px}
+.cooking-app .reading>figure figcaption{font-size:11px;color:#777e72}
+.cooking-app .recipe-box{padding:19px;border-color:#e0e2dc;clear:both}
+.cooking-app .recipe-heading h2{margin:0}
+.cooking-app .recipe-heading label{font-size:13px;white-space:nowrap}
+.cooking-app .servings{font:inherit;min-height:36px;border-radius:5px;width:64px}
+.cooking-app .ingredients li{padding:9px 0;font-size:13px;border-color:#eceee8}
+.cooking-app .steps{padding-left:22px;font-size:14px}
+.cooking-app .steps li{padding-left:3px;margin-bottom:9px}
+.cooking-app .inline-cta{padding:18px 20px;margin-top:22px;background:#eff2eb;border-radius:8px}
+.cooking-app .inline-cta h2{margin:0 0 8px;font-size:18px}
+.cooking-app .editorial-note{font-size:12px!important;margin-top:20px}
+@media(max-width:700px){
+  .cooking-app .site-header{padding:12px 14px 0}
+  .cooking-app .brand{font-size:20px}
+  .cooking-app .site-header nav{margin-top:8px;gap:25px}
+  .cooking-app main{padding:0 14px}
+  .cooking-app h1{font-size:22px;margin:16px 0 13px}
+  .cooking-tools{grid-template-columns:1fr;gap:13px}
+  .cooking-tool,.cooking-single{padding:16px}
+  .cooking-app .form-grid{gap:8px}
+  .cooking-app .tool-intro{margin-bottom:13px}
+  .cooking-app .cooking-footer{margin:22px 14px 0;padding:13px 0 20px}
+  .cooking-recipe{grid-template-columns:70px minmax(0,1fr) auto;gap:12px;padding:12px}
+  .cooking-recipe img{width:70px;height:72px}
+  .cooking-recipe h2{font-size:15px}
+  .cooking-recipe p{font-size:12px;margin-bottom:4px}
+  .cooking-app .reading h1{font-size:24px}
+  .cooking-app .reading>figure{max-width:125px;margin:0 0 12px 12px}
+  .cooking-app .recipe-box{padding:15px}
+  .cooking-app .recipe-heading{gap:10px}
+  .cooking-app .recipe-heading h2{font-size:18px}
+}

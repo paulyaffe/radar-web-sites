@@ -122,3 +122,14 @@ en /metodo/; no se añaden avisos al calendario.
 Las páginas de posiciones y goleadores abren directamente la competición del
 enlace, sin selector ni botón Ver. La comprobación tests/sports_page.mjs ejecuta
 el JavaScript de ambas páginas y verifica que se renderizan filas reales.
+
+## Cocina en gramos: calculadoras y recetas
+
+La portada abre las calculadoras de raciones y moldes directamente. La
+navegacion tiene dos accesos: Calculadoras (/) y Recetas (/recetas/). Las
+recetas publicadas se listan al regenerar el sitio, sin mostrar borradores.
+Las paginas individuales y los ajustes de raciones se conservan.
+
+El estilo compacto esta en assets/cooking.css y solo se carga para cocina.
+El publicador usa este mismo motor; conserva el nuevo diseno en cada ciclo.
+Se mantienen los mensajes de privacidad, AdSense, los canonicals y el sitemap.

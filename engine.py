@@ -384,11 +384,20 @@ def page(profile, base_url, path, title, description, body, schema=None, adsense
     nav = '<a href="/">Inicio</a><a href="/#herramientas">Calculadoras</a><a href="/#lecturas">' + ("Recetas y guías" if profile == "cocina" else "Guías") + '</a>'
     if profile == "deportes":
         nav = ""
+    elif profile == "cocina":
+        recipes_active = path.startswith("/recetas/")
+        calculators_active = path == "/" or path.startswith(("/calculadoras/", "/guias/"))
+        nav = '<a href="/"'+(' aria-current="page"' if calculators_active else '')+'>Calculadoras</a><a href="/recetas/"'+(' aria-current="page"' if recipes_active else '')+'>Recetas</a>'
     document = f'''<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(title)} | {esc(p['title'])}</title><meta name="description" content="{esc(description)}"><link rel="canonical" href="{esc(canonical)}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:type" content="website"><meta property="og:url" content="{esc(canonical)}"><meta property="og:image" content="{esc(base_url)}/assets/{p['icon']}.svg"><link rel="icon" href="/assets/{p['icon']}.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/style.css"><script src="/assets/tools.js" defer></script>{adtags}{'<script type="application/ld+json">'+structured+'</script>' if structured else ''}</head><body style="--accent:{p['color']};--paper:{p['background']}"><a class="skip" href="#contenido">Ir al contenido</a><header class="site-header"><a class="brand" href="/"><img src="/assets/{p['icon']}.svg" width="38" height="38" alt="">{esc(p['title'])}<span class="brand-dot">.</span></a><nav aria-label="Principal">{nav}</nav></header><main id="contenido">{body}</main><footer><a class="brand" href="/">{esc(p['title'])}.</a><p>Contenido gratuito. Fuentes visibles. Cuentas claras.</p><div><a href="/metodo/">Cómo trabajamos</a><a href="/privacidad/">Privacidad</a>{privacy_control}<a href="/sitemap.xml">Mapa del sitio</a></div><small>© {dt.datetime.now(UTC).year} {esc(p['title'])}</small></footer></body></html>'''
     if profile == "deportes":
         document = document.replace('<body style=', '<body class="sports-app" style=', 1)
         document = document.replace('<nav aria-label="Principal"></nav>', '')
         document = document.split("<footer>", 1)[0] + '<footer class="sports-footer"><a href="/privacidad/">Privacidad</a><a href="/metodo/">Créditos</a>' + privacy_control + '</footer></body></html>'
+    elif profile == "cocina":
+        version = hashlib.sha256((Path(__file__).parent/'assets/cooking.css').read_bytes()).hexdigest()[:12]
+        document = document.replace('</head>', '<link rel="stylesheet" href="/assets/cooking.css?v='+version+'"></head>', 1)
+        document = document.replace('<body style=', '<body class="cooking-app" style=', 1)
+        document = document.split("<footer>", 1)[0] + '<footer class="cooking-footer"><a href="/privacidad/">Privacidad</a><a href="/metodo/">Método</a><a href="/sitemap.xml">Mapa del sitio</a>' + privacy_control + '</footer></body></html>'
     return document
 
 
@@ -396,7 +405,7 @@ def field(name, label, value, low, high, step="1", suffix=""):
     return f'<label>{esc(label)}<span class="input-wrap"><input name="{name}" type="number" value="{value}" min="{low}" max="{high}" step="{step}" required><span>{esc(suffix)}</span></span></label>'
 
 
-def tool_page(tool):
+def tool_page(tool, compact=False):
     common = '<div class="result" aria-live="polite"></div><p class="form-error" role="alert"></p>'
     if tool == "masa":
         fields = field("pieces", "Número de piezas", 4, 1, 100) + field("weight", "Peso por pieza", 250, 20, 2000, suffix="g") + field("hydration", "Hidratación", 65, 0, 150, "0.1", "%") + field("salt", "Sal", 2, 0, 10, "0.1", "%") + field("oil", "Aceite", 2, 0, 50, "0.1", "%") + field("yeast", "Levadura seca", 0.2, 0, 10, "0.01", "%")
@@ -422,7 +431,31 @@ def tool_page(tool):
         fields = field("from", "Raciones originales", 4, 1, 100, "0.5") + field("to", "Raciones deseadas", 6, 1, 100, "0.5") + field("amount", "Cantidad de un ingrediente", 200, 0, 100000, "0.1", "g")
         intro = "Introduce las raciones y una cantidad. Aplica el mismo factor al resto de ingredientes de tu receta."
         note = "La herramienta escala cantidades, no tiempos. Las fracciones de huevo pueden pesarse después de batirlo; decide los redondeos según tu receta."
+    if compact:
+        label = "Ajustar raciones" if tool == "raciones" else "Cambiar de molde"
+        return f'<p class="tool-intro">{intro}</p><form class="calculator" data-tool="{tool}" aria-label="{label}"><div class="form-grid">{fields}</div><button class="button" type="submit">Calcular</button>{common}</form><details class="formula-note"><summary>Cómo se calcula</summary><p>{note}</p></details>'
     return f'<p class="intro">{intro}</p><div class="calculator-layout"><form class="calculator" data-tool="{tool}"><div class="form-grid">{fields}</div><button class="button" type="submit">Calcular <span aria-hidden="true">↗</span></button>{common}</form><aside class="note"><span class="eyebrow">LA CUENTA, EXPLICADA</span><h2>Una fórmula que puedes comprobar.</h2><p>{note}</p><a href="/metodo/">Ver nuestro método →</a></aside></div>'
+
+
+def cooking_calculators_html(articles):
+    cards = ''.join('<article class="cooking-tool" id="'+tid+'"><h2>'+esc(title)+'</h2>'+tool_page(tid, compact=True)+'</article>' for tid, title, _ in PROFILES['cocina']['tools'])
+    guides = ''.join('<a href="/guias/'+esc(a['id'])+'/">'+esc(a['title'])+'</a>' for a in articles if a['kind'] == 'guide')
+    related = '<div class="cooking-related">'+guides+'</div>' if guides else ''
+    return '<section id="herramientas"><h1>Calculadoras</h1><div class="cooking-tools">'+cards+'</div>'+related+'</section>'
+
+
+def cooking_recipes_html(articles, assets):
+    cards = []
+    for article in articles:
+        if article['kind'] != 'recipe':
+            continue
+        aid = article['id']
+        if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', aid):
+            raise ValueError('Identificador de receta no válido.')
+        image = '<img src="/assets/'+aid+'.svg" width="96" height="80" alt="" loading="lazy">' if (assets/(aid+'.svg')).is_file() else ''
+        servings_label = ' ración' if article['servings'] == 1 else ' raciones'
+        cards.append('<a class="cooking-recipe" href="/recetas/'+aid+'/">'+image+'<div><h2>'+esc(article['title'])+'</h2><p>'+esc(article['description'])+'</p><span>'+esc(article['servings'])+servings_label+'</span></div><span class="recipe-arrow" aria-hidden="true">→</span></a>')
+    return '<section id="lecturas"><h1>Recetas</h1><div class="cooking-recipes">'+''.join(cards)+'</div></section>'
 
 
 def render(root):
@@ -457,7 +490,11 @@ def render(root):
         body = hero + strip + body[len(hero):]
     if profile == "deportes":
         body = football_quick_links() + '<h1 class="sport-title">Fútbol</h1>' + calendar_html()
+    elif profile == "cocina":
+        body = cooking_calculators_html(articles)
     save("/", p["seo_title"], p["description"], body, {"@context": "https://schema.org", "@type": "WebSite", "name": p["title"], "url": base+"/", "inLanguage": "es"})
+    if profile == "cocina":
+        save('/recetas/', 'Recetas en gramos', 'Recetas con ingredientes en gramos y cantidades ajustables por raciones.', cooking_recipes_html(articles, assets))
     if profile == "deportes":
         sports = read_json(root/"sports.json", {})
         save("/equipo/", "Últimos resultados y próximos partidos de un equipo", "Los cinco últimos resultados y los cinco próximos partidos de un club o selección.", '<section class="team-history" data-team-history aria-busy="false"><a class="back-link" href="/partidos/">← Partidos</a><h1>Equipo</h1><p data-team-status class="data-status" role="status" aria-live="polite"></p><div data-team-content></div><noscript>Activa JavaScript para ver los partidos.</noscript></section><script src="/assets/team.js" defer></script>')
@@ -473,7 +510,8 @@ def render(root):
             path = out/kind/"index.html"
             path.write_text(path.read_text(encoding="utf-8").replace("</head>", '<meta name="robots" content="noindex,follow"></head>'), encoding="utf-8")
     for tid, title, desc in p["tools"]:
-        save(f"/calculadoras/{tid}/", title, desc, f'<section class="page-heading"><a href="/">← Inicio</a><p class="eyebrow">HERRAMIENTA GRATUITA</p><h1>{esc(title)}</h1>{tool_page(tid)}</section>')
+        tool_body = f'<section class="cooking-single"><a class="back-link" href="/">← Calculadoras</a><h1>{esc(title)}</h1>{tool_page(tid, compact=True)}</section>' if profile == 'cocina' else f'<section class="page-heading"><a href="/">← Inicio</a><p class="eyebrow">HERRAMIENTA GRATUITA</p><h1>{esc(title)}</h1>{tool_page(tid)}</section>'
+        save(f"/calculadoras/{tid}/", title, desc, tool_body)
     for article in articles:
         aid = article["id"]
         if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", aid):
@@ -481,6 +519,8 @@ def render(root):
         recipe_kind = article["kind"] == "recipe"
         category = "recetas" if recipe_kind else "guias"
         body = f'<article class="reading"><a href="/">← Inicio</a><p class="eyebrow">{"RECETA BASE" if recipe_kind else "GUÍA PRÁCTICA"}</p><h1>{esc(article["title"])}</h1><p class="intro">{esc(article["description"])}</p>'
+        if profile == 'cocina':
+            body = body.replace('<a href="/">← Inicio</a>', '<a class="back-link" href="/recetas/">← Recetas</a>' if recipe_kind else '<a class="back-link" href="/">← Calculadoras</a>')
         schema = {"@context": "https://schema.org", "@type": "Article", "headline": article["title"], "description": article["description"], "datePublished": article["created"], "author": {"@type": "Organization", "name": p["title"]}, "mainEntityOfPage": base+f"/{category}/{aid}/"}
         if recipe_kind:
             body += f'<figure><img src="/assets/{esc(aid)}.svg" alt="Ilustración de {esc(article["title"])}" width="1200" height="800" style="width:100%;height:auto;border-radius:8px"><figcaption class="small">Ilustración orientativa del plato.</figcaption></figure>'
