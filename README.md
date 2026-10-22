@@ -158,3 +158,31 @@ https://developers.google.com/tag-platform/security/guides/consent
 https://developers.google.com/funding-choices/fc-api-docs
 
 Validacion: tests/test_analytics.py y node tests/analytics_tag.mjs.
+
+
+## Goles y alineaciones de cada partido
+
+Los resultados del calendario y del historial de equipos enlazan a /partido/
+con el ID del evento y su competicion. Las filas conservan el acceso al equipo.
+Los goles incluyen jugador, minuto, penalti y propia puerta cuando la fuente
+lo publica; las tandas de penaltis no cuentan como goles del partido.
+Se conserva tambien esta informacion en las copias periodicas de ESPN.
+
+/api/partido consulta el resumen publico de ESPN por ID validado. Solo acepta
+competiciones de la lista existente, valida la identidad del partido y usa una
+cache de un minuto. Ante fallos conserva la ultima copia y su fecha original.
+No requiere nuevas cuentas, tokens ni consultas desde el navegador a la API
+de ESPN. Los escudos y fotos publicados pueden proceder de su CDN.
+
+La ficha muestra goleadores, fecha y hora peninsular, formacion inicial,
+titulares y banquillo. El campo se dibuja segun la formacion publicada y los
+roles iniciales, sin simular coordenadas de seguimiento ni inventar onces.
+Si faltan formacion o roles completos, se presenta la alineacion como lista.
+Las fotos solo se usan si la fuente incluye una URL valida; en otro caso
+se muestra el dorsal. Las notas 0-10 y las lesiones no se estiman.
+El detalle se consulta de nuevo cada minuto mientras la pagina es visible;
+no se garantiza un servicio en directo. Creditos: /metodo/.
+
+Pruebas: tests/match_worker.mjs (incluye un partido real),
+tests/match_page.mjs (ejecuta los scripts de calendario, equipo y detalle),
+y tests/test_match.py (generacion periodica y copias de goles).

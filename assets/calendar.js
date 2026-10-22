@@ -22,7 +22,8 @@
       for(const m of c.matches){
         const row=el('article',undefined,'fixture-row');const when=el('div',undefined,'fixture-time');const clock=el('time',matchDate(m.date));clock.dateTime=m.date;when.append(clock,el('small',m.status));
         const score=m.home_score==null||m.away_score==null?'—':m.home_score+' – '+m.away_score;
-        row.append(when,team(m.home,m.home_icon,m.national,m.home_id,c.code),el('strong',score,'fixture-score'),team(m.away,m.away_icon,m.national,m.away_id,c.code));box.append(row);
+        m.competition=c.code;
+        row.append(when,team(m.home,m.home_icon,m.national,m.home_id,c.code),MatchUI.scoreLink(m,score),team(m.away,m.away_icon,m.national,m.away_id,c.code));MatchUI.finishRow(row,m);box.append(row);
       }
       fragment.append(box);
     }

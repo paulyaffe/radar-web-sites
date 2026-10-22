@@ -1,0 +1,1467 @@
+{
+  "_source": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/summary?event=401915313",
+  "header": {
+    "id": "401915313",
+    "competitions": [
+      {
+        "id": "401915313",
+        "date": "2026-10-21T19:00Z",
+        "competitors": [
+          {
+            "homeAway": "home",
+            "team": {
+              "id": "86",
+              "displayName": "Real Madrid",
+              "logos": [
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500/86.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "default"
+                  ],
+                  "lastUpdated": "2019-05-08T16:07Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/86.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "dark"
+                  ],
+                  "lastUpdated": "2019-05-08T16:07Z"
+                }
+              ]
+            },
+            "score": "4"
+          },
+          {
+            "homeAway": "away",
+            "team": {
+              "id": "11420",
+              "displayName": "RB Leipzig",
+              "logos": [
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500/11420.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "default"
+                  ],
+                  "lastUpdated": "2024-01-04T17:49Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/11420.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "dark"
+                  ],
+                  "lastUpdated": "2024-01-04T17:52Z"
+                }
+              ]
+            },
+            "score": "1"
+          }
+        ],
+        "status": {
+          "type": {
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
+          }
+        },
+        "details": [
+          {
+            "clock": {
+              "value": 2580.0,
+              "displayValue": "43'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "86"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "199833",
+                  "displayName": "Bernardo Silva",
+                  "shortName": "B. Silva"
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0.0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          },
+          {
+            "clock": {
+              "value": 3085.0,
+              "displayValue": "52'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "86"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "310452",
+                  "displayName": "Arda Güler",
+                  "shortName": "A. Güler"
+                }
+              },
+              {
+                "athlete": {
+                  "id": "231388",
+                  "displayName": "Kylian Mbappé",
+                  "shortName": "K. Mbappé"
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0.0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          },
+          {
+            "clock": {
+              "value": 4951.0,
+              "displayValue": "83'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "86"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "231388",
+                  "displayName": "Kylian Mbappé",
+                  "shortName": "K. Mbappé"
+                }
+              },
+              {
+                "athlete": {
+                  "id": "402479",
+                  "displayName": "Yan Diomande",
+                  "shortName": "Y. Diomande"
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0.0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          },
+          {
+            "clock": {
+              "value": 5050.0,
+              "displayValue": "85'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "11420"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "366911",
+                  "displayName": "Tidiam Gomis",
+                  "shortName": "T. Gomis"
+                }
+              },
+              {
+                "athlete": {
+                  "id": "274897",
+                  "displayName": "Christoph Baumgartner",
+                  "shortName": "C. Baumgartner"
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0.0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          },
+          {
+            "clock": {
+              "value": 5188.0,
+              "displayValue": "87'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "86"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "402479",
+                  "displayName": "Yan Diomande",
+                  "shortName": "Y. Diomande"
+                }
+              },
+              {
+                "athlete": {
+                  "id": "246532",
+                  "displayName": "Brahim Díaz",
+                  "shortName": "B. Díaz"
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0.0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          }
+        ]
+      }
+    ],
+    "league": {
+      "slug": "uefa.champions"
+    }
+  },
+  "gameInfo": {
+    "venue": {
+      "id": "10630",
+      "fullName": "Santiago Bernabéu",
+      "shortName": "Santiago Bernabéu",
+      "address": {
+        "city": "Madrid",
+        "country": "Spain"
+      },
+      "images": []
+    },
+    "attendance": 73016
+  },
+  "rosters": [
+    {
+      "homeAway": "home",
+      "team": {
+        "id": "86"
+      },
+      "formation": "4-2-3-1",
+      "roster": [
+        {
+          "starter": true,
+          "jersey": "1",
+          "position": {
+            "name": "Goalkeeper",
+            "displayName": "Goalkeeper",
+            "abbreviation": "G"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "1",
+          "athlete": {
+            "id": "134283",
+            "displayName": "Thibaut Courtois",
+            "shortName": "T. Courtois"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "4",
+          "position": {
+            "name": "Center Left Defender",
+            "displayName": "Center Left Defender",
+            "abbreviation": "CD-L"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "6",
+          "athlete": {
+            "id": "356000",
+            "displayName": "Dean Huijsen",
+            "shortName": "D. Huijsen"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "22",
+          "position": {
+            "name": "Center Right Defender",
+            "displayName": "Center Right Defender",
+            "abbreviation": "CD-R"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "5",
+          "athlete": {
+            "id": "169438",
+            "displayName": "Antonio Rüdiger",
+            "shortName": "A. Rüdiger"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "18",
+          "position": {
+            "name": "Left Back",
+            "displayName": "Left Back",
+            "abbreviation": "LB"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "3",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "68'"
+              },
+              "scoringPlay": false,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": true,
+              "penaltyKick": false,
+              "ownGoal": false
+            },
+            {
+              "clock": {
+                "displayValue": "70'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "310637",
+            "displayName": "Álvaro Carreras",
+            "shortName": "Á. Carreras"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "8",
+          "position": {
+            "name": "Right Back",
+            "displayName": "Right Back",
+            "abbreviation": "RB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "2",
+          "athlete": {
+            "id": "235818",
+            "displayName": "Federico Valverde",
+            "shortName": "F. Valverde"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "5",
+          "position": {
+            "name": "Attacking Midfielder",
+            "displayName": "Attacking Midfielder",
+            "abbreviation": "AM"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "10",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "88'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "291281",
+            "displayName": "Jude Bellingham",
+            "shortName": "J. Bellingham"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "6",
+          "position": {
+            "name": "Left Midfielder",
+            "displayName": "Left Midfielder",
+            "abbreviation": "LM"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "4",
+          "athlete": {
+            "id": "285150",
+            "displayName": "Eduardo Camavinga",
+            "shortName": "E. Camavinga"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "20",
+          "position": {
+            "name": "Right Midfielder",
+            "displayName": "Right Midfielder",
+            "abbreviation": "RM"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "8",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "43'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didScore": true
+            }
+          ],
+          "athlete": {
+            "id": "199833",
+            "displayName": "Bernardo Silva",
+            "shortName": "B. Silva"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "10",
+          "position": {
+            "name": "Forward",
+            "displayName": "Forward",
+            "abbreviation": "F"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "9",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "52'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didAssist": true
+            },
+            {
+              "clock": {
+                "displayValue": "83'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didScore": true
+            },
+            {
+              "clock": {
+                "displayValue": "88'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "231388",
+            "displayName": "Kylian Mbappé",
+            "shortName": "K. Mbappé"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "7",
+          "position": {
+            "name": "Attacking Midfielder Left",
+            "displayName": "Attacking Midfielder Left",
+            "abbreviation": "AM-L"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "11",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "70'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "252107",
+            "displayName": "Vinícius Júnior",
+            "shortName": "Vinícius Júnior"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "15",
+          "position": {
+            "name": "Attacking Midfielder Right",
+            "displayName": "Attacking Midfielder Right",
+            "abbreviation": "AM-R"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "7",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "52'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didScore": true
+            },
+            {
+              "clock": {
+                "displayValue": "78'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "310452",
+            "displayName": "Arda Güler",
+            "shortName": "A. Güler"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "16",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "251634",
+            "displayName": "Ibrahima Konaté",
+            "shortName": "I. Konaté"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "25",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "70'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            },
+            {
+              "clock": {
+                "displayValue": "83'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didAssist": true
+            },
+            {
+              "clock": {
+                "displayValue": "87'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didScore": true
+            }
+          ],
+          "athlete": {
+            "id": "402479",
+            "displayName": "Yan Diomande",
+            "shortName": "Y. Diomande"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "19",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "88'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "380286",
+            "displayName": "Carlos Espí",
+            "shortName": "C. Espí"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "9",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "88'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "346612",
+            "displayName": "Endrick",
+            "shortName": "Endrick"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "3",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "228402",
+            "displayName": "Éder Militão",
+            "shortName": "É. Militão"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "27",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "409019",
+            "displayName": "Thiago Pitarch",
+            "shortName": "T. Pitarch"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "14",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "265919",
+            "displayName": "Aurélien Tchouaméni",
+            "shortName": "A. Tchouaméni"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "17",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "70'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "259910",
+            "displayName": "Marc Cucurella",
+            "shortName": "M. Cucurella"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "24",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "213248",
+            "displayName": "Denzel Dumfries",
+            "shortName": "D. Dumfries",
+            "headshot": {
+              "href": "https://a.espncdn.com/i/headshots/soccer/players/full/213248.png",
+              "alt": "Denzel Dumfries"
+            }
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "12",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "223532",
+            "displayName": "Trent Alexander-Arnold",
+            "shortName": "T. Alexander-Arnold"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "13",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "257237",
+            "displayName": "Andriy Lunin",
+            "shortName": "A. Lunin"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "21",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "78'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            },
+            {
+              "clock": {
+                "displayValue": "87'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didAssist": true
+            }
+          ],
+          "athlete": {
+            "id": "246532",
+            "displayName": "Brahim Díaz",
+            "shortName": "B. Díaz"
+          }
+        }
+      ]
+    },
+    {
+      "homeAway": "away",
+      "team": {
+        "id": "11420"
+      },
+      "formation": "4-2-3-1",
+      "roster": [
+        {
+          "starter": true,
+          "jersey": "26",
+          "position": {
+            "name": "Goalkeeper",
+            "displayName": "Goalkeeper",
+            "abbreviation": "G"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "1",
+          "athlete": {
+            "id": "277377",
+            "displayName": "Maarten Vandevoordt",
+            "shortName": "M. Vandevoordt"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "23",
+          "position": {
+            "name": "Center Left Defender",
+            "displayName": "Center Left Defender",
+            "abbreviation": "CD-L"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "6",
+          "athlete": {
+            "id": "319100",
+            "displayName": "Castello Lukeba",
+            "shortName": "C. Lukeba"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "4",
+          "position": {
+            "name": "Center Right Defender",
+            "displayName": "Center Right Defender",
+            "abbreviation": "CD-R"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "5",
+          "athlete": {
+            "id": "162162",
+            "displayName": "Willi Orbán",
+            "shortName": "W. Orbán"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "22",
+          "position": {
+            "name": "Left Back",
+            "displayName": "Left Back",
+            "abbreviation": "LB"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "3",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "73'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "249548",
+            "displayName": "David Raum",
+            "shortName": "D. Raum"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "17",
+          "position": {
+            "name": "Right Back",
+            "displayName": "Right Back",
+            "abbreviation": "RB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "2",
+          "athlete": {
+            "id": "258963",
+            "displayName": "Ridle Baku",
+            "shortName": "R. Baku"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "28",
+          "position": {
+            "name": "Attacking Midfielder",
+            "displayName": "Attacking Midfielder",
+            "abbreviation": "AM"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "10",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "78'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "222176",
+            "displayName": "Christopher Nkunku",
+            "shortName": "C. Nkunku"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "21",
+          "position": {
+            "name": "Left Midfielder",
+            "displayName": "Left Midfielder",
+            "abbreviation": "LM"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "4",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "63'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "323807",
+            "displayName": "Neil El Aynaoui",
+            "shortName": "N. El Aynaoui"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "13",
+          "position": {
+            "name": "Right Midfielder",
+            "displayName": "Right Midfielder",
+            "abbreviation": "RM"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "8",
+          "athlete": {
+            "id": "305956",
+            "displayName": "Nicolas Seiwald",
+            "shortName": "N. Seiwald"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "40",
+          "position": {
+            "name": "Forward",
+            "displayName": "Forward",
+            "abbreviation": "F"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "9",
+          "athlete": {
+            "id": "324766",
+            "displayName": "Rômulo",
+            "shortName": "Rômulo"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "7",
+          "position": {
+            "name": "Attacking Midfielder Left",
+            "displayName": "Attacking Midfielder Left",
+            "abbreviation": "AM-L"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "11",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "73'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "319368",
+            "displayName": "Antonio Nusa",
+            "shortName": "A. Nusa"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "10",
+          "position": {
+            "name": "Attacking Midfielder Right",
+            "displayName": "Attacking Midfielder Right",
+            "abbreviation": "AM-R"
+          },
+          "subbedIn": false,
+          "subbedOut": true,
+          "formationPlace": "7",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "63'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "357683",
+            "displayName": "Brajan Gruda",
+            "shortName": "B. Gruda"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "30",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "63'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "372232",
+            "displayName": "Andrija Maksimovic",
+            "shortName": "A. Maksimovic"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "14",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "78'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            },
+            {
+              "clock": {
+                "displayValue": "85'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didAssist": true
+            }
+          ],
+          "athlete": {
+            "id": "274897",
+            "displayName": "Christoph Baumgartner",
+            "shortName": "C. Baumgartner"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "6",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "330233",
+            "displayName": "Ezechiel Banzuzi",
+            "shortName": "E. Banzuzi"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "3",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "318316",
+            "displayName": "Maxime Estève",
+            "shortName": "M. Estève"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "35",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "73'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "368003",
+            "displayName": "Max Finkgrafe",
+            "shortName": "M. Finkgrafe"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "27",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "73'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            },
+            {
+              "clock": {
+                "displayValue": "85'"
+              },
+              "scoringPlay": true,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false,
+              "didScore": true
+            }
+          ],
+          "athlete": {
+            "id": "366911",
+            "displayName": "Tidiam Gomis",
+            "shortName": "T. Gomis"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "39",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "220711",
+            "displayName": "Benjamin Henrichs",
+            "shortName": "B. Henrichs"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "2",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "384380",
+            "displayName": "Abdoul Koné",
+            "shortName": "A. Koné"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "11",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "310131",
+            "displayName": "Johan Bakayoko",
+            "shortName": "J. Bakayoko",
+            "headshot": {
+              "href": "https://a.espncdn.com/i/headshots/soccer/players/full/310131.png",
+              "alt": "Johan Bakayoko"
+            }
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "16",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "201803",
+            "displayName": "Lukas Klostermann",
+            "shortName": "L. Klostermann"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "1",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": false,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "athlete": {
+            "id": "193610",
+            "displayName": "Ørjan Nyland",
+            "shortName": "Ø. Nyland"
+          }
+        },
+        {
+          "starter": false,
+          "jersey": "20",
+          "position": {
+            "name": "Substitute",
+            "displayName": "Substitute",
+            "abbreviation": "SUB"
+          },
+          "subbedIn": true,
+          "subbedOut": false,
+          "formationPlace": "0",
+          "plays": [
+            {
+              "clock": {
+                "displayValue": "63'"
+              },
+              "scoringPlay": false,
+              "substitution": true,
+              "redCard": false,
+              "yellowCard": false,
+              "penaltyKick": false,
+              "ownGoal": false
+            },
+            {
+              "clock": {
+                "displayValue": "70'"
+              },
+              "scoringPlay": false,
+              "substitution": false,
+              "redCard": false,
+              "yellowCard": true,
+              "penaltyKick": false,
+              "ownGoal": false
+            }
+          ],
+          "athlete": {
+            "id": "307364",
+            "displayName": "Rocco Reitz",
+            "shortName": "R. Reitz"
+          }
+        }
+      ]
+    }
+  ]
+}

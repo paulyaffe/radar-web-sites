@@ -38,7 +38,7 @@ class CalendarTests(unittest.TestCase):
                 self.assertIn('https://marcador-claro-paul.pages.dev/'+route+'/', text)
                 self.assertIn('/assets/calendar.js', text)
             self.assertTrue((root/"dist/_worker.js").is_file())
-            self.assertEqual(engine.read_json(root/"dist/_routes.json")["include"], ["/api/partidos", "/api/equipo", "/api/tabla", "/api/banderas"])
+            self.assertEqual(engine.read_json(root/"dist/_routes.json")["include"], ["/api/partidos", "/api/equipo", "/api/tabla", "/api/banderas", "/api/partido"])
             team = (root/"dist/equipo/index.html").read_text(encoding="utf-8")
             self.assertIn('/assets/team.js', team)
             self.assertIn('noindex,follow', team)

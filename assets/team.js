@@ -18,9 +18,9 @@
       const row=el('article',undefined,'fixture-row team-history-row'),time=el('div',undefined,'fixture-time');
       const clock=el('time',when(m));clock.dateTime=m.date;time.append(clock,el('small',m.competition_name),el('small',m.status));
       let result=future?'vs':m.home_score==null||m.away_score==null?'Sin resultado':m.home_score+' – '+m.away_score;
-      const score=el('strong',result,'fixture-score');
+      const score=MatchUI.scoreLink(m,result);
       if(!future&&m.home_penalties!=null&&m.away_penalties!=null)score.append(el('small','Pen. '+m.home_penalties+' – '+m.away_penalties));
-      row.append(time,team(m.home,m.home_icon,m.national,m.home_id,m.competition),score,team(m.away,m.away_icon,m.national,m.away_id,m.competition));box.append(row);
+      row.append(time,team(m.home,m.home_icon,m.national,m.home_id,m.competition),score,team(m.away,m.away_icon,m.national,m.away_id,m.competition));MatchUI.finishRow(row,m);box.append(row);
     }
     return box;
   }
