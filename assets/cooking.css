@@ -60,6 +60,7 @@
 .cooking-app .inline-cta{padding:18px 20px;margin-top:22px;background:#eff2eb;border-radius:8px}
 .cooking-app .inline-cta h2{margin:0 0 8px;font-size:18px}
 .cooking-app .editorial-note{font-size:12px!important;margin-top:20px}
+.tool-explanation{max-width:760px;font-size:14px;line-height:1.6;margin-top:24px;border-top:1px solid #e1e5e8;padding-top:4px}.cooking-app .tool-explanation h2{font:700 17px/1.35 Arial,Helvetica,sans-serif;letter-spacing:0;margin:20px 0 9px}.tool-explanation p{margin:0 0 12px}.tool-explanation table{width:100%;border-collapse:collapse;font-size:12px;margin:14px 0}.tool-explanation caption{text-align:left;font-size:12px;font-weight:600;margin-bottom:7px}.tool-explanation th,.tool-explanation td{text-align:left;padding:7px;border-bottom:1px solid #e1e5e8}.tool-explanation th{background:#f7f8f9}.tool-explanation a{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:700px){
   .cooking-app .site-header{padding:12px 14px 0}
   .cooking-app .brand{font-size:20px}
