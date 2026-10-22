@@ -361,7 +361,38 @@ def football_team(name, code, identity=""):
     return '<a class="fixture-team team-link" href="/equipo/?'+esc(urllib.parse.urlencode(query))+'" title="Ver últimos y próximos partidos de '+esc(name)+'">'+esc(name)+'</a>'
 
 
-def page(profile, base_url, path, title, description, body, schema=None, adsense=None):
+def analytics_tags(settings, adsense):
+    settings = settings or {}
+    measurement = settings.get("measurement_id", "")
+    if measurement and not re.fullmatch(r"G-[A-Z0-9]{6,20}", measurement):
+        raise ValueError("ID de medición de Google Analytics no válido.")
+    if not settings.get("enabled"):
+        return ""
+    if not measurement:
+        raise ValueError("Falta el ID de medición de Google Analytics.")
+    if not adsense.get("enabled") or not adsense.get("google_cmp_ready"):
+        raise ValueError("Analytics requiere el mensaje de consentimiento de Google configurado.")
+    # Denied precedes every Google tag. The existing Google CMP communicates
+    # consent updates when Consent Mode (including Analytics) is enabled there.
+    # Without an update, Analytics remains in cookieless consent mode.
+    return f'''<!-- Google tag (gtag.js): Google Analytics -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('consent', 'default', {{
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied',
+    'wait_for_update': 500
+  }});
+  gtag('js', new Date());
+  gtag('config', '{measurement}');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={measurement}"></script>'''
+
+
+def page(profile, base_url, path, title, description, body, schema=None, adsense=None, analytics=None):
     p = PROFILES[profile]
     canonical = base_url.rstrip("/") + path
     graph = [schema] if schema else []
@@ -381,6 +412,7 @@ def page(profile, base_url, path, title, description, body, schema=None, adsense
     if ads.get("enabled"):
         adtags += '<script src="/assets/consent.js" defer></script>'
         privacy_control = '<a href="/privacidad/" id="privacy-options" hidden>Opciones de privacidad</a>'
+    adtags = analytics_tags(analytics, ads) + adtags
     nav = '<a href="/">Inicio</a><a href="/#herramientas">Calculadoras</a><a href="/#lecturas">' + ("Recetas y guías" if profile == "cocina" else "Guías") + '</a>'
     if profile == "deportes":
         nav = ""
@@ -476,7 +508,7 @@ def render(root):
     def save(path, title, description, body, schema=None):
         target = out/(path.strip("/") + "/index.html" if path != "/" else "index.html")
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(page(profile, base, path, title, description, body, schema, config.get("adsense")), encoding="utf-8")
+        target.write_text(page(profile, base, path, title, description, body, schema, config.get("adsense"), config.get("analytics")), encoding="utf-8")
         paths.append(path)
 
     tool_cards = "".join(f'<a class="tool-card" href="/calculadoras/{tid}/"><span class="card-number">0{i+1}</span><h3>{esc(title)}</h3><p>{esc(desc)}</p><span class="arrow" aria-hidden="true">↗</span></a>' for i, (tid, title, desc) in enumerate(p["tools"]))
@@ -551,6 +583,10 @@ def render(root):
     ads = config.get("adsense", {})
     if ads.get("enabled"):
         privacy = '<article class="reading"><p class="eyebrow">PRIVACIDAD</p><h1>Datos y publicidad.</h1><p>Las herramientas se ejecutan en el navegador. Utilizamos Google AdSense para mostrar publicidad y el mensaje de privacidad de Google para gestionar las opciones de consentimiento.</p><h2>Google AdSense</h2><p>Google y sus colaboradores pueden procesar identificadores, cookies e información de uso conforme a tus elecciones. Consulta <a href="https://policies.google.com/technologies/partner-sites">cómo usa Google la información de sitios asociados</a>.</p><h2>Tus opciones</h2><p>Utiliza las opciones del mensaje de privacidad para aceptar, rechazar o gestionar las finalidades publicitarias. Puedes cambiar o retirar tu consentimiento mediante el enlace Opciones de privacidad del pie de página cuando esté disponible. Puedes consultar <a href="https://myadcenter.google.com/">Mi centro de anuncios de Google</a> para gestionar la personalización.</p><h2>Alojamiento</h2><p>El proveedor procesa información técnica necesaria para servir y proteger esta web.</p></article>'
+    if config.get("analytics", {}).get("enabled"):
+        analytics_privacy = '<h2>Google Analytics</h2><p>Utilizamos Google Analytics 4 para conocer las visitas, las páginas consultadas y el uso general de la web. Google puede procesar información técnica de la visita, del dispositivo y de su procedencia. Las cookies de analítica están desactivadas por defecto y solo se permiten cuando el gestor de consentimiento comunica una autorización aplicable. Sin esa autorización, el modo de consentimiento puede enviar señales de medición sin cookies de analítica. No enviamos a Analytics los valores introducidos en las calculadoras.</p><p>Puedes revisar tus elecciones en el mensaje de privacidad y en Opciones de privacidad cuando esté disponible. Consulta <a href="https://policies.google.com/technologies/partner-sites">cómo usa Google los datos de sitios asociados</a> y su <a href="https://policies.google.com/privacy">política de privacidad</a>.</p>'
+        privacy = privacy.replace('<h2>Alojamiento</h2>', analytics_privacy + '<h2>Alojamiento</h2>', 1)
+        privacy = privacy.replace('<h1>Datos y publicidad.</h1>', '<h1>Datos, publicidad y estadísticas.</h1>')
     save("/privacidad/", "Privacidad", "Cómo funcionan las calculadoras y qué datos procesa esta web.", privacy)
     save("/404/", "Página no encontrada", "La página que buscas no está aquí.", '<section class="page-heading"><h1>Ese enlace se ha perdido.</h1><p>Vuelve al inicio para encontrar las calculadoras y las guías.</p><a class="button" href="/">Ir al inicio →</a></section>')
     (out/"404.html").write_text((out/"404/index.html").read_text(encoding="utf-8"), encoding="utf-8")

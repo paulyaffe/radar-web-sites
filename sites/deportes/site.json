@@ -10,5 +10,9 @@
     "google_cmp_ready": true,
     "approval_confirmed": false
   },
-  "cloudflare_project": "marcador-claro-paul"
+  "cloudflare_project": "marcador-claro-paul",
+  "analytics": {
+    "measurement_id": "G-W3F2HYMSXD",
+    "enabled": true
+  }
 }

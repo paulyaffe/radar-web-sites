@@ -31,6 +31,7 @@ jobs:
       - run: node tests/team_worker.mjs
       - run: node tests/sports_data_worker.mjs
       - run: node tests/sports_page.mjs
+      - run: node tests/analytics_tag.mjs
       - run: python update.py --force
       - name: Comprobar SEO y archivos públicos
         run: |
@@ -45,6 +46,10 @@ jobs:
                   assert 'chatgpt.site' not in text
                   assert base in text
                   assert 'ca-pub-7901739911277041' in text
+                  if config.get('analytics', {}).get('enabled'):
+                      measurement = config['analytics']['measurement_id']
+                      assert text.count('googletagmanager.com/gtag/js?id='+measurement) == 1
+                      assert text.index("gtag('consent', 'default'") < text.index('adsbygoogle.js')
                   if config.get('adsense', {}).get('enabled'):
                       assert config['adsense'].get('google_cmp_ready')
                       assert 'adsbygoogle.js?client=ca-pub-7901739911277041' in text

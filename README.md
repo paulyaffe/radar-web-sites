@@ -133,3 +133,28 @@ Las paginas individuales y los ajustes de raciones se conservan.
 El estilo compacto esta en assets/cooking.css y solo se carga para cocina.
 El publicador usa este mismo motor; conserva el nuevo diseno en cada ciclo.
 Se mantienen los mensajes de privacidad, AdSense, los canonicals y el sitemap.
+
+
+## Google Analytics 4 en las cuatro webs
+
+Las cuatro configuraciones sites/*/site.json usan G-W3F2HYMSXD. El motor
+incorpora una sola etiqueta por pagina (incluidas recetas, tablas y privacidad),
+y cada publicacion periodica conserva esa configuracion. Google Analytics
+permite separar los informes por nombre de host dentro de la misma propiedad.
+
+Consent Mode v2 establece analytics_storage, ad_storage, ad_user_data y
+ad_personalization en denied antes de cargar cualquier etiqueta de Google.
+La CMP existente de Google puede actualizarlos segun la decision del visitante.
+En AdSense > Privacidad y mensajes > Normativas europeas > Configuracion,
+Consent Mode debe incluir Analytics para que la CMP comunique esa eleccion.
+No se interpreta el consentimiento publicitario como permiso de analitica.
+Sin actualizacion de consentimiento, la etiqueta permanece sin cookies y puede
+enviar senales de medicion sin cookies (modo de consentimiento avanzado).
+La politica de privacidad de cada sitio lo explica. No se ha conectado ni
+modificado la cuenta de Analytics ni se presupone que ya muestre datos.
+
+Documentacion de Google:
+https://developers.google.com/tag-platform/security/guides/consent
+https://developers.google.com/funding-choices/fc-api-docs
+
+Validacion: tests/test_analytics.py y node tests/analytics_tag.mjs.
