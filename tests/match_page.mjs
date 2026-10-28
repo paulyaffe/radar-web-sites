@@ -12,7 +12,12 @@ class Element{
   append(...nodes){for(const node of nodes){node.parent=this;this.children.push(node);}}
   replaceChildren(...nodes){this.text='';for(const node of this.children)node.parent=null;this.children=[];this.append(...nodes);}
   setAttribute(k,v){this.attributes[k]=v;}
+  removeAttribute(k){delete this.attributes[k];}
   addEventListener(name,fn){this.listeners[name]=fn;}
+  focus(){this.listeners.focus?.({});}
+  click(){this.listeners.click?.({});}
+  select(){this.textSelected=true;}
+  contains(target){return target===this||nodes(this).includes(target);}
   querySelector(selector){return this.selectors?.[selector]||this.querySelectorAll(selector)[0]||null;}
   querySelectorAll(selector){return this.many?.[selector]||nodes(this).filter(n=>selector==='[data-athlete-id]'?n.dataset.athleteId:selector.startsWith('.')?n.className.split(' ').includes(selector.slice(1)):selector.startsWith('[data-')?Object.hasOwn(n.attributes,selector.slice(1,-1)):false);}
   remove(){if(this.parent)this.parent.children=this.parent.children.filter(n=>n!==this);}
@@ -21,15 +26,17 @@ const nodes=node=>node.children.flatMap(n=>[n,...nodes(n)]),classes=(node,name)=
 const fixture=JSON.parse(fs.readFileSync(new URL('./fixtures/match-real.json',import.meta.url),'utf8'));
 const data=normalizeMatchDetails(fixture,'CL','401915313');data.updated='2026-10-22T10:00:00Z';
 function context(root,selector,payload,search,fail=false,saved=null){
-  const requests=[],navigations=[],squads=new Map(),events={},storage=new Map(saved===null?[]:[['lajornada.highlight-country',saved]]),select=new Element('select'),variables={};
-  const document={hidden:false,title:'',body:{style:{setProperty:(k,v)=>variables[k]=v}},querySelector:q=>q===selector?root:q==='[data-highlight-country]'?select:null,querySelectorAll:q=>root.querySelectorAll(q),
+  const requests=[],navigations=[],squads=new Map(),events={},documentEvents={},storage=new Map(saved===null?[]:[['lajornada.highlight-country',saved]]),input=new Element('input'),picker=new Element('div'),options=new Element('ul'),toggle=new Element('button'),variables={};
+  picker.append(input,toggle,options);
+  const controls={'[data-highlight-country]':input,'[data-country-picker]':picker,'[data-country-options]':options,'[data-country-toggle]':toggle};
+  const document={hidden:false,title:'',body:{style:{setProperty:(k,v)=>variables[k]=v}},addEventListener:(k,fn)=>documentEvents[k]=fn,querySelector:q=>q===selector?root:controls[q]||null,querySelectorAll:q=>root.querySelectorAll(q),
     createElement:t=>new Element(t),createDocumentFragment:()=>new Element('fragment')};
   const sandbox={document,console,Intl,Date,URLSearchParams,URL,AbortController,AbortSignal,
     location:{search,href:'https://site.test/'+search,assign:url=>navigations.push(url)},history:{replaceState(){}},setInterval(){},addEventListener:(k,fn)=>events[k]=fn,localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},
     FixtureNavigation:{createNavigator:()=>async()=>null},fetch:async url=>{requests.push(url);if(fail)throw Error('offline');if(String(url).startsWith('/api/plantilla?')){const id=new URL(url,'https://site.test').searchParams.get('id');return Response.json(squads.get(id)||{team:{id},basis:'first_team_squad',available:true,players:[{id:'1',name:'Jugador',number:'1'}],uruguayan_players:[],has_uruguayan:false});}return Response.json(payload);}};
   sandbox.window=sandbox;vm.createContext(sandbox);
   for(const file of ['country-data.js','country-highlight.js','match-ui.js'])vm.runInContext(fs.readFileSync(new URL('../assets/'+file,import.meta.url),'utf8'),sandbox);
-  return {sandbox,requests,navigations,squads,select,storage,variables,events};
+  return {sandbox,requests,navigations,squads,input,picker,options,toggle,storage,variables,events,documentEvents};
 }
 async function run(file,state){vm.runInContext(fs.readFileSync(new URL('../assets/'+file,import.meta.url),'utf8'),state.sandbox);for(let i=0;i<10;i++)await new Promise(setImmediate);}
 for(const scenario of ['pitch','list','unpublished','failure','midnight','uruguay','lineup-only']){
@@ -104,8 +111,9 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   const malicious=state.sandbox.MatchUI.scorers({goals:[{side:'home',name:'<script>throw 1</script>',minute:'1′'}]});
   assert.ok(malicious.textContent.includes('<script>'));assert.equal(nodes(malicious).filter(n=>n.tagName==='script').length,0);
   const before=state.requests.length;
-  assert.equal(state.select.value,'UY','Uruguay is the initial selection');
-  state.select.value='BR';state.select.listeners.change();
+  assert.equal(state.input.value,'Uruguay','Uruguay is the initial selection');
+  state.input.focus();state.input.value='bra';state.input.listeners.input({});
+  classes(state.options,'country-option')[0].click();
   assert.equal(state.variables['--country-bg'],'#fff0ad','Brazil uses yellow');
   assert.equal(classes(content,'country-match').length,2,'All history rows change from squad data');
   assert.equal(classes(content,'squad-player').filter(n=>n.className.includes('country-player')).length,1);
@@ -115,7 +123,7 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   assert.equal(state.storage.get('lajornada.highlight-country'),'BR');assert.equal(state.requests.length,before,'Changing country does not request squads again');
   state.sandbox.CountryHighlight.choose('DE');assert.equal(classes(content,'country-match').length,0);assert.equal(classes(content,'country-player').length,0);
   state.sandbox.CountryHighlight.choose('');assert.equal(classes(content,'highlight-flag').length,0,'Highlighting can be disabled');
-  const next=context(new Element('section'),'[data-test]',{},'',false,'BR');assert.equal(next.select.value,'BR','Country persists on the next page');
+  const next=context(new Element('section'),'[data-test]',{},'',false,'BR');assert.equal(next.input.value,'Brasil','Country persists on the next page');
 }
 {
   const state=context(new Element('section'),'[data-test]',{},'');
@@ -126,9 +134,45 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   assert.equal(api.countryOf({flag:'https://a.espncdn.com/i/teamlogos/countries/500/ger.png'}).code,'DE');
   assert.equal(api.countryOf({birthPlace:{country:'Brazil'}}),null,'Never infer nationality from birthplace');
   assert.equal(api.choose('<script>'),false);assert.equal(api.selected.code,'UY');
-  assert.equal(context(new Element('section'),'[data-test]',{},'',false,'invalid').select.value,'UY');
-  state.events.storage({key:'lajornada.highlight-country',newValue:'BR'});assert.equal(state.select.value,'BR','Open tabs follow the same preference');
-  state.events.storage({key:'lajornada.highlight-country',newValue:null});assert.equal(state.select.value,'UY','Removing the preference restores Uruguay');
+  assert.equal(context(new Element('section'),'[data-test]',{},'',false,'invalid').input.value,'Uruguay');
+  state.events.storage({key:'lajornada.highlight-country',newValue:'BR'});assert.equal(state.input.value,'Brasil','Open tabs follow the same preference');
+  state.events.storage({key:'lajornada.highlight-country',newValue:null});assert.equal(state.input.value,'Uruguay','Removing the preference restores Uruguay');
+}
+{
+  const state=context(new Element('section'),'[data-test]',{},'');
+  const {input,options,toggle,picker}=state,api=state.sandbox.CountryHighlight;
+  const values=()=>classes(options,'country-option').map(option=>option.textContent);
+  const type=value=>{input.value=value;input.listeners.input({});return values();};
+  const key=value=>{const event={key:value,preventDefault(){this.prevented=true;}};input.listeners.keydown(event);return event;};
+  input.focus();assert.equal(input.textSelected,true);assert.equal(options.hidden,false);assert.equal(values().length,255);
+  input.textSelected=false;input.click();assert.equal(input.textSelected,true,'The first typed letter replaces the selected country, including on pointer focus');
+  for(const value of ['u','ur','uru','b','br','bra','es','España','  BRA','é']){
+    const found=type(value),fold=v=>v.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    assert.ok(found.length>0,value);assert.ok(found.every(name=>fold(name).startsWith(fold(value))),value);
+  }
+  assert.ok(type('u').includes('Uruguay'));assert.deepEqual(type('ur'),['Uruguay']);
+  assert.ok(!type('guay').includes('Uruguay'),'The filter matches prefixes, never substrings');
+  type('zzzz');
+  assert.equal(classes(options,'country-empty').length,1);assert.equal(input.attributes['aria-activedescendant'],undefined);
+  key('Enter');assert.equal(api.selected.code,'UY','An empty result cannot select a country');
+  type('br');assert.deepEqual(values(),['Brasil','Brunéi']);assert.equal(api.selected.code,'UY','Typing alone does not change highlighting');
+  assert.equal(input.attributes['aria-expanded'],'true');assert.ok(input.attributes['aria-activedescendant']);
+  assert.equal(key('Enter').prevented,true);assert.equal(api.selected.code,'BR');assert.equal(input.value,'Brasil');assert.equal(options.hidden,true);
+  assert.equal(input.attributes['aria-activedescendant'],undefined);assert.equal(state.storage.get('lajornada.highlight-country'),'BR');
+  input.click();assert.equal(values().length,255,'The list reopens after choosing a country');type('es');
+  const first=classes(options,'country-option')[0];key('ArrowDown');assert.notEqual(input.attributes['aria-activedescendant'],first.id);key('ArrowUp');assert.equal(input.attributes['aria-activedescendant'],first.id);
+  key('Escape');assert.equal(input.value,'Brasil');assert.equal(options.hidden,true);assert.equal(api.selected.code,'BR');
+  type('ur');key('Tab');assert.equal(input.value,'Brasil');assert.equal(options.hidden,true,'Tab discards an unfinished query');
+  toggle.click();assert.equal(options.hidden,false);toggle.click();assert.equal(options.hidden,true);
+  input.click();type('z');state.documentEvents.pointerdown({target:input});assert.equal(options.hidden,false,'Editing inside the picker keeps it open');
+  state.documentEvents.pointerdown({target:new Element('main')});assert.equal(options.hidden,true);assert.equal(input.value,'Brasil');
+  input.click();picker.listeners.focusout({relatedTarget:toggle});assert.equal(options.hidden,false);
+  picker.listeners.focusout({relatedTarget:new Element('button')});assert.equal(options.hidden,true);
+  type('sin');classes(options,'country-option')[0].click();assert.equal(api.selected,null);assert.equal(input.value,'Sin resaltar');
+  assert.equal(type('').length,255,'Clearing the search restores the whole list');
+  const before=values();input.value='bra';input.listeners.input({isComposing:true});assert.deepEqual(values(),before);
+  input.listeners.compositionend();assert.deepEqual(values(),['Brasil']);
+  assert.equal(state.requests.length,0,'Filtering countries is entirely local');
 }
 {
   const root=new Element('section'),status=new Element('p'),content=new Element('div'),back=new Element('a');

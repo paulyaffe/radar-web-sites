@@ -9,6 +9,33 @@
   }
   let selected=countries.get('UY');
   try{const saved=localStorage.getItem(key);if(saved===''||countries.has(saved))selected=countries.get(saved)||null;}catch{}
+  const input=document.querySelector('[data-highlight-country]'),picker=document.querySelector('[data-country-picker]'),list=document.querySelector('[data-country-options]'),toggle=document.querySelector('[data-country-toggle]');
+  const choices=[{code:'',name:'Sin resaltar'},...[...countries.values()].sort((a,b)=>a.name.localeCompare(b.name,'es'))];
+  const prefix=value=>String(value||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es');
+  let expanded=false,options=[],active=-1;
+  function closePicker(){
+    expanded=false;if(list)list.hidden=true;
+    if(input){input.value=selected?.name||'Sin resaltar';input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');}
+    toggle?.setAttribute('aria-expanded','false');
+  }
+  function activate(index){
+    active=index;
+    for(const [i,option] of options.entries()){option.classList.toggle('is-active',i===active);option.setAttribute('aria-selected',String(i===active));}
+    if(active<0)input.removeAttribute('aria-activedescendant');
+    else{input.setAttribute('aria-activedescendant',options[active].id);options[active].scrollIntoView?.({block:'nearest'});}
+  }
+  function showPicker(query=''){
+    if(!input||!list)return;
+    const start=prefix(query),found=choices.filter(country=>prefix(country.name).startsWith(start)),fragment=document.createDocumentFragment();
+    options=[];
+    for(const country of found){
+      const option=document.createElement('li');option.id='country-option-'+(country.code||'none');option.className='country-option';option.setAttribute('role','option');option.textContent=country.name;
+      option.addEventListener('pointerdown',event=>event.preventDefault());option.addEventListener('click',()=>choose(country.code));fragment.append(option);options.push(option);
+    }
+    if(!found.length){const empty=document.createElement('li');empty.className='country-empty';empty.setAttribute('role','presentation');empty.textContent='Sin coincidencias';fragment.append(empty);}
+    list.replaceChildren(fragment);list.hidden=false;expanded=true;input.setAttribute('aria-expanded','true');toggle?.setAttribute('aria-expanded','true');
+    const current=found.findIndex(country=>country.code===(selected?.code||''));activate(found.length?(start?0:Math.max(0,current)):-1);
+  }
   function countryOf(player){
     if(!player)return null;
     const named=aliases.get(clean(player.nationality));if(named)return named;
@@ -34,15 +61,27 @@
   }
   function choose(code,persist=true){
     if(code!==''&&!countries.has(code))return false;selected=countries.get(code)||null;
-    if(select)select.value=selected?.code||'';
+    closePicker();
     if(persist)try{localStorage.setItem(key,code);}catch{}
     repaint();return true;
   }
-  const select=document.querySelector('[data-highlight-country]');
-  if(select){
-    const options=document.createDocumentFragment(),off=document.createElement('option');off.value='';off.textContent='Sin resaltar';options.append(off);
-    for(const country of [...countries.values()].sort((a,b)=>a.name.localeCompare(b.name,'es'))){const option=document.createElement('option');option.value=country.code;option.textContent=country.name;options.append(option);}
-    select.replaceChildren(options);select.value=selected?.code||'';select.addEventListener('change',()=>choose(select.value));
+  if(input&&picker&&list){
+    closePicker();
+    input.addEventListener('focus',()=>{showPicker();input.select();});
+    input.addEventListener('click',()=>{if(!expanded)showPicker();if(input.value===(selected?.name||'Sin resaltar'))input.select();});
+    input.addEventListener('input',event=>{if(!event.isComposing)showPicker(input.value);});
+    input.addEventListener('compositionend',()=>showPicker(input.value));
+    input.addEventListener('keydown',event=>{
+      if(event.isComposing)return;
+      if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+        event.preventDefault();if(!expanded)showPicker();else if(options.length)activate((active+(event.key==='ArrowDown'?1:-1)+options.length)%options.length);
+      }else if(event.key==='Enter'&&expanded){event.preventDefault();if(active>=0)options[active].click();}
+      else if(event.key==='Escape'){event.preventDefault();closePicker();}
+      else if(event.key==='Tab')closePicker();
+    });
+    toggle?.addEventListener('click',()=>{if(expanded)closePicker();else{input.focus();showPicker();}});
+    picker.addEventListener('focusout',event=>{if(!picker.contains(event.relatedTarget))closePicker();});
+    document.addEventListener('pointerdown',event=>{if(!picker.contains(event.target))closePicker();});
   }
   window.CountryHighlight={get selected(){return selected;},countries,countryOf,matches,watchPlayer,repaint,choose,onChange:callback=>listeners.push(callback)};
   repaint();

@@ -194,6 +194,11 @@ los cinco ultimos partidos finalizados y los cinco proximos de cada equipo.
 El selector junto a La Jornada permite elegir un país, con Uruguay como valor
 inicial. La elección se conserva localmente en ese navegador y se comparte
 entre sus pestañas; Sin resaltar la desactiva. No modifica filtros ni fechas.
+La caja «Selecciona tú país.» filtra por el inicio del nombre en español,
+letra a letra, sin distinguir mayúsculas ni tildes. Por ejemplo, «u» incluye
+Uruguay y «ur» lo deja como único país. La lista tiene texto compacto y puede
+manejarse con clic, flechas y Enter. Escape, Tab o salir de la caja descartan
+una búsqueda sin confirmar y conservan el país elegido anteriormente.
 Los jugadores del país seleccionado tienen un fondo del color principal de
 su camiseta y una bandera pequeña al final del nombre. Se usan tonos suaves
 para mantener el contraste. También se actualizan los titulares, suplentes y
