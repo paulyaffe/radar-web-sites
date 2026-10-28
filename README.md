@@ -208,7 +208,7 @@ La ficha /equipo/ abre la plantilla actual en dos columnas y conserva debajo
 los cinco ultimos partidos finalizados y los cinco proximos de cada equipo.
 El selector junto a La Jornada permite elegir un país, con Uruguay como valor
 inicial. La elección se conserva localmente en ese navegador y se comparte
-entre sus pestañas; Sin resaltar la desactiva. No modifica filtros ni fechas.
+entre sus pestañas; Sin resaltar la desactiva. No cambia la competición ni la fecha.
 La caja «Selecciona tú país.» filtra por el inicio del nombre en español,
 letra a letra, sin distinguir mayúsculas ni tildes. Por ejemplo, «u» incluye
 Uruguay y «ur» lo deja como único país. La lista tiene texto compacto y puede
@@ -226,6 +226,16 @@ por separado; la fecha, el marcador y el resto de la ficha conservan su fondo.
 El criterio no depende de la convocatoria, del banquillo ni de que se publiquen onces.
 Un lesionado que sigue en la plantilla tambien cuenta. Los detalles siguen
 mostrando las nacionalidades y las banderas de los convocados cuando existen.
+
+El botón «Solo Uruguay» se adapta al país seleccionado y filtra los partidos
+de la jornada usando las plantillas de ambos equipos. Su estado se guarda en
+ese navegador y se comparte entre pestañas. Sigue activo al cambiar de fecha
+o competición; al elegir Sin resaltar se desactiva. Otro clic vuelve a mostrar
+la jornada completa. No requiere registro.
+Con el filtro activo se comprueban también las filas que están fuera de
+pantalla, con la misma caché y límite de consultas simultáneas. Las competiciones
+sin coincidencias se ocultan. El contador distingue la comprobación pendiente,
+las plantillas no disponibles y la ausencia confirmada de coincidencias.
 
 /api/plantilla?id= consulta la plantilla del club en su liga principal, sin
 mezclar listas de inscripcion de una competicion ni inferir nacionalidad por

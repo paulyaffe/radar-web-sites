@@ -25,20 +25,30 @@ class Element{
 const nodes=node=>node.children.flatMap(n=>[n,...nodes(n)]),classes=(node,name)=>nodes(node).filter(n=>n.className.split(' ').includes(name));
 const fixture=JSON.parse(fs.readFileSync(new URL('./fixtures/match-real.json',import.meta.url),'utf8'));
 const data=normalizeMatchDetails(fixture,'CL','401915313');data.updated='2026-10-22T10:00:00Z';
-function context(root,selector,payload,search,fail=false,saved=null){
+function context(root,selector,payload,search,fail=false,saved=null,observer=null){
   const requests=[],navigations=[],squads=new Map(),events={},documentEvents={},storage=new Map(saved===null?[]:[['lajornada.highlight-country',saved]]),input=new Element('input'),picker=new Element('div'),options=new Element('ul'),toggle=new Element('button'),variables={};
   picker.append(input,toggle,options);
   const controls={'[data-highlight-country]':input,'[data-country-picker]':picker,'[data-country-options]':options,'[data-country-toggle]':toggle};
   const document={hidden:false,title:'',body:{style:{setProperty:(k,v)=>variables[k]=v}},addEventListener:(k,fn)=>documentEvents[k]=fn,querySelector:q=>q===selector?root:controls[q]||null,querySelectorAll:q=>root.querySelectorAll(q),
     createElement:t=>new Element(t),createDocumentFragment:()=>new Element('fragment')};
   const sandbox={document,console,Intl,Date,URLSearchParams,URL,AbortController,AbortSignal,
-    location:{search,href:'https://site.test/'+search,assign:url=>navigations.push(url)},history:{replaceState(){}},setInterval(){},addEventListener:(k,fn)=>events[k]=fn,localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},
+    location:{search,href:'https://site.test/'+search,assign:url=>navigations.push(url)},history:{replaceState(){}},setInterval(){},addEventListener:(k,fn)=>{const previous=events[k];events[k]=previous?event=>{previous(event);fn(event);}:fn;},localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},
     FixtureNavigation:{createNavigator:()=>async()=>null},fetch:async url=>{requests.push(url);if(fail)throw Error('offline');if(String(url).startsWith('/api/plantilla?')){const id=new URL(url,'https://site.test').searchParams.get('id');return Response.json(squads.get(id)||{team:{id},basis:'first_team_squad',available:true,players:[{id:'1',name:'Jugador',number:'1'}],uruguayan_players:[],has_uruguayan:false});}return Response.json(payload);}};
+  if(observer)sandbox.IntersectionObserver=observer;
   sandbox.window=sandbox;vm.createContext(sandbox);
   for(const file of ['country-data.js','country-highlight.js','match-ui.js'])vm.runInContext(fs.readFileSync(new URL('../assets/'+file,import.meta.url),'utf8'),sandbox);
   return {sandbox,requests,navigations,squads,input,picker,options,toggle,storage,variables,events,documentEvents};
 }
 async function run(file,state){vm.runInContext(fs.readFileSync(new URL('../assets/'+file,import.meta.url),'utf8'),state.sandbox);for(let i=0;i<10;i++)await new Promise(setImmediate);}
+function calendarContext(payload,saved=null){
+  const root=new Element('section'),form=new Element('form'),status=new Element('p'),list=new Element('div'),today=new Element('button'),countryOnly=new Element('button');
+  const date=new Element('input'),filter=new Element('select');filter.value='clubes';filter.options=[{value:'clubes'},...payload.competitions.map(c=>({value:c.code,dataset:{group:'clubes'}}))];
+  form.elements={fecha:date,competicion:filter};form.reportValidity=()=>true;
+  root.selectors={'form':form,'[data-fixtures-status]':status,'[data-fixtures-list]':list,'[data-today]':today,'[data-country-only]':countryOnly};root.many={'[data-day-step]':[]};root.append(form,status,list,today,countryOnly);
+  const observed=[],observer=class{observe(row){observed.push(row);}unobserve(){}};
+  const state=context(root,'[data-fixtures]',payload,'?fecha=2026-10-21&competicion=clubes',false,saved,observer);
+  return {...state,root,form,status,list,today,countryOnly,date,filter,observed};
+}
 for(const scenario of ['pitch','list','unpublished','failure','midnight','uruguay','lineup-only']){
   const root=new Element('section'),status=new Element('p'),content=new Element('div'),back=new Element('a');
   root.selectors={'[data-match-status]':status,'[data-match-content]':content,'[data-match-back]':back};root.append(back,status,content);
@@ -213,4 +223,75 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   for(let i=0;i<8;i++)await new Promise(setImmediate);
   assert.ok(!offline.className.includes('country-match'),'Missing nationality never invents a match');
 }
-console.log('Páginas: calendario y equipos enlazan partidos; goles, 22 titulares, banquillos, campo, lista alternativa, ausencia de datos y fechas comprobados.');
+{
+  const payload={competitions:[
+    {code:'CL',name:'Champions League',matches:[structuredClone(data.match)]},
+    {code:'PD',name:'La Liga',matches:[{...data.match,id:'401999991',home:'Barcelona',home_id:'83',away:'Alavés',away_id:'96'}]},
+    {code:'PL',name:'Premier League',matches:[{...data.match,id:'401999992',home:'Sin plantilla',home_id:'1001',away:'Tampoco disponible',away_id:'1002'}]}
+  ]};
+  const state=calendarContext(payload),pending=[],observed=state.observed;
+  const roster={86:[{name:'Uruguayo',nationality:'Uruguay'}],11420:[{name:'Español',nationality:'Spain'}],83:[{name:'Español',nationality:'Spain'}],96:[{name:'Brasileño',nationality:'Brazil'}]};
+  state.sandbox.fetch=async url=>{
+    state.requests.push(url);
+    if(String(url).startsWith('/api/plantilla?')){
+      const id=new URL(url,'https://site.test').searchParams.get('id');
+      return new Promise(resolve=>pending.push(()=>resolve(roster[id]?Response.json({team:{id},basis:'first_team_squad',available:true,players:roster[id]}):Response.json({error:'offline'},{status:503}))));
+    }
+    const query=new URL(url,'https://site.test').searchParams;
+    return Response.json({competitions:payload.competitions.filter(c=>(query.get('competicion')==='clubes'||c.code===query.get('competicion'))&&(query.get('fecha')==='2026-10-21'||c.code==='PD'))});
+  };
+  await run('calendar.js',state);
+  assert.equal(state.countryOnly.textContent,'Solo Uruguay');assert.equal(state.countryOnly.attributes['aria-pressed'],'false');
+  assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,3);
+  assert.equal(observed.length,3);assert.equal(pending.length,0,'Unfiltered rows remain lazy until visible');
+  state.countryOnly.click();
+  assert.equal(state.countryOnly.attributes['aria-pressed'],'true');assert.equal(pending.length,6,'Filtering checks both teams in every match, including off-screen rows');
+  assert.ok(state.status.textContent.includes('comprobando plantillas'));
+  assert.ok(!state.status.textContent.includes('No hay partidos'),'Pending metadata must not claim there are no matches');
+  state.sandbox.CountryHighlight.choose('BR');
+  for(const resolve of pending)resolve();
+  for(let i=0;i<12;i++)await new Promise(setImmediate);
+  assert.equal(state.countryOnly.textContent,'Solo Brasil');
+  assert.deepEqual(classes(state.list,'fixture-row').filter(row=>!row.hidden).map(row=>row.nationalityMatch.id),['401999991'],'Late responses filter using the country currently selected');
+  assert.equal(classes(state.list,'fixture-competition').filter(group=>!group.hidden).length,1,'Empty competitions disappear from filtered results');
+  assert.ok(state.status.textContent.includes('1 de 3 partidos'));assert.ok(state.status.textContent.includes('1 partido sin plantilla completa'));
+  assert.equal(state.list.attributes['aria-busy'],'false');
+  const requests=state.requests.length;
+  state.sandbox.CountryHighlight.choose('UY');
+  assert.deepEqual(classes(state.list,'fixture-row').filter(row=>!row.hidden).map(row=>row.nationalityMatch.id),[data.match.id]);
+  assert.equal(state.requests.length,requests,'Changing country reuses the checked squads, including failures');
+  state.sandbox.CountryHighlight.choose('DE');assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,0);
+  assert.ok(state.status.textContent.includes('sin plantilla completa'));assert.ok(!state.status.textContent.startsWith('No hay partidos'),'Unavailable squads are not counted as known non-matches');
+  state.countryOnly.click();assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,3);assert.equal(state.status.textContent,'3 partidos · 21/10/26');
+  state.sandbox.CountryHighlight.choose('BR');state.countryOnly.click();
+  state.date.value='2026-10-22';await state.date.listeners.change();for(let i=0;i<12;i++)await new Promise(setImmediate);
+  assert.equal(state.countryOnly.attributes['aria-pressed'],'true');assert.equal(state.storage.get('lajornada.only-country'),'1');
+  assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,1);assert.equal(state.status.textContent,'1 de 1 partido · 22/10/26');
+  assert.equal(state.requests.filter(url=>url.startsWith('/api/plantilla?')).length,6,'Changing date reuses the squads already fetched');
+  state.filter.value='CL';await state.filter.listeners.change();for(let i=0;i<12;i++)await new Promise(setImmediate);
+  assert.equal(state.status.textContent,'No hay partidos con jugadores de Brasil · 22/10/26');assert.equal(state.countryOnly.attributes['aria-pressed'],'true');
+  state.sandbox.CountryHighlight.choose('');assert.equal(state.countryOnly.disabled,true);assert.equal(state.countryOnly.attributes['aria-pressed'],'false');
+  assert.equal(state.countryOnly.textContent,'Solo mi país');assert.equal(state.storage.get('lajornada.only-country'),'0');
+}
+{
+  const payload={competitions:[{code:'CL',name:'Champions League',matches:[structuredClone(data.match)]}]};
+  const state=calendarContext(payload,'BR');state.storage.set('lajornada.only-country','1');
+  state.squads.set(data.match.home_id,{team:{id:data.match.home_id},basis:'first_team_squad',available:true,players:[{name:'Brasileño',nationality:'Brazil'}]});
+  await run('calendar.js',state);
+  assert.equal(state.countryOnly.textContent,'Solo Brasil');assert.equal(state.countryOnly.attributes['aria-pressed'],'true');
+  assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,1,'Saved filtering works on a newly opened page without scrolling');
+  state.events.storage({key:'lajornada.only-country',newValue:'0'});assert.equal(state.countryOnly.attributes['aria-pressed'],'false');
+  state.events.storage({key:'lajornada.only-country',newValue:'1'});assert.equal(state.countryOnly.attributes['aria-pressed'],'true');
+  state.sandbox.CountryHighlight.choose('DE');assert.equal(state.status.textContent,'No hay partidos con jugadores de Alemania · 21/10/26');
+  const before=state.requests.length;state.events.storage({key:'lajornada.highlight-country',newValue:'BR'});
+  assert.equal(state.countryOnly.textContent,'Solo Brasil');assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,1);
+  assert.equal(state.requests.length,before,'Country and filter storage listeners coexist across tabs');
+}
+{
+  const payload={competitions:[{code:'CL',name:'Champions League',matches:[structuredClone(data.match)]}]},state=calendarContext(payload);
+  state.sandbox.localStorage={getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}};
+  state.squads.set(data.match.home_id,{team:{id:data.match.home_id},basis:'first_team_squad',available:true,players:[{name:'Uruguayo',nationality:'Uruguay'}]});
+  await run('calendar.js',state);state.countryOnly.click();for(let i=0;i<10;i++)await new Promise(setImmediate);
+  assert.equal(state.countryOnly.attributes['aria-pressed'],'true');assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,1,'Filtering works when browser storage is blocked');
+}
+console.log('Páginas: partidos, plantillas, nacionalidades y filtro por país; carga diferida, respuestas tardías, errores, fechas, competiciones y preferencias comprobados.');

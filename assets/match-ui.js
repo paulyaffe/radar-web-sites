@@ -40,7 +40,13 @@
       if(player)CountryHighlight.watchPlayer(name,name,player);
     }
   }
-  const squads=new Map(),queue=[];let active=0;
+  const squads=new Map(),queue=[],countryUpdates=[];let active=0;
+  function countryState(row){
+    const rosters=row.firstTeamSquads;
+    if(!rosters)return row.countryRosterState==='done'?'unknown':'pending';
+    if(rosters.some(data=>data?.players?.some(CountryHighlight.matches)))return 'match';
+    return rosters.length===2&&rosters.every(Boolean)?'none':'unknown';
+  }
   async function squad(id){
     id=String(id||'');
     if(!/^[1-9]\d{0,8}$/.test(String(id||'')))return null;
@@ -53,21 +59,30 @@
   }
   function drain(){
     while(active<3&&queue.length){
-      const {row,match}=queue.shift();if(row.isConnected===false)continue;
-      active++;
-      Promise.all([squad(match.home_id),squad(match.away_id)]).then(results=>{if(row.isConnected!==false){row.firstTeamSquads=results;markCountry(row);}})
+      const {row,match}=queue.shift();if(row.isConnected===false){row.countryRosterState='idle';continue;}
+      active++;row.countryRosterState='loading';
+      Promise.all([squad(match.home_id),squad(match.away_id)]).then(results=>{if(row.isConnected!==false){
+        row.firstTeamSquads=results;row.countryRosterState='done';markCountry(row);
+        for(const listener of countryUpdates)listener(row);
+      }})
         .finally(()=>{active--;drain();});
     }
   }
+  function checkCountry(row){
+    if(['queued','loading','done'].includes(row.countryRosterState))return;
+    const match=row.nationalityMatch;if(!match)return;
+    observer?.unobserve(row);
+    if(!match.home_id&&!match.away_id){row.countryRosterState='done';return;}
+    row.countryRosterState='queued';queue.push({row,match});drain();
+  }
   const observer=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{
-    for(const entry of entries)if(entry.isIntersecting){observer.unobserve(entry.target);queue.push({row:entry.target,match:entry.target.nationalityMatch});}
-    drain();
+    for(const entry of entries)if(entry.isIntersecting)checkCountry(entry.target);
   },{rootMargin:'250px'}):null;
   function watchCountry(row,match){
-    row.setAttribute('data-nationality-match','');row.nationalityMatch=match;markCountry(row);
-    if(!match.home_id&&!match.away_id)return;
+    row.setAttribute('data-nationality-match','');row.nationalityMatch=match;row.countryRosterState='idle';markCountry(row);
+    if(!match.home_id&&!match.away_id){row.countryRosterState='done';return;}
     if(observer){observer.observe(row);}
-    else{queue.push({row,match});drain();}
+    else{checkCountry(row);}
   }
   function finishRow(row,match){
     const goals=scorers(match);if(goals)row.append(goals);
@@ -77,5 +92,5 @@
     row.addEventListener('click',event=>{if(!event.target.closest('a,button,input,select'))location.assign(url);});
   }
   CountryHighlight.onChange(()=>{for(const row of document.querySelectorAll('[data-nationality-match]'))markCountry(row);});
-  window.MatchUI={href,scoreLink,goalText,scorers,finishRow,markCountry,watchCountry,squad};
+  window.MatchUI={href,scoreLink,goalText,scorers,finishRow,markCountry,watchCountry,squad,countryState,checkCountry,onCountryUpdate:listener=>countryUpdates.push(listener)};
 })();

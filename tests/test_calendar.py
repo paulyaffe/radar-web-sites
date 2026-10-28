@@ -49,6 +49,8 @@ class CalendarTests(unittest.TestCase):
                 self.assertNotIn(removed, home)
             self.assertIn('class="sports-app"', home)
             self.assertIn('data-highlight-country', home)
+            self.assertIn('data-country-only aria-pressed="false" aria-controls="fixture-results">Solo Uruguay</button>', home)
+            self.assertIn('id="fixture-results" data-fixtures-list', home)
             self.assertIn('Selecciona tú país.', home)
             self.assertIn('role="combobox"', home)
             self.assertIn('value="Uruguay"', home)

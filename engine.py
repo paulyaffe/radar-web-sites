@@ -656,7 +656,8 @@ def football_quick_links(selected="todas"):
 def date_controls(filters, match_navigation=False):
     previous = 'Ver la fecha anterior con partidos' if match_navigation else 'Ver el día anterior'
     following = 'Ver la fecha siguiente con partidos' if match_navigation else 'Ver el día siguiente'
-    return '<form class="calendar-form"><label>Fecha<input type="date" name="fecha" min="2000-01-01" max="2099-12-31" required></label>'+filters+'<button class="button" type="submit">Ver</button></form><div class="calendar-days"><button type="button" data-day-step="-1" aria-label="'+previous+'">← Anterior</button><button type="button" data-today>Hoy</button><button type="button" data-day-step="1" aria-label="'+following+'">Siguiente →</button><span>Hora peninsular</span></div>'
+    country_filter = '<button type="button" class="country-only-filter" data-country-only aria-pressed="false" aria-controls="fixture-results">Solo Uruguay</button>' if match_navigation else ''
+    return '<form class="calendar-form"><label>Fecha<input type="date" name="fecha" min="2000-01-01" max="2099-12-31" required></label>'+filters+'<button class="button" type="submit">Ver</button></form><div class="calendar-days"><button type="button" data-day-step="-1" aria-label="'+previous+'">← Anterior</button><button type="button" data-today>Hoy</button><button type="button" data-day-step="1" aria-label="'+following+'">Siguiente →</button>'+country_filter+'<span>Hora peninsular</span></div>'
 
 
 def competition_table_html(kind):
@@ -669,7 +670,7 @@ def calendar_html(selected="todas"):
     choices += [(code, value[2]) for code, value in LEAGUES.items()]
     choices += list(NATIONAL_COMPETITIONS.items())
     options = "".join(f'<option value="{esc(code)}"'+(' data-group="selecciones"' if code in NATIONAL_COMPETITIONS else ' data-group="clubes"' if code in LEAGUES else '')+(' selected' if selected == code else '')+f'>{esc(name)}</option>' for code, name in choices)
-    return '<section id="partidos" class="calendar" data-fixtures aria-busy="false">'+date_controls('<label>Competición<select name="competicion">'+options+'</select></label>', match_navigation=True)+'<p class="calendar-status" data-fixtures-status role="status" aria-live="polite"></p><div data-fixtures-list></div><noscript>Activa JavaScript para consultar los partidos.</noscript><script src="/assets/calendar-navigation.js" defer></script><script src="'+asset_url('calendar.js')+'" defer></script></section>'
+    return '<section id="partidos" class="calendar" data-fixtures aria-busy="false">'+date_controls('<label>Competición<select name="competicion">'+options+'</select></label>', match_navigation=True)+'<p class="calendar-status" data-fixtures-status role="status" aria-live="polite"></p><div id="fixture-results" data-fixtures-list></div><noscript>Activa JavaScript para consultar los partidos.</noscript><script src="/assets/calendar-navigation.js" defer></script><script src="'+asset_url('calendar.js')+'" defer></script></section>'
 
 
 
