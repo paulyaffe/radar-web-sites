@@ -5,7 +5,19 @@ Las cuatro webs se publicaron y se comprobaron el 12 de octubre de 2026.
 - Cocina en gramos: https://cocina-en-gramos-paul.pages.dev
 - Masa exacta: https://masa-exacta-paul.pages.dev
 - Casa en vatios: https://casa-en-vatios-paul.pages.dev
-- La Jornada: https://marcador-claro-paul.pages.dev
+- La Jornada: https://lajornada.pages.dev
+
+El 28 de octubre de 2026 La Jornada se trasladó al proyecto gratuito `lajornada`.
+`marcador-claro-paul.pages.dev` queda como redirección 301, conservando las rutas
+y los parámetros. Su paquete está en `redirects/marcador-claro-paul`; no se debe
+publicar allí el contenido deportivo. La publicación automática lee
+`sites/deportes/site.json` y utiliza el nuevo proyecto.
+
+La nueva dirección conserva el ID de editor y `ads.txt` para verificarla en
+AdSense. El alta, la revisión y el mensaje de consentimiento para este dominio
+se deben completar en la cuenta de Google. Hasta confirmar ese mensaje,
+`adsense.enabled`, `adsense.google_cmp_ready` y `analytics.enabled` permanecen
+desactivados; la confirmación del dominio anterior no se traslada al nuevo.
 
 Los logotipos PNG de 600 x 160 píxeles para los mensajes de AdSense están en
 `assets/logo-cocina-en-gramos.png`, `assets/logo-masa-exacta.png`,
