@@ -6,7 +6,7 @@
 .clickable-match{cursor:pointer}.clickable-match:hover{background:#f8faff}
 .sports-app .fixture-row>.fixture-team,.sports-app .match-scoreboard>.match-team{justify-self:start;max-width:100%}
 .sports-app .fixture-row>.fixture-team:nth-child(4),.sports-app .match-scoreboard>.match-team:last-child{justify-self:end}
-.sports-app .fixture-team.country-team,.sports-app .match-scoreboard>.match-team.country-team{background:var(--country-bg,#d9f0fc);color:var(--country-ink,#173e53);border-radius:5px;padding:8px 12px}
+.sports-app .fixture-team.country-team,.sports-app .match-scoreboard>.match-team.country-team{background:var(--country-bg,#d9f0fc);color:var(--country-ink,#173e53);border-radius:5px;padding:10px 16px}
 .highlight-flag{display:inline-block!important;width:18px!important;height:12px!important;object-fit:contain;vertical-align:middle;margin-left:4px;flex:none}
 .fixture-goals{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:18px;font-size:11px;line-height:1.5;color:#5c6573;margin-top:-3px}
 .fixture-goals>div,.match-goals>div{display:grid;align-content:start;gap:2px;min-width:0;overflow-wrap:anywhere}
