@@ -13,11 +13,14 @@ y los parámetros. Su paquete está en `redirects/marcador-claro-paul`; no se de
 publicar allí el contenido deportivo. La publicación automática lee
 `sites/deportes/site.json` y utiliza el nuevo proyecto.
 
-La nueva dirección conserva el ID de editor y `ads.txt` para verificarla en
-AdSense. El alta, la revisión y el mensaje de consentimiento para este dominio
-se deben completar en la cuenta de Google. Hasta confirmar ese mensaje,
-`adsense.enabled`, `adsense.google_cmp_ready` y `analytics.enabled` permanecen
-desactivados; la confirmación del dominio anterior no se traslada al nuevo.
+El 28 de octubre de 2026 se añadió y verificó la nueva dirección en AdSense,
+se solicitó su revisión y se activaron los anuncios automáticos. El mensaje
+europeo publicado incluye `lajornada.pages.dev`, el nombre La Jornada y su
+política de privacidad. Se reactivan el código publicitario y Analytics con
+consentimiento denegado por defecto. El estado de aprobación sigue siendo
+Preparando: publicar el mensaje y el código no confirma la aprobación ni la
+emisión de anuncios. El nuevo logotipo está en `assets/logo-la-jornada.png`,
+con su fuente vectorial en `assets/logo-la-jornada.svg`.
 
 Los logotipos PNG de 600 x 160 píxeles para los mensajes de AdSense están en
 `assets/logo-cocina-en-gramos.png`, `assets/logo-masa-exacta.png`,
