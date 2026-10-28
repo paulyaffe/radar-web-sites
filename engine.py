@@ -32,6 +32,7 @@ SOURCE_BAKING = "https://www.kingarthurbaking.com/pro/reference/bakers-percentag
 SOURCE_ENERGY = "https://www.energy.gov/energysaver/estimating-appliance-and-home-electronic-energy-use"
 LEAGUES = {
     "PD": ("liga-espanola", "España", "La Liga", 2014),
+    "CDR": ("copa-del-rey", "España", "Copa del Rey", None),
     "SA": ("serie-a", "Italia", "Serie A", 2019),
     "PL": ("premier-league", "Inglaterra", "Premier League", 2021),
     "FL1": ("ligue-1", "Francia", "Ligue 1", 2015),
@@ -552,7 +553,7 @@ def render(root):
         match_page = out/'partido/index.html'
         match_page.write_text(match_page.read_text(encoding='utf-8').replace('</head>', '<meta name="robots" content="noindex,follow"></head>'), encoding='utf-8')
         save("/partidos/", "Partidos por fecha", "Horarios y resultados de fútbol por fecha.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
-        save("/futbol/", "Fútbol: partidos, clasificación y goleadores", "Calendario de ligas europeas y americanas, Champions League, Europa League y selecciones.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
+        save("/futbol/", "Fútbol: partidos, clasificación y goleadores", "Calendario de ligas europeas y americanas, Copa del Rey, Champions League, Europa League y selecciones.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
         save("/futbol/selecciones/", "Partidos de selecciones", "Resultados y horarios de selecciones internacionales.", football_quick_links("selecciones")+'<h1 class="sport-title">Selecciones</h1>'+calendar_html("selecciones"))
         for code, (route, country, name, _) in LEAGUES.items():
             save(f"/futbol/{route}/", f"{name}: partidos y resultados", f"Horarios, resultados, clasificación y goleadores de {name}.", football_quick_links(code)+'<h1 class="sport-title">'+esc(name)+'</h1>'+calendar_html(code))
@@ -771,7 +772,7 @@ def recent_matches(matches):
 
 def update_tables(root):
     """The native publisher keeps a dated copy when the edge cannot reach standings."""
-    slugs = {"PD": "esp.1", "SA": "ita.1", "PL": "eng.1", "FL1": "fra.1", "DED": "ned.1", "PPL": "por.1", "BL1": "ger.1", "CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1"}
+    slugs = {"PD": "esp.1", "CDR": "esp.copa_del_rey", "SA": "ita.1", "PL": "eng.1", "FL1": "fra.1", "DED": "ned.1", "PPL": "por.1", "BL1": "ger.1", "CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1"}
     slugs.update({"WORLD": "fifa.world", "EURO": "uefa.euro", "NATIONS": "uefa.nations", "WQ_EU": "fifa.worldq.uefa", "WQ_SA": "fifa.worldq.conmebol", "WQ_NA": "fifa.worldq.concacaf", "WQ_AF": "fifa.worldq.caf", "WQ_AS": "fifa.worldq.afc", "WQ_OC": "fifa.worldq.ofc", "COPA": "conmebol.america", "GOLD": "concacaf.gold", "AFCON": "caf.nations", "ASIAN": "afc.asian.cup"})
     result = read_json(root/"tables.json", {"competitions": {}})
     def compact(node):
@@ -807,7 +808,7 @@ def update_sports(root):
     files = {"PD": "es.1", "SA": "it.1", "PL": "en.1", "FL1": "fr.1", "DED": "nl.1", "PPL": "pt.1", "BL1": "de.1"}
     requests = [(code, f"https://raw.githubusercontent.com/openfootball/football.json/master/{season}/{file}.json", "CC0-1.0", "OpenFootball") for code, file in files.items()]
     requests += [(code, f"https://api.openligadb.de/getmatchdata/{league}/{year}", "ODbL-1.0", "OpenLigaDB") for code, league in {"PD":"la1", "PL":"pl", "BL1":"bl1"}.items()]
-    requests += [(code, f"https://site.api.espn.com/apis/site/v2/sports/soccer/{source}/scoreboard", "", "ESPN") for code, source in {"CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1"}.items()]
+    requests += [(code, f"https://site.api.espn.com/apis/site/v2/sports/soccer/{source}/scoreboard", "", "ESPN") for code, source in {"CDR": "esp.copa_del_rey", "CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1"}.items()]
     fetched = []
     with ThreadPoolExecutor(max_workers=4) as executor:
         futures = {executor.submit(sports_request, request[1]): request for request in requests}

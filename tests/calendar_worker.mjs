@@ -33,9 +33,9 @@ response=await fixtures(new Request('https://site.test/api/partidos?fecha=2026-0
 globalThis.fetch=async()=>{throw Error('offline');};response=await fixtures(new Request('https://site.test/api/partidos?fecha=2026-10-21&competicion=CL'),ctx);assert.equal(response.status,503);body=await response.json();assert.equal(body.complete,false);assert.ok(body.competitions[0].error);
 response=await worker.fetch(new Request('https://site.test/ads.txt'),{ASSETS:{fetch:async()=>new Response('publisher unchanged')}},ctx);assert.equal(await response.text(),'publisher unchanged');
 response=await fixtures(new Request('https://site.test/api/partidos',{method:'POST'}),ctx);assert.equal(response.status,405);
-assert.equal(Object.values(COMPETITIONS).filter(c=>!c[2]).length,14);assert.equal(Object.values(COMPETITIONS).filter(c=>c[2]).length,14);
+assert.equal(Object.values(COMPETITIONS).filter(c=>!c[2]).length,15);assert.equal(Object.values(COMPETITIONS).filter(c=>c[2]).length,14);
 // American club leagues use the same Madrid date, crest and schedule handling.
-const newLeagues={MLS:'usa.1',MEX:'mex.1',URU:'uru.1',ARG:'arg.1',BRA:'bra.1'};
+const newLeagues={CDR:'esp.copa_del_rey',MLS:'usa.1',MEX:'mex.1',URU:'uru.1',ARG:'arg.1',BRA:'bra.1'};
 for(const [code,slug] of Object.entries(newLeagues)){
   const upstream=[];globalThis.fetch=async url=>{upstream.push(String(url));return Response.json({events:[event(code+'-midnight','2026-10-19T22:30Z','post')]});};
   response=await fixtures(new Request('https://site.test/api/partidos?fecha='+day+'&competicion='+code),ctx);body=await response.json();
@@ -43,10 +43,10 @@ for(const [code,slug] of Object.entries(newLeagues)){
   assert.equal(body.competitions[0].matches[0].national,false);assert.equal(body.competitions[0].matches[0].home_score,0);
   assert.ok(upstream.every(url=>url.includes('/soccer/'+slug+'/scoreboard')));await Promise.all(waiting);
 }
-cache.set('https://site.test/api/partidos?fecha='+day+'&competicion=clubes&v=2',Response.json({checked_at:new Date().toISOString(),competitions:[]}));
+cache.set('https://site.test/api/partidos?fecha='+day+'&competicion=clubes&v=4',Response.json({checked_at:new Date().toISOString(),competitions:[]}));
 globalThis.fetch=async()=>Response.json({events:[event('all-clubs')]});
 response=await fixtures(new Request('https://site.test/api/partidos?fecha='+day+'&competicion=clubes'),ctx);body=await response.json();
-assert.equal(body.competitions.length,14,'Old group caches cannot hide newly added leagues');await Promise.all(waiting);
+assert.equal(body.competitions.length,15,'Old group caches cannot hide newly added leagues');assert.ok(body.competitions.some(c=>c.code==='CDR'));await Promise.all(waiting);
 // Navigation skips sparse dates, preserves the nearest day across groups and
 // verifies actual fixtures instead of trusting source-day whitelist labels.
 const signal=new AbortController().signal,lookups=[],days=[];

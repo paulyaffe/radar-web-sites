@@ -1,6 +1,7 @@
 // Cloudflare Pages: fixture and team APIs; other requests stay static.
 export const COMPETITIONS = {
-  PD: ['La Liga', 'esp.1', false], SA: ['Serie A', 'ita.1', false],
+  PD: ['La Liga', 'esp.1', false], CDR: ['Copa del Rey', 'esp.copa_del_rey', false],
+  SA: ['Serie A', 'ita.1', false],
   PL: ['Premier League', 'eng.1', false], FL1: ['Ligue 1', 'fra.1', false],
   DED: ['Eredivisie', 'ned.1', false], PPL: ['Primeira Liga', 'por.1', false],
   BL1: ['Bundesliga', 'ger.1', false], CL: ['Champions League', 'uefa.champions', false],
@@ -204,7 +205,7 @@ export async function fixtures(request, ctx={waitUntil:()=>{}}) {
   if (!codes.length) return json({error:'Competición no disponible.'},400);
   // Groups keep each request below the free plan's subrequest limit.
   const cache = globalThis.caches?.default;
-  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=4');
+  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=5');
   let cached;
   try { const response = await cache?.match(key); cached = response && await response.json(); } catch { /* cache is optional */ }
   if (cached && Date.now()-Date.parse(cached.checked_at) < FRESH_MS) return json(cached);

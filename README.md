@@ -15,7 +15,7 @@ Las actualizaciones conservan estos archivos en el alojamiento.
 ## Calendario de La Jornada
 
 `/partidos/` permite elegir fecha y competición. Incluye las doce ligas,
-Champions League, Europa League y catorce calendarios de selecciones masculinas:
+Copa del Rey, Champions League, Europa League y catorce calendarios de selecciones masculinas:
 amistosos, Mundial, Eurocopa, UEFA Nations League, seis clasificatorios del
 Mundial, Copa América, Copa Oro, Copa Africana de Naciones y Copa Asiática.
 Los escudos se muestran a 24 × 24 píxeles y las banderas a 24 × 16.
@@ -101,7 +101,7 @@ Comprobaciones: `node tests/team_worker.mjs` (desde el paquete Cloudflare).
 ## Marcador dedicado al fútbol
 
 La portada entra al calendario. Los enlaces a posiciones y goleadores aparecen
-debajo del título de cada competición. Incluye siete ligas europeas, Champions League, Europa League,
+debajo del título de cada competición. Incluye siete ligas europeas, Copa del Rey, Champions League, Europa League,
 MLS (Estados Unidos), Liga MX (México), Liga AUF Uruguaya, Liga Profesional
 Argentina y Brasileirão Serie A, además de las competiciones de selecciones.
 Las ligas nuevas se incluyen en los filtros, las fichas de equipos, la navegación
