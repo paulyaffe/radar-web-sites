@@ -31,7 +31,7 @@ class MatchPages(unittest.TestCase):
                 self.assertIn('/assets/match.css?v=', page)
             page = (root/'dist/index.html').read_text(encoding='utf-8')
             self.assertLess(page.index('/assets/match-ui.js?v='), page.index('/assets/calendar.js?v='))
-            for name in ('match.js', 'match-ui.js', 'match.css'):
+            for name in ('match.js', 'match-ui.js', 'match.css', 'country-data.js', 'country-highlight.js'):
                 self.assertTrue((root/'dist/assets'/name).is_file())
 
     def test_periodic_scoreboard_copy_keeps_goals_and_not_assistants(self):

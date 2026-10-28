@@ -25,10 +25,10 @@
   }
   function playerNode(player,pitch=false){
     const item=el(pitch?'div':'li',undefined,pitch?'pitch-player':'lineup-player');item.setAttribute('data-player-id',player.id);item.title=player.name;
-    if(player.uruguayan)item.classList.add('uruguay-player');
     const avatar=el('span',undefined,'player-avatar');avatar.append(el('span',player.number||'·','player-number'));
     if(player.photo)avatar.append(image(player.photo,'player-photo',40,40));
-    const text=el('span',undefined,'player-caption');text.append(MatchUI.flagName(el('span',pitch?player.short_name:player.name,'player-name'),player.uruguayan));
+    const text=el('span',undefined,'player-caption'),name=el('span',pitch?player.short_name:player.name,'player-name');
+    CountryHighlight.watchPlayer(item,name,player);text.append(name);
     if(!pitch&&player.position)text.append(el('small',(player.number?'N.º '+player.number+' · ':'')+player.position));
     text.append(badges(player));item.append(avatar,text);return item;
   }
@@ -52,7 +52,6 @@
   function render(data){
     const match=data.match;document.title=match.home+' – '+match.away+' | La Jornada';
     const fragment=document.createDocumentFragment(),header=el('section',undefined,'match-summary');
-    MatchUI.markUruguay(header,match);
     const back=root.querySelector('[data-match-back]'),q=new URLSearchParams({competicion:match.competition,fecha:dayFormat.format(new Date(match.date))});
     back.href='/partidos/?'+q;
     header.append(el('h1',match.competition_name,'sport-title'));
@@ -61,14 +60,14 @@
     const result=el('div',undefined,'match-result');result.append(el('strong',match.home_score==null||match.away_score==null?'vs':match.home_score+' – '+match.away_score));
     if(match.home_penalties!=null&&match.away_penalties!=null)result.append(el('small','Pen. '+match.home_penalties+' – '+match.away_penalties));
     scoreboard.append(teamLink(data.lineups[0].team),result,teamLink(data.lineups[1].team));header.append(scoreboard);
-    const goals=MatchUI.scorers(match,'match-goals');if(goals){goals.id='goles';header.append(goals);}
+    const goals=MatchUI.scorers(match,'match-goals',data.lineups.flatMap(l=>l.players));if(goals){goals.id='goles';header.append(goals);}
     if(match.venue)header.append(el('p',match.venue,'match-venue'));
     fragment.append(header);
     const section=el('section',undefined,'match-lineups');section.id='alineaciones';section.append(el('h2','Alineaciones iniciales'));
     const grid=el('div',undefined,'lineups-grid');for(const lineup of data.lineups)grid.append(lineupCard(lineup));section.append(grid);fragment.append(section);
     if(data.lineups.some(l=>l.players.some(p=>p.events?.length))){const legend=el('p','⚽ Gol · (p. p.) Propia puerta · (pen.) Penalti · ↑ Entra · ↓ Sale · ↗ Asistencia · 🟨 Amarilla · 🟥 Roja','lineup-legend');fragment.append(legend);}
     if(data.updated)fragment.append(el('p','Datos: '+when(data.updated)+' · Hora peninsular','match-updated'));
-    content.replaceChildren(fragment);MatchUI.watchUruguay(header,match);status.textContent='';rendered=true;
+    content.replaceChildren(fragment);MatchUI.watchCountry(header,match);status.textContent='';rendered=true;
   }
   async function load(){
     root.setAttribute('aria-busy','true');status.textContent=rendered?'':'Cargando partido…';

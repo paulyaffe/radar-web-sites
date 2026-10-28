@@ -48,13 +48,17 @@ class CalendarTests(unittest.TestCase):
             for removed in ('class="hero"', 'ELIGE TU DÍA', '¿Qué partidos se juegan?', 'Fuentes enlazadas', 'Ilustración de un balón'):
                 self.assertNotIn(removed, home)
             self.assertIn('class="sports-app"', home)
+            self.assertIn('data-highlight-country', home)
+            self.assertIn('<option value="UY" selected>Uruguay</option>', home)
+            self.assertLess(home.index('country-data.js?v='), home.index('country-highlight.js?v='))
+            self.assertLess(home.index('country-highlight.js?v='), home.index('match-ui.js?v='))
             self.assertNotIn('href="/tenis/"', home)
             self.assertNotIn('href="/formula-1/"', home)
             for route in ('clasificacion', 'goleadores'):
                 page = (root/"dist"/route/"index.html").read_text(encoding="utf-8")
                 self.assertIn('/assets/sports-data.js', page)
                 self.assertIn('ca-pub-7901739911277041', page)
-                self.assertNotIn('<select', page)
+                self.assertEqual(page.count('<select'), 1)  # Only the shared nationality selector.
                 self.assertNotIn('<form', page)
                 self.assertNotIn('type="submit"', page)
                 self.assertRegex(page, r'/assets/sports-data\.js\?v=[a-f0-9]{12}')

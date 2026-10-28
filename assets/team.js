@@ -32,10 +32,10 @@
     const data=await MatchUI.squad(id);
     if(data){
       for(const player of data.players){
-        const item=el('li',undefined,'squad-player');if(player.uruguayan)item.classList.add('uruguay-player');
+        const item=el('li',undefined,'squad-player');
         item.append(el('span',player.number||'·','squad-number'));
         const caption=el('span',undefined,'squad-caption'),name=el('span',player.name,'squad-player-name');
-        MatchUI.flagName(name,player.uruguayan);caption.append(name);
+        CountryHighlight.watchPlayer(item,name,player);caption.append(name);
         if(player.position)caption.append(el('small',player.position));item.append(caption);section.list.append(item);
       }
     }else section.box.append(el('p','Plantilla no disponible por ahora.','squad-unavailable'));

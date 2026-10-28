@@ -187,14 +187,20 @@ Pruebas: tests/match_worker.mjs (incluye un partido real),
 tests/match_page.mjs (ejecuta los scripts de calendario, equipo y detalle),
 y tests/test_match.py (generacion periodica y copias de goles).
 
-## Plantillas del primer equipo y Uruguay
+## Plantillas del primer equipo y país para resaltar
 
 La ficha /equipo/ abre la plantilla actual en dos columnas y conserva debajo
 los cinco ultimos partidos finalizados y los cinco proximos de cada equipo.
-Los jugadores uruguayos tienen fondo celeste y bandera al final del nombre.
+El selector junto a La Jornada permite elegir un país, con Uruguay como valor
+inicial. La elección se conserva localmente en ese navegador y se comparte
+entre sus pestañas; Sin resaltar la desactiva. No modifica filtros ni fechas.
+Los jugadores del país seleccionado tienen un fondo del color principal de
+su camiseta y una bandera pequeña al final del nombre. Se usan tonos suaves
+para mantener el contraste. También se actualizan los titulares, suplentes y
+goleadores identificados, sin recargar la página.
 
 El calendario, el historial y la cabecera de cada partido se resaltan cuando
-alguno de sus equipos tiene un uruguayo en su plantilla actual. El criterio
+alguno de sus equipos tiene un jugador del país elegido en su plantilla actual. El criterio
 ya no depende de la convocatoria, del banquillo ni de que se publiquen onces.
 Un lesionado que sigue en la plantilla tambien cuenta. Los detalles siguen
 mostrando las nacionalidades y las banderas de los convocados cuando existen.
@@ -206,6 +212,21 @@ plantilla durante seis horas, manteniendo su fecha real si hay un fallo.
 El navegador reutiliza la consulta del mismo equipo entre todos sus partidos
 y consulta las filas a medida que entran en pantalla. Los fallos de plantilla
 no impiden mostrar los ultimos y proximos partidos.
+
+El navegador reutiliza esas mismas plantillas para todos los países; cambiar
+el selector no requiere volver a consultarlas. La nacionalidad procede de
+la fuente, nunca del lugar de nacimiento, del nombre ni del país del club.
+Si falta, no se inventa. Los datos antiguos de convocados uruguayos siguen
+siendo compatibles, pero no deciden el fondo del partido.
+
+Catálogo de 254 países/territorios y selecciones británicas: nombres y códigos
+de Unicode CLDR (Unicode-3.0, assets/COUNTRY-DATA-LICENSE.txt), con alias de ESPN.
+Los fondos representan el color principal/tradicional, no una equipación
+específica de cada partido ni el color de la bandera. Referencia FIFA para
+los colores tradicionales de Uruguay, Argentina, Brasil, España, Francia,
+Alemania, Inglaterra y México:
+https://inside.fifa.com/es/organisation/news/desingacion-colores-uniformes-partidos-fase-grupos-copa-mundial-2026
+Las banderas usan Flagcdn y, en selecciones británicas, ESPN.
 
 Pruebas: tests/team_squad.mjs, tests/match_page.mjs y las pruebas previas de
 calendario, equipos, alineaciones, tablas y generacion periodica.
