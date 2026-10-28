@@ -25,6 +25,7 @@
   }
   function playerNode(player,pitch=false){
     const item=el(pitch?'div':'li',undefined,pitch?'pitch-player':'lineup-player');item.setAttribute('data-player-id',player.id);item.title=player.name;
+    if(player.uruguayan)item.classList.add('uruguay-player');
     const avatar=el('span',undefined,'player-avatar');avatar.append(el('span',player.number||'·','player-number'));
     if(player.photo)avatar.append(image(player.photo,'player-photo',40,40));
     const text=el('span',undefined,'player-caption');text.append(MatchUI.flagName(el('span',pitch?player.short_name:player.name,'player-name'),player.uruguayan));

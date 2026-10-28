@@ -55,6 +55,9 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   assert.equal(classes(content,'match-result')[0].textContent,'4 – 1');assert.ok(content.textContent.includes('Banquillo'));
   if(scenario==='uruguay'){
     assert.equal(classes(content,'uruguay-match').length,1);
+    assert.equal(classes(content,'uruguay-player').length,2,'Both the starter and the substitute get a blue background');
+    assert.equal(classes(content,'pitch-player').filter(n=>n.className.includes('uruguay-player')).length,1);
+    assert.equal(classes(content,'lineup-player').filter(n=>n.className.includes('uruguay-player')).length,1);
     assert.equal(classes(content,'uruguay-flag').length,3,'Starter, unused substitute and goals get a Uruguay flag');
     for(const flag of classes(content,'uruguay-flag'))assert.equal(flag.alt,'Uruguay');
     const names=classes(content,'player-name').filter(n=>n.querySelector('.uruguay-flag'));
