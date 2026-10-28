@@ -32,6 +32,7 @@ jobs:
       - run: node tests/sports_data_worker.mjs
       - run: node tests/sports_page.mjs
       - run: node tests/match_worker.mjs
+      - run: node tests/uruguay_worker.mjs
       - run: node tests/match_page.mjs
       - run: node tests/analytics_tag.mjs
       - run: python update.py --force

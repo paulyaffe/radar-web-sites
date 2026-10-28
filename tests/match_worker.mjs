@@ -39,7 +39,8 @@ assert.equal(normalizeMatchDetails(malicious,'CL','401915313').lineups[0].player
 const originalFetch=globalThis.fetch,originalCaches=globalThis.caches;
 const cache=new Map(),waiting=[];let calls=0;
 globalThis.caches={default:{match:async key=>cache.get(key.url)?.clone(),put:async(key,value)=>cache.set(key.url,value.clone())}};
-globalThis.fetch=async url=>{calls++;assert.equal(new URL(url).hostname,'site.api.espn.com');assert.equal(new URL(url).searchParams.get('event'),'401915313');return Response.json(fixture);};
+const identified=structuredClone(fixture);for(const team of identified.rosters)for(const player of team.roster)player.athlete.citizenship='Spain';
+globalThis.fetch=async url=>{calls++;assert.equal(new URL(url).hostname,'site.api.espn.com');assert.equal(new URL(url).searchParams.get('event'),'401915313');return Response.json(identified);};
 const ctx={waitUntil:p=>waiting.push(p)},address='https://site.test/api/partido?competicion=CL&id=401915313';
 try{
   for(const query of ['id=../401915313&competicion=CL','id=401915313&competicion=https://evil.invalid','id=1','competicion=CL']){

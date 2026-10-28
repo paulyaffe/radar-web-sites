@@ -2,6 +2,11 @@
 .fixture-score.match-link{font-weight:700;text-decoration:none;border:1px solid #dfe4ec;border-radius:5px;padding:5px 3px;display:block;min-width:46px}
 .fixture-score.match-link:hover,.fixture-score.match-link:focus-visible{background:#edf2fc;border-color:var(--accent)}
 .clickable-match{cursor:pointer}.clickable-match:hover{background:#f8faff}
+.sports-app .fixture-row.uruguay-match,.sports-app .match-summary.uruguay-match{background:#d9f0fc;border-radius:5px}
+.sports-app .fixture-row.uruguay-match{padding-left:8px;padding-right:8px}
+.sports-app .fixture-row.uruguay-match:hover{background:#c8e8fa}
+.sports-app .match-summary.uruguay-match{padding:10px 12px 14px}
+.uruguay-flag{display:inline-block!important;width:18px!important;height:12px!important;object-fit:contain;vertical-align:middle;margin-left:4px;flex:none}
 .fixture-goals{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:18px;font-size:11px;line-height:1.5;color:#5c6573;margin-top:-3px}
 .fixture-goals>div,.match-goals>div{display:grid;align-content:start;gap:2px;min-width:0;overflow-wrap:anywhere}
 .goals-away{text-align:right}

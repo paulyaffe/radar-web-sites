@@ -27,7 +27,7 @@
     const item=el(pitch?'div':'li',undefined,pitch?'pitch-player':'lineup-player');item.setAttribute('data-player-id',player.id);item.title=player.name;
     const avatar=el('span',undefined,'player-avatar');avatar.append(el('span',player.number||'·','player-number'));
     if(player.photo)avatar.append(image(player.photo,'player-photo',40,40));
-    const text=el('span',undefined,'player-caption');text.append(el('span',pitch?player.short_name:player.name,'player-name'));
+    const text=el('span',undefined,'player-caption');text.append(MatchUI.flagName(el('span',pitch?player.short_name:player.name,'player-name'),player.uruguayan));
     if(!pitch&&player.position)text.append(el('small',(player.number?'N.º '+player.number+' · ':'')+player.position));
     text.append(badges(player));item.append(avatar,text);return item;
   }
@@ -51,6 +51,7 @@
   function render(data){
     const match=data.match;document.title=match.home+' – '+match.away+' | La Jornada';
     const fragment=document.createDocumentFragment(),header=el('section',undefined,'match-summary');
+    MatchUI.markUruguay(header,match);
     const back=root.querySelector('[data-match-back]'),q=new URLSearchParams({competicion:match.competition,fecha:dayFormat.format(new Date(match.date))});
     back.href='/partidos/?'+q;
     header.append(el('h1',match.competition_name,'sport-title'));

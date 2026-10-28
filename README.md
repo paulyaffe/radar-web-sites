@@ -186,3 +186,18 @@ no se garantiza un servicio en directo. Creditos: /metodo/.
 Pruebas: tests/match_worker.mjs (incluye un partido real),
 tests/match_page.mjs (ejecuta los scripts de calendario, equipo y detalle),
 y tests/test_match.py (generacion periodica y copias de goles).
+
+## Uruguay en los partidos
+
+Las filas del calendario y del historial de equipos se muestran en celeste si
+la convocatoria publicada incluye un uruguayo, titular o suplente de cualquiera
+de los equipos. La ficha del partido conserva esa marca y muestra la bandera
+de Uruguay después del nombre en titulares, banquillo y goles. Se cruzan los
+IDs de la convocatoria con la nacionalidad publicada por ESPN para esa temporada;
+pertenecer a la plantilla del club no basta para marcar un partido.
+
+La comprobación se carga para las filas visibles, con tres consultas simultáneas,
+y reutiliza la ficha del partido durante un minuto y las nacionalidades durante
+un día. Los partidos esperan a que la fuente publique la convocatoria; los
+fallos conservan la última ficha válida. Pruebas: tests/uruguay_worker.mjs y
+tests/match_page.mjs.

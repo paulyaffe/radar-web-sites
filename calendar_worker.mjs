@@ -352,7 +352,7 @@ async function cachedData(url,key,ctx,build,freshMs=FRESH_MS) {
   try{const r=await cache?.match(request);old=r && await r.json();}catch{}
   if(old && Date.now()-Date.parse(old.checked_at || old.updated)<freshMs)return json(old);
   try{
-    const payload={updated:new Date().toISOString(),stale:false,...await build(),checked_at:new Date().toISOString()};
+    const payload={updated:new Date().toISOString(),stale:false,...await build(old),checked_at:new Date().toISOString()};
     if(cache)ctx.waitUntil(cache.put(request,new Response(JSON.stringify(payload),{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
     return json(payload);
   }catch(e){
@@ -392,6 +392,8 @@ function normalizePlayer(player) {
     short_name:String(athlete.shortName || athlete.displayName || '').slice(0,100),
     number:/^\d{1,3}$/.test(number)?number:'',position,position_code:code,
     starter:player.starter===true,place:Number(player.formationPlace)||null,
+    ...athleteNationality(athlete),
+    uruguayan:isUruguayan(athleteNationality(athlete)),
     photo:playerPhoto(athlete.headshot?.href || athlete.headshot || player.media?.headshot?.href),
     events:playerEvents(player)};
 }
@@ -439,17 +441,66 @@ export function normalizeMatchDetails(data, code, id) {
       formation:/^\d(?:-\d){1,4}$/.test(formation)?formation:'',players,
       rows:formationRows(players,formation),coach:String(roster?.coach?.displayName || roster?.coaches?.[0]?.displayName || '').slice(0,100)});
   }
-  return {match:{...match,venue:String(data.gameInfo?.venue?.fullName || match.venue).slice(0,160)},lineups,
+  return markUruguay({match:{...match,venue:String(data.gameInfo?.venue?.fullName || match.venue).slice(0,160)},lineups,
     source:'https://www.espn.com/soccer/lineups/_/gameId/'+id,
-    attribution:'Goles y alineaciones iniciales: ESPN. La cobertura depende del partido.'};
+    attribution:'Goles y alineaciones iniciales: ESPN. La cobertura depende del partido.'});
+}
+export function isUruguayan(player) {
+  return String(player?.nationality || '').trim().toLowerCase()==='uruguay' ||
+    /^https:\/\/[^/]+\.espncdn\.com\/i\/teamlogos\/countries\/(?:\d+\/)?uru\.png(?:\?|$)/i.test(player?.flag || '');
+}
+function markUruguay(payload) {
+  const players=payload.lineups.flatMap(lineup=>lineup.players.filter(p=>p.uruguayan).map(p=>
+    ({id:p.id,name:p.name,side:lineup.side,starter:p.starter})));
+  payload.match.uruguayan_players=players;
+  payload.match.has_uruguayan=players.length>0;
+  payload.match.lineups_published=payload.lineups.every(l=>l.players.length>0);
+  return payload;
+}
+async function squadNationalities(code,id,season,origin,ctx) {
+  const cache=globalThis.caches?.default,key=new Request(origin+'/__nationalities?competicion='+code+'&equipo='+id+'&temporada='+season);
+  try{const hit=await cache?.match(key);if(hit)return await hit.json();}catch{}
+  try{
+    const data=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/teams/'+id+'/roster'+(season?'?season='+season:''));
+    if(teamId(data.team?.id)!==id || !Array.isArray(data.athletes))throw Error('Plantilla no coincidente');
+    const players=data.athletes.flatMap(a=>a.items || [a]).slice(0,200).filter(a=>teamId(a.id)).map(a=>({id:teamId(a.id),...athleteNationality(a)}));
+    if(cache)ctx.waitUntil(cache.put(key,Response.json(players,{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
+    return players;
+  }catch{return [];}
+}
+export async function matchNationalities(payload,season,origin,ctx,previous) {
+  const code=payload.match.competition;
+  await Promise.all(payload.lineups.map(async lineup=>{
+    if(!lineup.players.some(p=>!p.nationality&&!p.flag))return;
+    const squad=await squadNationalities(code,lineup.team.id,season,origin,ctx);
+    const byId=new Map(squad.map(p=>[p.id,p]));
+    for(const player of lineup.players){const nationality=byId.get(player.id);if(!player.nationality&&!player.flag&&nationality)Object.assign(player,nationality);}
+  }));
+  // Historical or youth players may no longer be in that season's club roster.
+  // Bound individual lookups to keep each request within the hosting limits.
+  const missing=payload.lineups.flatMap(l=>l.players).filter(p=>!p.nationality&&!p.flag).slice(0,10);
+  await Promise.all(missing.map(async p=>Object.assign(p,await playerNationality(p.id,origin,ctx))));
+  const known=new Map((previous?.lineups || []).flatMap(l=>l.players || []).map(p=>[p.id,p]));
+  for(const lineup of payload.lineups)for(const player of lineup.players){
+    const old=known.get(player.id);
+    if(!player.nationality&&!player.flag&&old)Object.assign(player,{nationality:old.nationality,flag:old.flag});
+    player.uruguayan=isUruguayan(player);
+  }
+  return markUruguay(payload);
 }
 export async function matchDetails(request,ctx={waitUntil:()=>{}}) {
   if(request.method!=='GET')return json({error:'Método no permitido'},405);
   const url=new URL(request.url),code=url.searchParams.get('competicion'),id=teamId(url.searchParams.get('id'));
   if(!id||!COMPETITIONS[code])return json({error:'Partido o competición no válidos.'},400);
-  return cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=1',ctx,async()=>
-    normalizeMatchDetails(await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+
-      COMPETITIONS[code][1]+'/summary?event='+id,4_000_000),code,id),60*1000);
+  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=2',ctx,async old=>{
+    const raw=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/summary?event='+id,4_000_000);
+    const year=String(raw.header?.season?.year || '');
+    return matchNationalities(normalizeMatchDetails(raw,code,id),/^20\d{2}$/.test(year)?year:'',url.origin,ctx,old);
+  },60*1000);
+  if(url.searchParams.get('uruguay')!=='1'||!response.ok)return response;
+  const data=await response.json();
+  return json({match:{id:data.match.id,competition:code,has_uruguayan:data.match.has_uruguayan,
+    uruguayan_players:data.match.uruguayan_players,lineups_published:data.match.lineups_published},updated:data.updated,stale:data.stale});
 }
 export async function competitionTable(request,ctx={waitUntil:()=>{}},env={}) {
   if(request.method!=='GET')return json({error:'Método no permitido'},405);
