@@ -65,6 +65,7 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   assert.equal(classes(content,'match-result')[0].textContent,'4 – 1');assert.ok(content.textContent.includes('Banquillo'));
   if(scenario==='uruguay'){
     assert.equal(classes(content,'country-match').length,1);
+    assert.deepEqual(classes(content,'country-team').map(team=>team.textContent),['Real Madrid'],'Only the team with a matching current-squad player is highlighted, even when both old lineups contain Uruguayans');
     assert.equal(classes(content,'pitch-player').filter(n=>n.className.includes('country-player')).length,1);
     assert.equal(classes(content,'lineup-player').filter(n=>n.className.includes('country-player')).length,1);
     assert.equal(classes(content,'highlight-flag').length,3,'Starter, unused substitute and goals get a Uruguay flag');
@@ -91,9 +92,13 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   assert.equal(classes(list,'team-link').length,2,'Team histories remain separate links');
   assert.equal(classes(list,'fixture-goals').length,1);assert.ok(list.textContent.includes('B. Silva 43′'));assert.ok(list.textContent.includes('T. Gomis 85′'));
   const row=classes(list,'fixture-row')[0];row.listeners.click({target:{closest:()=>null}});assert.equal(state.navigations[0],link.href);
-  assert.equal(classes(list,'country-match').length,1,'The visible calendar row turns blue from the current squad even with old lineups already published');
+  assert.equal(classes(list,'country-match').length,1,'The calendar detects the current squad even with old lineups already published');
+  assert.deepEqual(classes(list,'country-team').map(team=>team.textContent),['Real Madrid'],'The calendar highlights only the qualifying team, not its opponent or score');
+  assert.ok(classes(list,'country-team')[0].title.includes('Uruguayo del primer equipo'));
   assert.equal(classes(list,'highlight-flag').length,1,'The scorer gets a flag after the asynchronous first-team check');
   row.listeners.click({target:{closest:()=>({})}});assert.equal(state.navigations.length,1,'Clicking a team does not trigger match navigation');
+  state.sandbox.CountryHighlight.choose('');assert.equal(classes(list,'country-team').length,0);
+  assert.equal(classes(list,'team-link')[0].title,'Ver últimos y próximos partidos de Real Madrid','Disabling the highlight restores the team link description');
 }
 {
   const root=new Element('section'),heading=new Element('h1'),status=new Element('p'),content=new Element('div');root.selectors={'h1':heading,'[data-team-status]':status,'[data-team-content]':content};root.append(heading,status,content);
@@ -122,6 +127,7 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   assert.equal(classes(content,'highlight-flag')[0].alt,'Brasil');
   assert.equal(state.storage.get('lajornada.highlight-country'),'BR');assert.equal(state.requests.length,before,'Changing country does not request squads again');
   state.sandbox.CountryHighlight.choose('DE');assert.equal(classes(content,'country-match').length,0);assert.equal(classes(content,'country-player').length,0);
+  assert.equal(classes(content,'country-team').length,0,'Changing country clears team backgrounds that no longer apply');
   state.sandbox.CountryHighlight.choose('');assert.equal(classes(content,'highlight-flag').length,0,'Highlighting can be disabled');
   const next=context(new Element('section'),'[data-test]',{},'',false,'BR');assert.equal(next.input.value,'Brasil','Country persists on the next page');
 }
@@ -183,6 +189,7 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   state.squads.set(sample.match.away_id,{team:{id:sample.match.away_id},basis:'first_team_squad',available:true,players:[{id:'999',name:'Brasileño no convocado',nationality:'Brazil'}]});
   await run('match.js',state);
   assert.equal(classes(content,'country-match').length,1,'A Brazilian on the away current squad highlights the match');
+  assert.deepEqual(classes(content,'country-team').map(team=>team.textContent),['RB Leipzig'],'An away-squad match highlights the away team only');
   assert.equal(classes(content,'pitch-player').filter(n=>n.className.includes('country-player')).length,1);
   assert.equal(classes(content,'lineup-player').filter(n=>n.className.includes('country-player')).length,1);
   assert.equal(classes(content,'highlight-flag').length,3);assert.ok(classes(content,'highlight-flag').every(flag=>flag.alt==='Brasil'));
@@ -190,6 +197,7 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
 }
 {
   const root=new Element('section'),row=new Element('article');root.append(row);
+  for(const name of ['Local','Visitante']){const team=new Element('a');team.className='fixture-team';team.textContent=name;row.append(team);}
   const state=context(root,'[data-test]',{},''),pending=[];
   state.sandbox.fetch=url=>{state.requests.push(url);return new Promise(resolve=>pending.push({url,resolve}));};
   state.sandbox.MatchUI.watchCountry(row,{home_id:'86',away_id:'83'});
@@ -199,6 +207,7 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   assert.equal(classes(root,'country-match').length,0,'A late response uses the latest selection, not the country at request time');
   const before=state.requests.length;state.sandbox.CountryHighlight.choose('UY');
   assert.equal(classes(root,'country-match').length,1);assert.equal(state.requests.length,before);
+  assert.deepEqual(classes(root,'country-team').map(team=>team.textContent),['Local','Visitante'],'Both teams are highlighted independently when both squads qualify');
   const offline=new Element('article');root.append(offline);state.sandbox.fetch=async()=>{throw Error('offline');};
   state.sandbox.MatchUI.watchCountry(offline,{home_id:'9999',away_id:'9998'});
   for(let i=0;i<8;i++)await new Promise(setImmediate);

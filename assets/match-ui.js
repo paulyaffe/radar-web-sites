@@ -24,9 +24,17 @@
     return box;
   }
   function markCountry(row){
-    const players=(row.firstTeamSquads||[]).flatMap(data=>data?.players||[]),selected=players.filter(CountryHighlight.matches);
+    const rosters=row.firstTeamSquads||[],players=rosters.flatMap(data=>data?.players||[]),selected=players.filter(CountryHighlight.matches);
     row.classList.toggle('country-match',selected.length>0);
-    row.title=selected.length?CountryHighlight.selected.name+' en plantilla: '+[...new Set(selected.map(p=>p.name))].join(', '):'';
+    row.title='';
+    for(const selector of ['.fixture-team','.match-team']){
+      row.querySelectorAll(selector).forEach((team,index)=>{
+        const selectedTeam=(rosters[index]?.players||[]).filter(CountryHighlight.matches);
+        team.classList.toggle('country-team',selectedTeam.length>0);
+        if(team.nationalityTitle===undefined)team.nationalityTitle=team.title||'';
+        team.title=selectedTeam.length?CountryHighlight.selected.name+' en plantilla: '+[...new Set(selectedTeam.map(p=>p.name))].join(', '):team.nationalityTitle;
+      });
+    }
     for(const name of row.querySelectorAll('[data-athlete-id]')){
       const player=players.find(p=>p.id===name.dataset.athleteId);
       if(player)CountryHighlight.watchPlayer(name,name,player);

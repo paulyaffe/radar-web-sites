@@ -219,9 +219,11 @@ su camiseta y una bandera pequeña al final del nombre. Se usan tonos suaves
 para mantener el contraste. También se actualizan los titulares, suplentes y
 goleadores identificados, sin recargar la página.
 
-El calendario, el historial y la cabecera de cada partido se resaltan cuando
-alguno de sus equipos tiene un jugador del país elegido en su plantilla actual. El criterio
-ya no depende de la convocatoria, del banquillo ni de que se publiquen onces.
+En el calendario, el historial y la cabecera de cada partido, el fondo rodea
+solo el nombre y el escudo del equipo que tiene jugadores del país elegido en
+su plantilla actual. Si ambos equipos cumplen el criterio, cada uno se resalta
+por separado; la fecha, el marcador y el resto de la ficha conservan su fondo.
+El criterio no depende de la convocatoria, del banquillo ni de que se publiquen onces.
 Un lesionado que sigue en la plantilla tambien cuenta. Los detalles siguen
 mostrando las nacionalidades y las banderas de los convocados cuando existen.
 
