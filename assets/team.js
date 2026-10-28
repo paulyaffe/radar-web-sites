@@ -24,6 +24,23 @@
     }
     return box;
   }
+  function squadSection(){
+    const box=el('section',undefined,'team-squad-section');box.setAttribute('aria-busy','true');box.append(el('h2','Primer equipo'));
+    const list=el('ul',undefined,'team-squad-grid');box.append(list);return {box,list};
+  }
+  async function loadSquad(id,section){
+    const data=await MatchUI.squad(id);
+    if(data){
+      for(const player of data.players){
+        const item=el('li',undefined,'squad-player');if(player.uruguayan)item.classList.add('uruguay-player');
+        item.append(el('span',player.number||'·','squad-number'));
+        const caption=el('span',undefined,'squad-caption'),name=el('span',player.name,'squad-player-name');
+        MatchUI.flagName(name,player.uruguayan);caption.append(name);
+        if(player.position)caption.append(el('small',player.position));item.append(caption);section.list.append(item);
+      }
+    }else section.box.append(el('p','Plantilla no disponible por ahora.','squad-unavailable'));
+    section.box.setAttribute('aria-busy','false');
+  }
   async function load(){
     if(params.has('id'))query.set('id',params.get('id'));else if(params.has('nombre'))query.set('nombre',params.get('nombre'));
     if(params.has('competicion'))query.set('competicion',params.get('competicion'));
@@ -31,11 +48,11 @@
     try{
       const response=await fetch('/api/equipo?'+query,{signal:AbortSignal.timeout(25000)}),data=await response.json();
       if(!response.ok||!data.team||!data.past||!data.future)throw Error(data.error||'No se ha podido consultar este equipo.');
-      document.title=data.team.name+' · últimos y próximos partidos | La Jornada';
+      document.title=data.team.name+' · plantilla y partidos | La Jornada';
       heading.replaceChildren(team(data.team.name,data.team.icon,data.team.national));
       status.textContent=(data.team.national?'Selección':'Club')+' · Hora peninsular';
       const grid=el('div',undefined,'team-history-grid');grid.append(section(data.past,false),section(data.future,true));
-      content.replaceChildren(grid);
+      const squad=squadSection();content.replaceChildren(squad.box,grid);loadSquad(data.team.id,squad);
     }catch(e){status.textContent='';content.replaceChildren();}
     finally{root.setAttribute('aria-busy','false');}
   }

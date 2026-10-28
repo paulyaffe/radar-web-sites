@@ -33,6 +33,7 @@ jobs:
       - run: node tests/sports_page.mjs
       - run: node tests/match_worker.mjs
       - run: node tests/uruguay_worker.mjs
+      - run: node tests/team_squad.mjs
       - run: node tests/match_page.mjs
       - run: node tests/analytics_tag.mjs
       - run: python update.py --force
@@ -65,7 +66,7 @@ jobs:
           sports = json.loads(Path('sites/deportes/sports.json').read_text())
           assert {'PD','CDR','SA','PL','FL1','DED','PPL','BL1','CL','EL','MLS','MEX','URU','ARG','BRA'} <= set(sports['leagues'])
           assert Path('sites/deportes/dist/_worker.js').is_file()
-          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos', '/api/equipo', '/api/tabla', '/api/banderas', '/api/partido']
+          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos', '/api/equipo', '/api/tabla', '/api/banderas', '/api/partido', '/api/plantilla']
           for route in ('partidos','futbol/copa-del-rey','futbol/champions-league','futbol/europa-league','futbol/selecciones','futbol/mls','futbol/liga-mx','futbol/liga-uruguaya','futbol/liga-argentina','futbol/brasileirao','clasificacion','goleadores'):
               assert Path('sites/deportes/dist',route,'index.html').is_file()
           print('Cuatro webs, SEO, AdSense, quince competiciones de clubes y calendario internacional comprobados. Esta tarea no publica.')

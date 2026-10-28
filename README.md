@@ -187,17 +187,25 @@ Pruebas: tests/match_worker.mjs (incluye un partido real),
 tests/match_page.mjs (ejecuta los scripts de calendario, equipo y detalle),
 y tests/test_match.py (generacion periodica y copias de goles).
 
-## Uruguay en los partidos
+## Plantillas del primer equipo y Uruguay
 
-Las filas del calendario y del historial de equipos se muestran en celeste si
-la convocatoria publicada incluye un uruguayo, titular o suplente de cualquiera
-de los equipos. La ficha del partido conserva esa marca y muestra la bandera
-de Uruguay después del nombre en titulares, banquillo y goles. Se cruzan los
-IDs de la convocatoria con la nacionalidad publicada por ESPN para esa temporada;
-pertenecer a la plantilla del club no basta para marcar un partido.
+La ficha /equipo/ abre la plantilla actual en dos columnas y conserva debajo
+los cinco ultimos partidos finalizados y los cinco proximos de cada equipo.
+Los jugadores uruguayos tienen fondo celeste y bandera al final del nombre.
 
-La comprobación se carga para las filas visibles, con tres consultas simultáneas,
-y reutiliza la ficha del partido durante un minuto y las nacionalidades durante
-un día. Los partidos esperan a que la fuente publique la convocatoria; los
-fallos conservan la última ficha válida. Pruebas: tests/uruguay_worker.mjs y
-tests/match_page.mjs.
+El calendario, el historial y la cabecera de cada partido se resaltan cuando
+alguno de sus equipos tiene un uruguayo en su plantilla actual. El criterio
+ya no depende de la convocatoria, del banquillo ni de que se publiquen onces.
+Un lesionado que sigue en la plantilla tambien cuenta. Los detalles siguen
+mostrando las nacionalidades y las banderas de los convocados cuando existen.
+
+/api/plantilla?id= consulta la plantilla del club en su liga principal, sin
+mezclar listas de inscripcion de una competicion ni inferir nacionalidad por
+lugar de nacimiento. Valida el ID y las URLs de imagen. Reutiliza cada
+plantilla durante seis horas, manteniendo su fecha real si hay un fallo.
+El navegador reutiliza la consulta del mismo equipo entre todos sus partidos
+y consulta las filas a medida que entran en pantalla. Los fallos de plantilla
+no impiden mostrar los ultimos y proximos partidos.
+
+Pruebas: tests/team_squad.mjs, tests/match_page.mjs y las pruebas previas de
+calendario, equipos, alineaciones, tablas y generacion periodica.

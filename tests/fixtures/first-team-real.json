@@ -1,0 +1,1128 @@
+{
+  "team": {
+    "id": "86",
+    "abbreviation": "RMA",
+    "location": "Real Madrid",
+    "name": "Real Madrid",
+    "displayName": "Real Madrid",
+    "clubhouse": "https://www.espn.com/soccer/club/_/id/86/real-madrid",
+    "color": "ffffff",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/86.png",
+    "recordSummary": "8-0-2",
+    "seasonSummary": "2026-27",
+    "standingSummary": "3rd in Spanish LALIGA",
+    "isNational": false
+  },
+  "season": {
+    "year": 2026,
+    "displayName": "2026-27 Spanish LALIGA",
+    "type": 14357,
+    "name": "2026-27 LALIGA"
+  },
+  "athletes": [
+    {
+      "id": "84349",
+      "displayName": "Javier Navarro",
+      "shortName": "J. Navarro",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "31",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "134283",
+      "displayName": "Thibaut Courtois",
+      "shortName": "T. Courtois",
+      "citizenship": "Belgium",
+      "citizenshipCountry": {
+        "alternateId": "4",
+        "abbreviation": "BEL"
+      },
+      "jersey": "1",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/bel.png",
+        "alt": "Belgium",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "257237",
+      "displayName": "Andriy Lunin",
+      "shortName": "A. Lunin",
+      "citizenship": "Ukraine",
+      "citizenshipCountry": {
+        "alternateId": "408",
+        "abbreviation": "UKR"
+      },
+      "jersey": "13",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/ukr.png",
+        "alt": "Ukraine",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "350351",
+      "displayName": "Sergio Mestre",
+      "shortName": "S. Mestre",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "26",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "405490",
+      "displayName": "Illia Voloshyn",
+      "shortName": "I. Voloshyn",
+      "citizenship": "Ukraine",
+      "citizenshipCountry": {
+        "alternateId": "408",
+        "abbreviation": "UKR"
+      },
+      "jersey": "39",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/ukr.png",
+        "alt": "Ukraine",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "1",
+        "name": "Goalkeeper",
+        "displayName": "Goalkeeper",
+        "abbreviation": "G",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "169438",
+      "displayName": "Antonio Rüdiger",
+      "shortName": "A. Rüdiger",
+      "citizenship": "Germany",
+      "citizenshipCountry": {
+        "alternateId": "8",
+        "abbreviation": "GER"
+      },
+      "jersey": "22",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/ger.png",
+        "alt": "Germany",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "213248",
+      "displayName": "Denzel Dumfries",
+      "shortName": "D. Dumfries",
+      "citizenship": "Netherlands",
+      "citizenshipCountry": {
+        "alternateId": "9",
+        "abbreviation": "NED"
+      },
+      "jersey": "24",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/ned.png",
+        "alt": "Netherlands",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "217475",
+      "displayName": "Ferland Mendy",
+      "shortName": "F. Mendy",
+      "citizenship": "France",
+      "citizenshipCountry": {
+        "alternateId": "7",
+        "abbreviation": "FRA"
+      },
+      "jersey": "23",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/fra.png",
+        "alt": "France",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "223532",
+      "displayName": "Trent Alexander-Arnold",
+      "shortName": "T. Alexander-Arnold",
+      "citizenship": "England",
+      "citizenshipCountry": {
+        "alternateId": "31",
+        "abbreviation": "ENG"
+      },
+      "jersey": "12",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/eng.png",
+        "alt": "England",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "228402",
+      "displayName": "Éder Militão",
+      "shortName": "É. Militão",
+      "citizenship": "Brazil",
+      "citizenshipCountry": {
+        "alternateId": "20",
+        "abbreviation": "BRA"
+      },
+      "jersey": "3",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+        "alt": "Brazil",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "251634",
+      "displayName": "Ibrahima Konaté",
+      "shortName": "I. Konaté",
+      "citizenship": "France",
+      "citizenshipCountry": {
+        "alternateId": "7",
+        "abbreviation": "FRA"
+      },
+      "jersey": "16",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/fra.png",
+        "alt": "France",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "259910",
+      "displayName": "Marc Cucurella",
+      "shortName": "M. Cucurella",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "17",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "310637",
+      "displayName": "Álvaro Carreras",
+      "shortName": "Á. Carreras",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "18",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "330352",
+      "displayName": "Mario Rivas",
+      "shortName": "M. Rivas",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "33",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "356000",
+      "displayName": "Dean Huijsen",
+      "shortName": "D. Huijsen",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "4",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "388338",
+      "displayName": "Raúl Asencio",
+      "shortName": "R. Asencio",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "2",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "388339",
+      "displayName": "Joan Martínez",
+      "shortName": "J. Martínez",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "30",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "405544",
+      "displayName": "Jesús Fortea",
+      "shortName": "J. Fortea",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "28",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "2",
+        "name": "Defender",
+        "displayName": "Defender",
+        "abbreviation": "D",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "199833",
+      "displayName": "Bernardo Silva",
+      "shortName": "B. Silva",
+      "citizenship": "Portugal",
+      "citizenshipCountry": {
+        "alternateId": "12",
+        "abbreviation": "POR"
+      },
+      "jersey": "20",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/por.png",
+        "alt": "Portugal",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "235818",
+      "displayName": "Federico Valverde",
+      "shortName": "F. Valverde",
+      "citizenship": "Uruguay",
+      "citizenshipCountry": {
+        "alternateId": "27",
+        "abbreviation": "URU"
+      },
+      "jersey": "8",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/uru.png",
+        "alt": "Uruguay",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "246532",
+      "displayName": "Brahim Díaz",
+      "shortName": "B. Díaz",
+      "citizenship": "Morocco",
+      "citizenshipCountry": {
+        "alternateId": "351",
+        "abbreviation": "MOR"
+      },
+      "jersey": "21",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/mor.png",
+        "alt": "Morocco",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "265919",
+      "displayName": "Aurélien Tchouaméni",
+      "shortName": "A. Tchouaméni",
+      "citizenship": "France",
+      "citizenshipCountry": {
+        "alternateId": "7",
+        "abbreviation": "FRA"
+      },
+      "jersey": "14",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/fra.png",
+        "alt": "France",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "285150",
+      "displayName": "Eduardo Camavinga",
+      "shortName": "E. Camavinga",
+      "citizenship": "France",
+      "citizenshipCountry": {
+        "alternateId": "7",
+        "abbreviation": "FRA"
+      },
+      "jersey": "6",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/fra.png",
+        "alt": "France",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "291281",
+      "displayName": "Jude Bellingham",
+      "shortName": "J. Bellingham",
+      "citizenship": "England",
+      "citizenshipCountry": {
+        "alternateId": "31",
+        "abbreviation": "ENG"
+      },
+      "jersey": "5",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/eng.png",
+        "alt": "England",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "310452",
+      "displayName": "Arda Güler",
+      "shortName": "A. Güler",
+      "citizenship": "Türkiye",
+      "citizenshipCountry": {
+        "alternateId": "16",
+        "abbreviation": "TUR"
+      },
+      "jersey": "15",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/tur.png",
+        "alt": "Türkiye",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "409019",
+      "displayName": "Thiago Pitarch",
+      "shortName": "T. Pitarch",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "27",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "409318",
+      "displayName": "Sergio Martínez",
+      "shortName": "S. Martínez",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "38",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "415478",
+      "displayName": "Jorge Cestero",
+      "shortName": "J. Cestero",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "29",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "3117407",
+      "displayName": "Alexis Ciria",
+      "shortName": "A. Ciria",
+      "jersey": "36",
+      "position": {
+        "id": "10",
+        "name": "Midfielder",
+        "displayName": "Midfielder",
+        "abbreviation": "M",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "231388",
+      "displayName": "Kylian Mbappé",
+      "shortName": "K. Mbappé",
+      "citizenship": "France",
+      "citizenshipCountry": {
+        "alternateId": "7",
+        "abbreviation": "FRA"
+      },
+      "jersey": "10",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/fra.png",
+        "alt": "France",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "252107",
+      "displayName": "Vinícius Júnior",
+      "shortName": "Vinícius Júnior",
+      "citizenship": "Brazil",
+      "citizenshipCountry": {
+        "alternateId": "20",
+        "abbreviation": "BRA"
+      },
+      "jersey": "7",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+        "alt": "Brazil",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "267804",
+      "displayName": "Rodrygo",
+      "shortName": "Rodrygo",
+      "citizenship": "Brazil",
+      "citizenshipCountry": {
+        "alternateId": "20",
+        "abbreviation": "BRA"
+      },
+      "jersey": "11",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+        "alt": "Brazil",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "346612",
+      "displayName": "Endrick",
+      "shortName": "Endrick",
+      "citizenship": "Brazil",
+      "citizenshipCountry": {
+        "alternateId": "20",
+        "abbreviation": "BRA"
+      },
+      "jersey": "9",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+        "alt": "Brazil",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "376422",
+      "displayName": "Daniel Yañez",
+      "shortName": "D. Yañez",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "35",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "380286",
+      "displayName": "Carlos Espí",
+      "shortName": "C. Espí",
+      "citizenship": "Spain",
+      "citizenshipCountry": {
+        "alternateId": "13",
+        "abbreviation": "ESP"
+      },
+      "jersey": "19",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/esp.png",
+        "alt": "Spain",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    },
+    {
+      "id": "402479",
+      "displayName": "Yan Diomande",
+      "shortName": "Y. Diomande",
+      "citizenship": "Ivory Coast",
+      "citizenshipCountry": {
+        "alternateId": "422",
+        "abbreviation": "CIV"
+      },
+      "jersey": "25",
+      "flag": {
+        "href": "https://a.espncdn.com/i/teamlogos/countries/500/civ.png",
+        "alt": "Ivory Coast",
+        "rel": [
+          "country-flag"
+        ]
+      },
+      "position": {
+        "id": "19",
+        "name": "Forward",
+        "displayName": "Forward",
+        "abbreviation": "F",
+        "leaf": false
+      },
+      "status": {
+        "id": "1",
+        "name": "Active",
+        "type": "active",
+        "abbreviation": "Active"
+      }
+    }
+  ]
+}

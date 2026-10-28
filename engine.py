@@ -546,7 +546,7 @@ def render(root):
         save('/recetas/', 'Recetas en gramos', 'Recetas con ingredientes en gramos y cantidades ajustables por raciones.', cooking_recipes_html(articles, assets))
     if profile == "deportes":
         sports = read_json(root/"sports.json", {})
-        save("/equipo/", "Últimos resultados y próximos partidos de un equipo", "Los cinco últimos resultados y los cinco próximos partidos de un club o selección.", '<section class="team-history" data-team-history aria-busy="false"><a class="back-link" href="/partidos/">← Partidos</a><h1>Equipo</h1><p data-team-status class="data-status" role="status" aria-live="polite"></p><div data-team-content></div><noscript>Activa JavaScript para ver los partidos.</noscript></section><script src="'+asset_url('team.js')+'" defer></script>')
+        save("/equipo/", "Plantilla y partidos de un equipo", "Plantilla del primer equipo, últimos cinco resultados y próximos cinco partidos de un club o selección.", '<section class="team-history" data-team-history aria-busy="false"><a class="back-link" href="/partidos/">← Partidos</a><h1>Equipo</h1><p data-team-status class="data-status" role="status" aria-live="polite"></p><div data-team-content></div><noscript>Activa JavaScript para ver los partidos.</noscript></section><script src="'+asset_url('team.js')+'" defer></script>')
         team_page = out/"equipo/index.html"
         team_page.write_text(team_page.read_text(encoding="utf-8").replace("</head>", '<meta name="robots" content="noindex,follow"></head>'), encoding="utf-8")
         save('/partido/', 'Goles y alineaciones del partido', 'Marcador, goleadores, minutos y alineaciones iniciales de cada partido.', '<section class="match-detail" data-match-detail aria-busy="false"><a class="back-link" data-match-back href="/partidos/">← Partidos</a><p data-match-status class="data-status" role="status" aria-live="polite"></p><div data-match-content></div><noscript>Activa JavaScript para ver el partido.</noscript></section><script src="'+asset_url('match.js')+'" defer></script>')
@@ -629,7 +629,7 @@ def render(root):
         worker = Path(__file__).with_name("calendar_worker.mjs")
         if worker.exists():
             shutil.copy2(worker, out/"_worker.js")
-            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo", "/api/tabla", "/api/banderas", "/api/partido"], "exclude": []})
+            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo", "/api/tabla", "/api/banderas", "/api/partido", "/api/plantilla"], "exclude": []})
         (out/"_redirects").write_text("/tenis /futbol/ 301\n/tenis/* /futbol/ 301\n/formula-1 /futbol/ 301\n/formula-1/* /futbol/ 301\n", encoding="utf-8")
         for removed_route in ("tenis", "formula-1"):
             stale = out/removed_route/"index.html"

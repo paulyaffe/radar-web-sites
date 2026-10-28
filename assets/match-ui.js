@@ -29,19 +29,25 @@
     return box;
   }
   function markUruguay(row,match){
-    if(!match.has_uruguayan)return;
-    row.classList.add('uruguay-match');row.title='Uruguay: '+(match.uruguayan_players || []).map(p=>p.name).join(', ');
-    for(const name of row.querySelectorAll('[data-athlete-id]'))flagName(name,match.uruguayan_players?.some(p=>p.id===name.dataset.athleteId));
+    row.classList.toggle('uruguay-match',match.has_squad_uruguayan===true);
+    row.title=match.has_squad_uruguayan?'Uruguay en plantilla: '+(match.squad_uruguayan_players || []).map(p=>p.name).join(', '):'';
+    const players=[...(match.uruguayan_players || []),...(match.squad_uruguayan_players || [])];
+    for(const name of row.querySelectorAll('[data-athlete-id]'))flagName(name,players.some(p=>p.id===name.dataset.athleteId));
   }
-  const checks=new Map(),queue=[];let active=0;
+  const squads=new Map(),queue=[];let active=0;
+  async function squad(id){
+    if(!/^[1-9]\d{0,8}$/.test(String(id||'')))return null;
+    const cached=squads.get(id);if(cached&&Date.now()-cached.time<10*60000)return cached.promise;
+    const promise=fetch('/api/plantilla?id='+encodeURIComponent(id),{signal:AbortSignal.timeout(25000)})
+      .then(async response=>{if(!response.ok)throw Error('Plantilla no disponible');const data=await response.json();
+        if(data.basis!=='first_team_squad'||data.team?.id!==String(id)||!data.available||!Array.isArray(data.players))throw Error('Plantilla no válida');return data;})
+      .catch(()=>{squads.delete(id);return null;});
+    squads.set(id,{time:Date.now(),promise});return promise;
+  }
   async function checkUruguay(match){
-    const key=match.competition+':'+match.id,cached=checks.get(key);
-    if(cached&&Date.now()-cached.time<60000)return cached.promise;
-    const promise=fetch('/api/partido?'+new URLSearchParams({competicion:match.competition,id:match.id,uruguay:'1'}),{signal:AbortSignal.timeout(20000)})
-      .then(async response=>{if(!response.ok)throw Error('Convocatoria no disponible');return(await response.json()).match;})
-      .catch(()=>{checks.delete(key);return null;});
-    checks.set(key,{time:Date.now(),promise});
-    return promise;
+    const results=await Promise.all([squad(match.home_id),squad(match.away_id)]);
+    const players=results.flatMap((data,index)=>(data?.uruguayan_players || []).map(p=>({...p,side:index?'away':'home'})));
+    return {...match,has_squad_uruguayan:players.length?true:results.every(Boolean)?false:null,squad_uruguayan_players:players};
   }
   function drain(){
     while(active<3&&queue.length){
@@ -55,13 +61,18 @@
     for(const entry of entries)if(entry.isIntersecting){observer.unobserve(entry.target);queue.push({row:entry.target,match:entry.target.uruguayMatch});}
     drain();
   },{rootMargin:'250px'}):null;
+  function watchUruguay(row,match){
+    markUruguay(row,match);
+    if(!match.home_id&&!match.away_id)return;
+    if(observer){row.uruguayMatch=match;observer.observe(row);}
+    else{queue.push({row,match});drain();}
+  }
   function finishRow(row,match){
     const goals=scorers(match);if(goals)row.append(goals);
+    watchUruguay(row,match);
     const url=href(match);if(!url)return;
     row.classList.add('clickable-match');
     row.addEventListener('click',event=>{if(!event.target.closest('a,button,input,select'))location.assign(url);});
-    markUruguay(row,match);
-    if(!match.lineups_published&&observer){row.uruguayMatch=match;observer.observe(row);}
   }
-  window.MatchUI={href,scoreLink,goalText,scorers,finishRow,flagName,markUruguay};
+  window.MatchUI={href,scoreLink,goalText,scorers,finishRow,flagName,markUruguay,watchUruguay,squad};
 })();

@@ -536,6 +536,51 @@ export function athleteNationality(athlete) {
   return {flag:teamIcon({logo:athlete?.flag?.href},true),
     nationality:typeof athlete?.citizenship==='string'?athlete.citizenship:String(athlete?.flag?.alt || '')};
 }
+export function normalizeSquad(data,id) {
+  if(teamId(data?.team?.id)!==id || !Array.isArray(data.athletes))throw Error('Plantilla no coincidente.');
+  const national=data.team.isNational===true,seen=new Set(),players=[];
+  for(const athlete of data.athletes.flatMap(group=>group.items || [group]).slice(0,200)) {
+    const playerId=teamId(athlete.id);
+    if(!playerId || seen.has(playerId) || !athlete.displayName)continue;
+    if(['transferred','retired','released','loaned-out'].includes(athlete.status?.type))continue;
+    if(!national && athlete.team?.id && teamId(athlete.team.id)!==id)continue;
+    const {name,short_name,number,position,position_code,flag,nationality,uruguayan,photo}=normalizePlayer({athlete,jersey:athlete.jersey,position:athlete.position});
+    seen.add(playerId);players.push({id:playerId,name,short_name,number,position,position_code,flag,nationality,uruguayan,photo});
+  }
+  const rank=p=>p.position==='Portero'?0:p.position==='Defensa'?1:p.position==='Centrocampista'?2:p.position==='Delantero'?3:4;
+  players.sort((a,b)=>rank(a)-rank(b)||(Number(a.number)||Infinity)-(Number(b.number)||Infinity)||a.name.localeCompare(b.name,'es'));
+  const uruguayan=players.filter(p=>p.uruguayan).map(p=>({id:p.id,name:p.name}));
+  return {team:simpleTeam(data.team,national),players,season:String(data.season?.displayName || data.season?.name || '').slice(0,100),
+    available:players.length>0,has_uruguayan:players.length?uruguayan.length>0:null,uruguayan_players:uruguayan,
+    basis:'first_team_squad',source:'https://www.espn.com/soccer/team/squad/_/id/'+id};
+}
+export async function currentSquad(id,origin,ctx={waitUntil:()=>{}}) {
+  const cache=globalThis.caches?.default,key=new Request(origin+'/api/plantilla?id='+id+'&v=1');let old;
+  try{const hit=await cache?.match(key);old=hit&&await hit.json();}catch{}
+  if(old&&Date.now()-Date.parse(old.checked_at)<6*3600000)return old;
+  try{
+    const metadata=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/'+id);
+    if(teamId(metadata.team?.id)!==id)throw Error('Equipo no coincidente.');
+    const league=metadata.team.defaultLeague?.slug || metadata.team.leagueAbbrev || metadata.team.league?.slug;
+    if(!/^[a-z0-9][a-z0-9._-]{1,48}$/.test(league || ''))throw Error('Liga de la plantilla no disponible.');
+    // Use the current squad in the club's primary league, not the line-up or
+    // competition registration list for an individual match. Never guess
+    // nationality from a birthplace, name, age or whether a player was called up.
+    const data=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+league+'/teams/'+id+'/roster',4_000_000);
+    const payload={...normalizeSquad(data,id),updated:new Date().toISOString(),checked_at:new Date().toISOString(),stale:false};
+    if(cache&&payload.available)ctx.waitUntil(cache.put(key,Response.json(payload,{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
+    return payload;
+  }catch{
+    return old?{...old,stale:true}:{team:{id},players:[],available:false,has_uruguayan:null,uruguayan_players:[],basis:'first_team_squad',stale:true};
+  }
+}
+export async function teamSquad(request,ctx={waitUntil:()=>{}}) {
+  if(request.method!=='GET')return json({error:'Método no permitido'},405);
+  const url=new URL(request.url),id=teamId(url.searchParams.get('id'));
+  if(!id)return json({error:'Equipo no válido.'},400);
+  const data=await currentSquad(id,url.origin,ctx);
+  return json(data,data.available?200:503);
+}
 async function playerNationality(id,origin,ctx) {
   const cache=globalThis.caches?.default,key=new Request(origin+'/api/banderas?jugador='+id+'&v=1');
   try{const cached=await cache?.match(key);if(cached)return await cached.json();}catch{}
@@ -561,6 +606,7 @@ export default {
     if (new URL(request.url).pathname === '/api/partido') return matchDetails(request,ctx);
     if (new URL(request.url).pathname === '/api/tabla') return competitionTable(request,ctx,env);
     if (new URL(request.url).pathname === '/api/banderas') return playerFlags(request,ctx);
+    if (new URL(request.url).pathname === '/api/plantilla') return teamSquad(request,ctx);
     return env.ASSETS.fetch(request);
   }
 };

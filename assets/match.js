@@ -68,7 +68,7 @@
     const grid=el('div',undefined,'lineups-grid');for(const lineup of data.lineups)grid.append(lineupCard(lineup));section.append(grid);fragment.append(section);
     if(data.lineups.some(l=>l.players.some(p=>p.events?.length))){const legend=el('p','⚽ Gol · (p. p.) Propia puerta · (pen.) Penalti · ↑ Entra · ↓ Sale · ↗ Asistencia · 🟨 Amarilla · 🟥 Roja','lineup-legend');fragment.append(legend);}
     if(data.updated)fragment.append(el('p','Datos: '+when(data.updated)+' · Hora peninsular','match-updated'));
-    content.replaceChildren(fragment);status.textContent='';rendered=true;
+    content.replaceChildren(fragment);MatchUI.watchUruguay(header,match);status.textContent='';rendered=true;
   }
   async function load(){
     root.setAttribute('aria-busy','true');status.textContent=rendered?'':'Cargando partido…';
