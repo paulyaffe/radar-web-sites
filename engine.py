@@ -661,7 +661,7 @@ def football_quick_links(selected="todas"):
 def date_controls(filters, match_navigation=False):
     previous = 'Ver la fecha anterior con partidos' if match_navigation else 'Ver el día anterior'
     following = 'Ver la fecha siguiente con partidos' if match_navigation else 'Ver el día siguiente'
-    country_filter = '<div class="country-filter-control"><button type="button" class="country-only-filter" data-country-only aria-pressed="false" aria-controls="fixture-results">Solo Uruguay</button>'+control_help('country-filter-help', 'Información sobre Solo país', 'Muestra solo partidos con jugadores del país elegido en alguna plantilla. Pulsa de nuevo para ver todos.')+'</div>' if match_navigation else ''
+    country_filter = '<div class="country-filter-control"><button type="button" class="country-only-filter" data-country-only aria-pressed="false" aria-controls="fixture-results">Solo Uruguay</button>'+control_help('country-filter-help', 'Información sobre Solo país', 'Muestra solo partidos con jugadores del país elegido en el primer equipo. Pulsa de nuevo para ver todos.')+'</div>' if match_navigation else ''
     return '<form class="calendar-form"><label>Fecha<input type="date" name="fecha" min="2000-01-01" max="2099-12-31" required></label>'+filters+'<button class="button" type="submit">Ver</button></form><div class="calendar-days"><button type="button" data-day-step="-1" aria-label="'+previous+'">← Anterior</button><button type="button" data-today>Hoy</button><button type="button" data-day-step="1" aria-label="'+following+'">Siguiente →</button>'+country_filter+'<span>Hora peninsular</span></div>'
 
 
