@@ -346,6 +346,10 @@ def asset_url(name):
     return '/assets/'+name+'?v='+version
 
 
+def control_help(name, label, text):
+    return '<span class="control-help" data-control-help><button type="button" class="control-help-toggle" data-help-toggle aria-label="'+esc(label)+'" aria-expanded="false" aria-controls="'+esc(name)+'">i</button><span id="'+esc(name)+'" class="control-help-panel" data-help-panel role="note" hidden>'+esc(text)+'</span></span>'
+
+
 def match_date(value):
     try:
         if len(value) == 10:
@@ -430,7 +434,8 @@ def page(profile, base_url, path, title, description, body, schema=None, adsense
     if profile == "deportes":
         document = document.replace('</head>', '<link rel="stylesheet" href="'+asset_url('match.css')+'"><script src="'+asset_url('country-data.js')+'" defer></script><script src="'+asset_url('country-highlight.js')+'" defer></script><script src="'+asset_url('match-ui.js')+'" defer></script></head>', 1)
         document = document.replace('<body style=', '<body class="sports-app" style=', 1)
-        document = document.replace('<nav aria-label="Principal"></nav>', '<div class="country-picker" data-country-picker><label for="country-search">Selecciona tú país.</label><div class="country-search-box"><input id="country-search" data-highlight-country type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-options" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe un país" value="Uruguay"><button data-country-toggle type="button" aria-label="Mostrar países" aria-controls="country-options" aria-expanded="false">⌄</button></div><ul id="country-options" class="country-options" data-country-options role="listbox" aria-label="Países" hidden></ul></div>')
+        selector_help = control_help('country-selector-help', 'Información sobre el selector de países', 'Elige un país para resaltar a sus jugadores con un fondo y una bandera junto al nombre. También se destacan los equipos que los tienen en plantilla. «Sin resaltar» desactiva el marcado.')
+        document = document.replace('<nav aria-label="Principal"></nav>', '<div class="country-picker" data-country-picker><label for="country-search">Selecciona tú país.</label><div class="country-search-box"><input id="country-search" data-highlight-country type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-options" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe un país" value="Uruguay"><button data-country-toggle type="button" aria-label="Mostrar países" aria-controls="country-options" aria-expanded="false">⌄</button>'+selector_help+'</div><ul id="country-options" class="country-options" data-country-options role="listbox" aria-label="Países" hidden></ul></div>')
         document = document.split("<footer>", 1)[0] + '<footer class="sports-footer"><a href="/privacidad/">Privacidad</a><a href="/metodo/">Créditos</a>' + privacy_control + '</footer></body></html>'
     elif profile == "cocina":
         version = hashlib.sha256((Path(__file__).parent/'assets/cooking.css').read_bytes()).hexdigest()[:12]
@@ -656,7 +661,7 @@ def football_quick_links(selected="todas"):
 def date_controls(filters, match_navigation=False):
     previous = 'Ver la fecha anterior con partidos' if match_navigation else 'Ver el día anterior'
     following = 'Ver la fecha siguiente con partidos' if match_navigation else 'Ver el día siguiente'
-    country_filter = '<button type="button" class="country-only-filter" data-country-only aria-pressed="false" aria-controls="fixture-results">Solo Uruguay</button>' if match_navigation else ''
+    country_filter = '<div class="country-filter-control"><button type="button" class="country-only-filter" data-country-only aria-pressed="false" aria-controls="fixture-results">Solo Uruguay</button>'+control_help('country-filter-help', 'Información sobre Solo país', 'Muestra solo partidos con jugadores del país elegido en alguna plantilla. Pulsa de nuevo para ver todos.')+'</div>' if match_navigation else ''
     return '<form class="calendar-form"><label>Fecha<input type="date" name="fecha" min="2000-01-01" max="2099-12-31" required></label>'+filters+'<button class="button" type="submit">Ver</button></form><div class="calendar-days"><button type="button" data-day-step="-1" aria-label="'+previous+'">← Anterior</button><button type="button" data-today>Hoy</button><button type="button" data-day-step="1" aria-label="'+following+'">Siguiente →</button>'+country_filter+'<span>Hora peninsular</span></div>'
 
 

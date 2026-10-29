@@ -234,6 +234,10 @@ de la jornada usando las plantillas de ambos equipos. Su estado se guarda en
 ese navegador y se comparte entre pestañas. Sigue activo al cambiar de fecha
 o competición; al elegir Sin resaltar se desactiva. Otro clic vuelve a mostrar
 la jornada completa. No requiere registro.
+El selector y el botón de filtro tienen una «i» con una explicación breve.
+El cuadro se abre bajo el icono, alineado a su borde derecho y ajustado al
+espacio disponible. Otro clic, pulsar fuera o Escape lo cierra; solo se
+muestra una ayuda a la vez y abrirla no cambia el país ni activa el filtro.
 Con el filtro activo se comprueban también las filas que están fuera de
 pantalla, con la misma caché y límite de consultas simultáneas. Las competiciones
 sin coincidencias se ocultan. El contador distingue la comprobación pendiente,

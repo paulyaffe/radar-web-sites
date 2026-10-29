@@ -13,6 +13,26 @@
   const choices=[{code:'',name:'Sin resaltar'},...[...countries.values()].sort((a,b)=>a.name.localeCompare(b.name,'es'))];
   const prefix=value=>String(value||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es');
   let expanded=false,options=[],active=-1;
+  let openHelp=null;
+  const helpControls=[...document.querySelectorAll('[data-control-help]')].map(wrapper=>({wrapper,button:wrapper.querySelector('[data-help-toggle]'),panel:wrapper.querySelector('[data-help-panel]')})).filter(help=>help.button&&help.panel);
+  function closeHelp(restoreFocus=false){
+    if(!openHelp)return;
+    const {button,panel}=openHelp;openHelp=null;panel.hidden=true;button.setAttribute('aria-expanded','false');
+    if(restoreFocus)button.focus();
+  }
+  function sizeHelp(help){
+    const rect=help.button.getBoundingClientRect();
+    help.panel.style.width=Math.min(280,Math.max(0,rect.right-12))+'px';
+    help.panel.style.maxHeight=Math.max(40,document.documentElement.clientHeight-rect.bottom-20)+'px';
+  }
+  for(const help of helpControls)help.button.addEventListener('click',()=>{
+    const wasOpen=openHelp===help;closeHelp();closePicker();
+    if(wasOpen)return;
+    sizeHelp(help);help.panel.hidden=false;help.button.setAttribute('aria-expanded','true');openHelp=help;
+  });
+  document.addEventListener('pointerdown',event=>{if(openHelp&&!openHelp.wrapper.contains(event.target))closeHelp();});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&openHelp){event.preventDefault();closeHelp(true);}});
+  window.addEventListener('resize',()=>{if(openHelp)sizeHelp(openHelp);});
   function closePicker(){
     expanded=false;if(list)list.hidden=true;
     if(input){input.value=selected?.name||'Sin resaltar';input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');}
@@ -26,6 +46,7 @@
   }
   function showPicker(query=''){
     if(!input||!list)return;
+    closeHelp();
     const start=prefix(query),found=choices.filter(country=>prefix(country.name).startsWith(start)),fragment=document.createDocumentFragment();
     options=[];
     for(const country of found){
