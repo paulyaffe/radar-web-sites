@@ -220,6 +220,8 @@ Los jugadores del país seleccionado tienen un fondo del color principal de
 su camiseta y una bandera pequeña al final del nombre. Se usan tonos suaves
 para mantener el contraste. También se actualizan los titulares, suplentes y
 goleadores identificados, sin recargar la página.
+La cabecera y el marco exterior de toda la web usan ese mismo tono de la
+camiseta del país elegido. Sin resaltar devuelve el fondo a un tono neutro.
 
 En el calendario, el historial y la cabecera de cada partido, el fondo rodea
 solo el nombre y el escudo del equipo que tiene jugadores del país elegido en

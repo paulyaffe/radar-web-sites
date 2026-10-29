@@ -76,6 +76,7 @@
   function watchPlayer(item,name,player){item.setAttribute('data-nationality-player','');item.highlightName=name;item.highlightPlayer=player;paintPlayer(item);}
   function repaint(){
     const colours=selected?.colours||palettes.white;
+    document.body?.style.setProperty('--paper',colours[0]);
     ['--country-bg','--country-edge','--country-ink'].forEach((variable,i)=>document.body?.style.setProperty(variable,colours[i]));
     for(const item of document.querySelectorAll('[data-nationality-player]'))paintPlayer(item);
     for(const listener of listeners)listener();
