@@ -1,0 +1,1363 @@
+{
+  "header": {
+    "id": "761908",
+    "uid": "s:600~l:770~e:761908",
+    "season": {
+      "year": 2026,
+      "current": true,
+      "type": 13846,
+      "name": "2026 MLS, Regular Season"
+    },
+    "timeValid": true,
+    "competitions": [
+      {
+        "id": "761908",
+        "uid": "s:600~l:770~e:761908~c:761908",
+        "date": "2026-10-28T23:30Z",
+        "neutralSite": false,
+        "conferenceCompetition": false,
+        "boxscoreAvailable": true,
+        "commentaryAvailable": true,
+        "liveAvailable": false,
+        "onWatchESPN": false,
+        "recent": false,
+        "wallclockAvailable": true,
+        "boxscoreSource": "full",
+        "playByPlaySource": "full",
+        "competitors": [
+          {
+            "id": "20232",
+            "uid": "s:600~t:20232",
+            "order": 0,
+            "homeAway": "home",
+            "winner": false,
+            "team": {
+              "id": "20232",
+              "guid": "68c59d9b-7197-356f-8418-52c0d216852c",
+              "uid": "s:600~t:20232",
+              "location": "Inter Miami CF",
+              "name": "Inter Miami CF",
+              "abbreviation": "MIA",
+              "displayName": "Inter Miami CF",
+              "shortDisplayName": "Miami",
+              "color": "231f20",
+              "alternateColor": "f7b5cd",
+              "logos": [
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500/20232.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "default"
+                  ],
+                  "lastUpdated": "2019-11-26T19:25Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/20232.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "dark"
+                  ],
+                  "lastUpdated": "2023-11-29T16:35Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/primary_logo_on_white_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_white_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/primary_logo_on_black_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_black_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/primary_logo_on_primary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_primary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/primary_logo_on_secondary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_secondary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/primary_logo_black.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_black"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/primary_logo_white.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_white"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/secondary_logo_on_white_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_white_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/secondary_logo_on_black_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_black_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/secondary_logo_on_primary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_primary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/secondary_logo_on_secondary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_secondary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/secondary_logo_black.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_black"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/68c59d9b-7197-356f-8418-52c0d216852c/logos/secondary_logo_white.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_white"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                }
+              ],
+              "groups": {
+                "name": "MLS"
+              },
+              "links": [
+                {
+                  "rel": [
+                    "clubhouse",
+                    "desktop",
+                    "team"
+                  ],
+                  "href": "https://www.espn.com/soccer/club/_/id/20232/inter-miami-cf",
+                  "text": "Clubhouse"
+                }
+              ],
+              "form": "DLWWW"
+            },
+            "score": "2",
+            "linescores": [
+              {
+                "displayValue": "0"
+              },
+              {
+                "displayValue": "2"
+              }
+            ],
+            "record": [
+              {
+                "type": "total",
+                "summary": "15-11-6",
+                "displayValue": "15-11-6"
+              },
+              {
+                "type": "points",
+                "summary": "56",
+                "displayValue": "56"
+              }
+            ],
+            "groups": {
+              "abbreviation": "East"
+            },
+            "possession": false
+          },
+          {
+            "id": "18267",
+            "uid": "s:600~t:18267",
+            "order": 1,
+            "homeAway": "away",
+            "winner": false,
+            "team": {
+              "id": "18267",
+              "guid": "b55047f9-03f0-f140-9411-e8e10336a2a8",
+              "uid": "s:600~t:18267",
+              "location": "FC Cincinnati",
+              "name": "FC Cincinnati",
+              "abbreviation": "CIN",
+              "displayName": "FC Cincinnati",
+              "shortDisplayName": "Cincinnati",
+              "color": "003087",
+              "alternateColor": "fe5000",
+              "logos": [
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500/18267.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "default"
+                  ],
+                  "lastUpdated": "2023-11-29T16:33Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/18267.png",
+                  "width": 500,
+                  "height": 500,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "dark"
+                  ],
+                  "lastUpdated": "2023-11-29T16:35Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/primary_logo_on_white_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_white_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/primary_logo_on_black_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_black_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/primary_logo_on_primary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_primary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/primary_logo_on_secondary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_on_secondary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/primary_logo_black.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_black"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/primary_logo_white.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "primary_logo_white"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/secondary_logo_on_white_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_white_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/secondary_logo_on_black_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_black_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/secondary_logo_on_primary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_primary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/secondary_logo_on_secondary_color.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_on_secondary_color"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/secondary_logo_black.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_black"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                },
+                {
+                  "href": "https://a.espncdn.com/guid/b55047f9-03f0-f140-9411-e8e10336a2a8/logos/secondary_logo_white.png",
+                  "width": 4096,
+                  "height": 4096,
+                  "alt": "",
+                  "rel": [
+                    "full",
+                    "secondary_logo_white"
+                  ],
+                  "lastUpdated": "2026-07-22T20:22Z"
+                }
+              ],
+              "groups": {
+                "name": "MLS"
+              },
+              "links": [
+                {
+                  "rel": [
+                    "clubhouse",
+                    "desktop",
+                    "team"
+                  ],
+                  "href": "https://www.espn.com/soccer/club/_/id/18267/fc-cincinnati",
+                  "text": "Clubhouse"
+                }
+              ],
+              "form": "DWWLL"
+            },
+            "score": "2",
+            "linescores": [
+              {
+                "displayValue": "0"
+              },
+              {
+                "displayValue": "2"
+              }
+            ],
+            "record": [
+              {
+                "type": "total",
+                "summary": "11-10-11",
+                "displayValue": "11-10-11"
+              },
+              {
+                "type": "points",
+                "summary": "43",
+                "displayValue": "43"
+              }
+            ],
+            "groups": {
+              "abbreviation": "East"
+            },
+            "possession": false
+          }
+        ],
+        "notes": [],
+        "status": {
+          "type": {
+            "id": "28",
+            "name": "STATUS_FULL_TIME",
+            "state": "post",
+            "completed": true,
+            "description": "Full Time",
+            "detail": "FT",
+            "shortDetail": "FT"
+          }
+        },
+        "broadcasts": [
+          {
+            "type": {
+              "id": "4",
+              "shortName": "STREAMING"
+            },
+            "market": {},
+            "media": {
+              "shortName": "Apple TV"
+            },
+            "lang": "en",
+            "region": "us",
+            "isNational": false
+          }
+        ],
+        "details": [
+          {
+            "clock": {
+              "value": 3647,
+              "displayValue": "61'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "20232",
+              "uid": "s:600~t:20232",
+              "location": "Inter Miami CF",
+              "name": "Inter Miami CF",
+              "abbreviation": "MIA",
+              "displayName": "Inter Miami CF"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "125088",
+                  "displayName": "Luis Suárez",
+                  "shortName": "L. Suárez",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/125088/luis-suarez",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              },
+              {
+                "athlete": {
+                  "id": "173666",
+                  "displayName": "Casemiro",
+                  "shortName": "Casemiro",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/173666/casemiro",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          },
+          {
+            "clock": {
+              "value": 4779,
+              "displayValue": "80'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "18267",
+              "uid": "s:600~t:18267",
+              "location": "FC Cincinnati",
+              "name": "FC Cincinnati",
+              "abbreviation": "CIN",
+              "displayName": "FC Cincinnati"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "388854",
+                  "displayName": "Kenji Mboma Dem",
+                  "shortName": "K. Mboma Dem",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/388854/kenji-mboma-dem",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              },
+              {
+                "athlete": {
+                  "id": "86436",
+                  "displayName": "Evander",
+                  "shortName": "Evander",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/86436/evander",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          },
+          {
+            "clock": {
+              "value": 5153,
+              "displayValue": "86'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "18267",
+              "uid": "s:600~t:18267",
+              "location": "FC Cincinnati",
+              "name": "FC Cincinnati",
+              "abbreviation": "CIN",
+              "displayName": "FC Cincinnati"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "363908",
+                  "displayName": "Samuel Gidi",
+                  "shortName": "S. Gidi",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/363908/samuel-gidi",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              },
+              {
+                "athlete": {
+                  "id": "249926",
+                  "displayName": "Tom Barlow",
+                  "shortName": "T. Barlow",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/249926/tom-barlow",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          },
+          {
+            "clock": {
+              "value": 5343,
+              "displayValue": "90'"
+            },
+            "scoringPlay": true,
+            "team": {
+              "id": "20232",
+              "uid": "s:600~t:20232",
+              "location": "Inter Miami CF",
+              "name": "Inter Miami CF",
+              "abbreviation": "MIA",
+              "displayName": "Inter Miami CF"
+            },
+            "participants": [
+              {
+                "athlete": {
+                  "id": "361433",
+                  "displayName": "Riquelme",
+                  "shortName": "Riquelme",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/361433/riquelme",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              },
+              {
+                "athlete": {
+                  "id": "174466",
+                  "displayName": "Rodrigo De Paul",
+                  "shortName": "R. De Paul",
+                  "links": [
+                    {
+                      "language": "en-US",
+                      "rel": [
+                        "playercard",
+                        "desktop",
+                        "athlete"
+                      ],
+                      "href": "https://www.espn.com/soccer/player/_/id/174466/rodrigo-de-paul",
+                      "text": "Player Card",
+                      "shortText": "Player Card"
+                    }
+                  ]
+                }
+              }
+            ],
+            "addedClock": {
+              "value": 0,
+              "displayValue": ""
+            },
+            "redCard": false,
+            "penaltyKick": false,
+            "ownGoal": false
+          }
+        ],
+        "groups": {
+          "id": "1",
+          "name": "Eastern Conference",
+          "abbreviation": "East"
+        },
+        "isFinal": false,
+        "isThirdPlace": false,
+        "altGameNote": "MLS",
+        "boxscoreMinutes": false,
+        "shotMapAvailable": true
+      }
+    ],
+    "links": [
+      {
+        "rel": [
+          "summary",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/match/_/gameId/761908/fc-cincinnati-inter-miami-cf",
+        "text": "Summary",
+        "shortText": "Summary",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "recap",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/report/_/gameId/761908",
+        "text": "Report",
+        "shortText": "Report",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "commentary",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/commentary/_/gameId/761908",
+        "text": "Commentary",
+        "shortText": "Commentary",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "videos",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/video/_/gameId/761908",
+        "text": "Videos",
+        "shortText": "Videos",
+        "isExternal": false,
+        "isPremium": false
+      }
+    ],
+    "league": {
+      "id": "770",
+      "uid": "s:600~l:770",
+      "name": "MLS",
+      "abbreviation": "MLS",
+      "shortName": "MLS",
+      "midsizeName": "USA.1",
+      "slug": "usa.1",
+      "isTournament": false,
+      "links": [
+        {
+          "rel": [
+            "index",
+            "desktop",
+            "league"
+          ],
+          "href": "https://www.espn.com/soccer/league/_/name/usa.1",
+          "text": "Index"
+        },
+        {
+          "rel": [
+            "index",
+            "sportscenter",
+            "app",
+            "league"
+          ],
+          "href": "sportscenter://x-callback-url/showClubhouse?uid=s:600~l:770",
+          "text": "Index"
+        },
+        {
+          "rel": [
+            "schedule",
+            "desktop",
+            "league"
+          ],
+          "href": "https://www.espn.com/soccer/schedule/_/league/usa.1",
+          "text": "Schedule"
+        },
+        {
+          "rel": [
+            "schedule",
+            "sportscenter",
+            "app",
+            "league"
+          ],
+          "href": "sportscenter://x-callback-url/showClubhouse?uid=s:600~l:770&section=scores",
+          "text": "Schedule"
+        },
+        {
+          "rel": [
+            "standings",
+            "desktop",
+            "league"
+          ],
+          "href": "https://www.espn.com/soccer/table/_/league/usa.1",
+          "text": "Standings"
+        },
+        {
+          "rel": [
+            "standings",
+            "sportscenter",
+            "app",
+            "league"
+          ],
+          "href": "sportscenter://x-callback-url/showClubhouse?uid=s:600~l:770&section=standings",
+          "text": "Standings"
+        },
+        {
+          "rel": [
+            "scores",
+            "desktop",
+            "league"
+          ],
+          "href": "https://www.espn.com/soccer/scoreboard/_/league/usa.1",
+          "text": "Scores"
+        },
+        {
+          "rel": [
+            "scores",
+            "sportscenter",
+            "app",
+            "league"
+          ],
+          "href": "sportscenter://x-callback-url/showClubhouse?uid=s:600~l:770&section=scores",
+          "text": "Scores"
+        },
+        {
+          "rel": [
+            "stats",
+            "desktop",
+            "league"
+          ],
+          "href": "https://www.espn.com/soccer/stats/_/league/usa.1",
+          "text": "Stats"
+        },
+        {
+          "rel": [
+            "stats",
+            "sportscenter",
+            "app",
+            "league"
+          ],
+          "href": "sportscenter://x-callback-url/showClubhouse?uid=s:600~l:770&section=stats",
+          "text": "Stats"
+        },
+        {
+          "rel": [
+            "teams",
+            "desktop",
+            "league"
+          ],
+          "href": "https://www.espn.com/soccer/teams/_/league/usa.1",
+          "text": "Teams"
+        }
+      ],
+      "logos": [
+        {
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500/19.png",
+          "rel": [
+            "full",
+            "default"
+          ]
+        },
+        {
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/19.png",
+          "rel": [
+            "full",
+            "dark"
+          ]
+        }
+      ]
+    },
+    "linksv4": [
+      {
+        "rel": [
+          "summary",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/match/_/gameId/761908/fc-cincinnati-inter-miami-cf",
+        "text": "Gamecast",
+        "shortText": "Summary",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "recap",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/report/_/gameId/761908",
+        "text": "Recap",
+        "shortText": "Recap",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "teamstats",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/team-stats/_/gameId/761908",
+        "text": "Team Stats",
+        "shortText": "Team Stats",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "playerstats",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/player-stats/_/gameId/761908",
+        "text": "Player Stats",
+        "shortText": "Player Stats",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "commentary",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/commentary/_/gameId/761908",
+        "text": "Commentary",
+        "shortText": "Commentary",
+        "isExternal": false,
+        "isPremium": false
+      },
+      {
+        "rel": [
+          "videos",
+          "desktop",
+          "event"
+        ],
+        "href": "https://www.espn.com/soccer/video/_/gameId/761908",
+        "text": "Videos",
+        "shortText": "Videos",
+        "isExternal": false,
+        "isPremium": false
+      }
+    ]
+  },
+  "rosters": [
+    {
+      "team": {
+        "id": "20232",
+        "displayName": "Inter Miami CF"
+      },
+      "formation": "4-3-3",
+      "roster": [
+        {
+          "starter": true,
+          "jersey": "97",
+          "position": {
+            "name": "Goalkeeper",
+            "displayName": "Goalkeeper",
+            "abbreviation": "G"
+          },
+          "formationPlace": "1",
+          "athlete": {
+            "id": "231059",
+            "displayName": "Dayne St. Clair",
+            "shortName": "D. St. Clair"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "16",
+          "position": {
+            "name": "Center Left Defender",
+            "displayName": "Center Left Defender",
+            "abbreviation": "CD-L"
+          },
+          "formationPlace": "6",
+          "athlete": {
+            "id": "314952",
+            "displayName": "Micael",
+            "shortName": "Micael"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "5",
+          "position": {
+            "name": "Center Right Defender",
+            "displayName": "Center Right Defender",
+            "abbreviation": "CD-R"
+          },
+          "formationPlace": "5",
+          "athlete": {
+            "id": "173666",
+            "displayName": "Casemiro",
+            "shortName": "Casemiro"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "3",
+          "position": {
+            "name": "Left Back",
+            "displayName": "Left Back",
+            "abbreviation": "LB"
+          },
+          "formationPlace": "3",
+          "athlete": {
+            "id": "231241",
+            "displayName": "Sergio Reguilón",
+            "shortName": "S. Reguilón"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "2",
+          "position": {
+            "name": "Right Back",
+            "displayName": "Right Back",
+            "abbreviation": "RB"
+          },
+          "formationPlace": "2",
+          "athlete": {
+            "id": "315617",
+            "displayName": "Gonzalo Luján",
+            "shortName": "G. Luján"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "22",
+          "position": {
+            "name": "Center Midfielder",
+            "displayName": "Center Midfielder",
+            "abbreviation": "CM"
+          },
+          "formationPlace": "4",
+          "athlete": {
+            "id": "290715",
+            "displayName": "David Ayala",
+            "shortName": "D. Ayala"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "80",
+          "position": {
+            "name": "Left Midfielder",
+            "displayName": "Left Midfielder",
+            "abbreviation": "LM"
+          },
+          "formationPlace": "8",
+          "athlete": {
+            "id": "297328",
+            "displayName": "Matías Galarza",
+            "shortName": "M. Galarza"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "7",
+          "position": {
+            "name": "Right Midfielder",
+            "displayName": "Right Midfielder",
+            "abbreviation": "RM"
+          },
+          "formationPlace": "7",
+          "athlete": {
+            "id": "174466",
+            "displayName": "Rodrigo De Paul",
+            "shortName": "R. De Paul"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "9",
+          "position": {
+            "name": "Forward",
+            "displayName": "Forward",
+            "abbreviation": "F"
+          },
+          "formationPlace": "9",
+          "athlete": {
+            "id": "125088",
+            "displayName": "Luis Suárez",
+            "shortName": "L. Suárez"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "19",
+          "position": {
+            "name": "Left Forward",
+            "displayName": "Left Forward",
+            "abbreviation": "LF"
+          },
+          "formationPlace": "11",
+          "athlete": {
+            "id": "228394",
+            "displayName": "Germán Berterame",
+            "shortName": "G. Berterame"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "10",
+          "position": {
+            "name": "Right Forward",
+            "displayName": "Right Forward",
+            "abbreviation": "RF"
+          },
+          "formationPlace": "10",
+          "athlete": {
+            "id": "45843",
+            "displayName": "Lionel Messi",
+            "shortName": "L. Messi"
+          }
+        }
+      ]
+    },
+    {
+      "team": {
+        "id": "18267",
+        "displayName": "FC Cincinnati"
+      },
+      "formation": "3-5-2",
+      "roster": [
+        {
+          "starter": true,
+          "jersey": "18",
+          "position": {
+            "name": "Goalkeeper",
+            "displayName": "Goalkeeper",
+            "abbreviation": "G"
+          },
+          "formationPlace": "1",
+          "athlete": {
+            "id": "315972",
+            "displayName": "Roman Celentano",
+            "shortName": "R. Celentano"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "4",
+          "position": {
+            "name": "Center Defender",
+            "displayName": "Center Defender",
+            "abbreviation": "CD"
+          },
+          "formationPlace": "5",
+          "athlete": {
+            "id": "201354",
+            "displayName": "Nick Hagglund",
+            "shortName": "N. Hagglund"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "15",
+          "position": {
+            "name": "Center Left Defender",
+            "displayName": "Center Left Defender",
+            "abbreviation": "CD-L"
+          },
+          "formationPlace": "4",
+          "athlete": {
+            "id": "232755",
+            "displayName": "Teenage Hadebe",
+            "shortName": "T. Hadebe"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "11",
+          "position": {
+            "name": "Center Right Defender",
+            "displayName": "Center Right Defender",
+            "abbreviation": "CD-R"
+          },
+          "formationPlace": "6",
+          "athlete": {
+            "id": "363908",
+            "displayName": "Samuel Gidi",
+            "shortName": "S. Gidi"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "5",
+          "position": {
+            "name": "Center Left Midfielder",
+            "displayName": "Center Left Midfielder",
+            "abbreviation": "CM-L"
+          },
+          "formationPlace": "8",
+          "athlete": {
+            "id": "275106",
+            "displayName": "Obinna Nwobodo",
+            "shortName": "O. Nwobodo"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "22",
+          "position": {
+            "name": "Center Right Midfielder",
+            "displayName": "Center Right Midfielder",
+            "abbreviation": "CM-R"
+          },
+          "formationPlace": "7",
+          "athlete": {
+            "id": "362895",
+            "displayName": "Gerardo Valenzuela",
+            "shortName": "G. Valenzuela"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "10",
+          "position": {
+            "name": "Attacking Midfielder",
+            "displayName": "Attacking Midfielder",
+            "abbreviation": "AM"
+          },
+          "formationPlace": "11",
+          "athlete": {
+            "id": "86436",
+            "displayName": "Evander",
+            "shortName": "Evander"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "29",
+          "position": {
+            "name": "Left Midfielder",
+            "displayName": "Left Midfielder",
+            "abbreviation": "LM"
+          },
+          "formationPlace": "3",
+          "athlete": {
+            "id": "236049",
+            "displayName": "Bryan Ramirez",
+            "shortName": "B. Ramirez"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "23",
+          "position": {
+            "name": "Right Midfielder",
+            "displayName": "Right Midfielder",
+            "abbreviation": "RM"
+          },
+          "formationPlace": "2",
+          "athlete": {
+            "id": "343937",
+            "displayName": "David Doudera",
+            "shortName": "D. Doudera"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "17",
+          "position": {
+            "name": "Center Left Forward",
+            "displayName": "Center Left Forward",
+            "abbreviation": "CF-L"
+          },
+          "formationPlace": "9",
+          "athlete": {
+            "id": "388854",
+            "displayName": "Kenji Mboma Dem",
+            "shortName": "K. Mboma Dem"
+          }
+        },
+        {
+          "starter": true,
+          "jersey": "9",
+          "position": {
+            "name": "Center Right Forward",
+            "displayName": "Center Right Forward",
+            "abbreviation": "CF-R"
+          },
+          "formationPlace": "10",
+          "athlete": {
+            "id": "251694",
+            "displayName": "Kévin Denkey",
+            "shortName": "K. Denkey"
+          }
+        }
+      ]
+    }
+  ]
+}

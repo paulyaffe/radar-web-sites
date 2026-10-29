@@ -378,7 +378,7 @@ function playerEvents(player) {
 function positionName(position) {
   const code=String(position?.abbreviation || '').slice(0,12);
   return /^(G|GK)$/.test(code)?'Portero':/^(CD(?:-[LR])?|CB(?:-[LR])?|LB|RB|D|DL|DR|DC)$/.test(code)?'Defensa':
-    /^(AM|DM|CM|LM|RM|M|LWB|RWB)/.test(code)?'Centrocampista':/^(F|ST|CF|LW|RW)/.test(code)?'Delantero':'';
+    /^(AM|DM|CM|LM|RM|M|LWB|RWB)/.test(code)?'Centrocampista':/^(F|ST|CF|LW|RW|LF|RF)/.test(code)?'Delantero':'';
 }
 function normalizePlayer(player) {
   const athlete=player.athlete || {},id=teamId(athlete.id);
@@ -407,13 +407,13 @@ export function formationRows(players, formation) {
     if(/^DM/.test(c))return 20;
     if(/^(CM|LM|RM|M|LWB|RWB)/.test(c))return 30;
     if(/^AM/.test(c))return 40;
-    if(/^(F|ST|CF|LW|RW)/.test(c))return 50;
+    if(/^(F|ST|CF|LW|RW|LF|RF)/.test(c))return 50;
     return null;
   }
   const field=starters.filter(p=>p!==keeper[0]);
   if(field.some(p=>depth(p)===null) || field.filter(p=>depth(p)===10).length!==counts[0])return [];
-  const side=p=>/^(LB|LWB|LW|LM|DL)$/.test(p.position_code)?-2:/(?:-L)$/.test(p.position_code)?-1:
-    /^(RB|RWB|RW|RM|DR)$/.test(p.position_code)?2:/(?:-R)$/.test(p.position_code)?1:0;
+  const side=p=>/^(LB|LWB|LW|LM|DL|LF)$/.test(p.position_code)?-2:/(?:-L)$/.test(p.position_code)?-1:
+    /^(RB|RWB|RW|RM|DR|RF)$/.test(p.position_code)?2:/(?:-R)$/.test(p.position_code)?1:0;
   field.sort((a,b)=>depth(a)-depth(b)||(a.place||0)-(b.place||0));
   const rows=[[keeper[0].id]];let offset=0;
   for(const count of counts){
@@ -494,7 +494,7 @@ export async function matchDetails(request,ctx={waitUntil:()=>{}}) {
   if(request.method!=='GET')return json({error:'Método no permitido'},405);
   const url=new URL(request.url),code=url.searchParams.get('competicion'),id=teamId(url.searchParams.get('id'));
   if(!id||!COMPETITIONS[code])return json({error:'Partido o competición no válidos.'},400);
-  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=4',ctx,async old=>{
+  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=5',ctx,async old=>{
     const raw=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/summary?event='+id,4_000_000);
     const year=String(raw.header?.season?.year || '');
     return matchNationalities(normalizeMatchDetails(raw,code,id),/^20\d{2}$/.test(year)?year:'',url.origin,ctx,old);

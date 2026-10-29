@@ -33,6 +33,23 @@ assert.deepEqual(formationRows(result.lineups[0].players,'4-4-3'),[]);
 assert.deepEqual(formationRows(result.lineups[0].players.slice(1),'4-2-3-1'),[]);
 const defensiveMid=structuredClone(result.lineups[0].players);defensiveMid.find(p=>p.place===4).position_code='DM-L';
 assert.deepEqual(formationRows(defensiveMid,'4-2-3-1').map(r=>r.length),[1,4,2,3,1]);
+{
+  const mls=JSON.parse(fs.readFileSync(new URL('./fixtures/match-mls-761908.json',import.meta.url),'utf8'));
+  const match=normalizeMatchDetails(mls,'MLS','761908'),miami=match.lineups.find(l=>l.team.id==='20232'),cincinnati=match.lineups.find(l=>l.team.id==='18267');
+  assert.equal(miami.formation,'4-3-3');
+  assert.deepEqual(miami.rows.map(r=>r.length),[1,4,3,3],'Left/right forwards must not suppress Inter Miami’s published pitch');
+  assert.deepEqual(cincinnati.rows.map(r=>r.length),[1,3,5,2]);
+  assert.deepEqual(miami.rows.at(-1).map(id=>miami.players.find(p=>p.id===id).name),['Germán Berterame','Luis Suárez','Lionel Messi'],'Wide forwards stay on their published sides');
+  for(const lineup of [miami,cincinnati])assert.equal(new Set(lineup.rows.flat()).size,11);
+  for(const code of ['LF','RF'])assert.equal(miami.players.find(p=>p.position_code===code).position,'Delantero');
+  const backThree=structuredClone(miami.players),codes={'314952':'CD-L','173666':'CD','231241':'LWB','315617':'CD-R','297328':'CM','174466':'RWB'};
+  for(const player of backThree)if(codes[player.id])player.position_code=codes[player.id];
+  const threeRows=formationRows(backThree,'3-4-3');
+  assert.deepEqual(threeRows.map(r=>r.length),[1,3,4,3],'The same wide-forward codes work with a three-player defence');
+  assert.deepEqual(threeRows.at(-1),miami.rows.at(-1));
+  const unknown=structuredClone(miami.players);unknown.find(p=>p.position_code==='LF').position_code='UNKNOWN';
+  assert.deepEqual(formationRows(unknown,'4-3-3'),[],'Unknown positions still fall back to a list without inventing a layout');
+}
 const malicious=structuredClone(fixture);malicious.rosters[0].roster[0].athlete.headshot={href:'https://evil.invalid/x.png'};
 assert.ok([...result.lineups,...normalizeMatchDetails(malicious,'CL','401915313').lineups].every(l=>l.players.every(p=>!Object.hasOwn(p,'photo'))),'Player photos are omitted regardless of their source URL');
 

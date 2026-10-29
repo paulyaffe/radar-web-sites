@@ -193,6 +193,8 @@ La ficha muestra goleadores, fecha y hora peninsular, formacion inicial,
 titulares y banquillo. El campo se dibuja segun la formacion publicada y los
 roles iniciales, sin simular coordenadas de seguimiento ni inventar onces.
 Si faltan formacion o roles completos, se presenta la alineacion como lista.
+Los extremos LF/RF se reconocen como delanteros y se colocan a izquierda y
+derecha del ataque, también en las formaciones con tres defensas.
 Los jugadores se representan siempre con su dorsal, tanto en el campo como
 en el banquillo; no se publican fotos ni sus URLs en las APIs de jugadores.
 Si la fuente no publica un dorsal, se muestra un punto sin inventar el número.
