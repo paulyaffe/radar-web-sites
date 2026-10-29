@@ -26,7 +26,6 @@
   function playerNode(player,pitch=false){
     const item=el(pitch?'div':'li',undefined,pitch?'pitch-player':'lineup-player');item.setAttribute('data-player-id',player.id);item.title=player.name;
     const avatar=el('span',undefined,'player-avatar');avatar.append(el('span',player.number||'·','player-number'));
-    if(player.photo)avatar.append(image(player.photo,'player-photo',40,40));
     const text=el('span',undefined,'player-caption'),name=el('span',pitch?player.short_name:player.name,'player-name');
     CountryHighlight.watchPlayer(item,name,player);text.append(name);
     if(!pitch&&player.position)text.append(el('small',(player.number?'N.º '+player.number+' · ':'')+player.position));

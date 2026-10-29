@@ -34,7 +34,7 @@ assert.deepEqual(formationRows(result.lineups[0].players.slice(1),'4-2-3-1'),[])
 const defensiveMid=structuredClone(result.lineups[0].players);defensiveMid.find(p=>p.place===4).position_code='DM-L';
 assert.deepEqual(formationRows(defensiveMid,'4-2-3-1').map(r=>r.length),[1,4,2,3,1]);
 const malicious=structuredClone(fixture);malicious.rosters[0].roster[0].athlete.headshot={href:'https://evil.invalid/x.png'};
-assert.equal(normalizeMatchDetails(malicious,'CL','401915313').lineups[0].players[0].photo,'');
+assert.ok([...result.lineups,...normalizeMatchDetails(malicious,'CL','401915313').lineups].every(l=>l.players.every(p=>!Object.hasOwn(p,'photo'))),'Player photos are omitted regardless of their source URL');
 
 const originalFetch=globalThis.fetch,originalCaches=globalThis.caches;
 const cache=new Map(),waiting=[];let calls=0;

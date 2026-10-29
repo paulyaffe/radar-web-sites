@@ -360,13 +360,6 @@ async function cachedData(url,key,ctx,build,freshMs=FRESH_MS) {
     return old ? json({...old,stale:true,error:'No se ha podido actualizar. Se muestra la última copia disponible.'}) : json({error:'No se pueden consultar los datos ahora. Inténtalo de nuevo.'},503);
   }
 }
-function playerPhoto(value) {
-  try {
-    const url=new URL(value);
-    return url.protocol==='https:' && url.hostname.endsWith('.espncdn.com') &&
-      url.pathname.startsWith('/i/headshots/soccer/')?url.href:'';
-  }catch{return '';}
-}
 function playerEvents(player) {
   const events=[];
   for(const play of (player.plays || []).slice(0,40)) {
@@ -394,7 +387,6 @@ function normalizePlayer(player) {
     starter:player.starter===true,place:Number(player.formationPlace)||null,
     ...athleteNationality(athlete),
     uruguayan:isUruguayan(athleteNationality(athlete)),
-    photo:playerPhoto(athlete.headshot?.href || athlete.headshot || player.media?.headshot?.href),
     events:playerEvents(player)};
 }
 // Formation places and roles describe the published initial formation, not
@@ -492,7 +484,7 @@ export async function matchDetails(request,ctx={waitUntil:()=>{}}) {
   if(request.method!=='GET')return json({error:'Método no permitido'},405);
   const url=new URL(request.url),code=url.searchParams.get('competicion'),id=teamId(url.searchParams.get('id'));
   if(!id||!COMPETITIONS[code])return json({error:'Partido o competición no válidos.'},400);
-  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=2',ctx,async old=>{
+  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=3',ctx,async old=>{
     const raw=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/summary?event='+id,4_000_000);
     const year=String(raw.header?.season?.year || '');
     return matchNationalities(normalizeMatchDetails(raw,code,id),/^20\d{2}$/.test(year)?year:'',url.origin,ctx,old);
@@ -544,8 +536,8 @@ export function normalizeSquad(data,id) {
     if(!playerId || seen.has(playerId) || !athlete.displayName)continue;
     if(['transferred','retired','released','loaned-out'].includes(athlete.status?.type))continue;
     if(!national && athlete.team?.id && teamId(athlete.team.id)!==id)continue;
-    const {name,short_name,number,position,position_code,flag,nationality,uruguayan,photo}=normalizePlayer({athlete,jersey:athlete.jersey,position:athlete.position});
-    seen.add(playerId);players.push({id:playerId,name,short_name,number,position,position_code,flag,nationality,uruguayan,photo});
+    const {name,short_name,number,position,position_code,flag,nationality,uruguayan}=normalizePlayer({athlete,jersey:athlete.jersey,position:athlete.position});
+    seen.add(playerId);players.push({id:playerId,name,short_name,number,position,position_code,flag,nationality,uruguayan});
   }
   const rank=p=>p.position==='Portero'?0:p.position==='Defensa'?1:p.position==='Centrocampista'?2:p.position==='Delantero'?3:4;
   players.sort((a,b)=>rank(a)-rank(b)||(Number(a.number)||Infinity)-(Number(b.number)||Infinity)||a.name.localeCompare(b.name,'es'));
@@ -555,7 +547,7 @@ export function normalizeSquad(data,id) {
     basis:'first_team_squad',source:'https://www.espn.com/soccer/team/squad/_/id/'+id};
 }
 export async function currentSquad(id,origin,ctx={waitUntil:()=>{}}) {
-  const cache=globalThis.caches?.default,key=new Request(origin+'/api/plantilla?id='+id+'&v=1');let old;
+  const cache=globalThis.caches?.default,key=new Request(origin+'/api/plantilla?id='+id+'&v=2');let old;
   try{const hit=await cache?.match(key);old=hit&&await hit.json();}catch{}
   if(old&&Date.now()-Date.parse(old.checked_at)<6*3600000)return old;
   try{

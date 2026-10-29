@@ -187,14 +187,16 @@ Se conserva tambien esta informacion en las copias periodicas de ESPN.
 competiciones de la lista existente, valida la identidad del partido y usa una
 cache de un minuto. Ante fallos conserva la ultima copia y su fecha original.
 No requiere nuevas cuentas, tokens ni consultas desde el navegador a la API
-de ESPN. Los escudos y fotos publicados pueden proceder de su CDN.
+de ESPN. Los escudos publicados pueden proceder de su CDN.
 
 La ficha muestra goleadores, fecha y hora peninsular, formacion inicial,
 titulares y banquillo. El campo se dibuja segun la formacion publicada y los
 roles iniciales, sin simular coordenadas de seguimiento ni inventar onces.
 Si faltan formacion o roles completos, se presenta la alineacion como lista.
-Las fotos solo se usan si la fuente incluye una URL valida; en otro caso
-se muestra el dorsal. Las notas 0-10 y las lesiones no se estiman.
+Los jugadores se representan siempre con su dorsal, tanto en el campo como
+en el banquillo; no se publican fotos ni sus URLs en las APIs de jugadores.
+Si la fuente no publica un dorsal, se muestra un punto sin inventar el número.
+Las notas 0-10 y las lesiones no se estiman.
 El detalle se consulta de nuevo cada minuto mientras la pagina es visible;
 no se garantiza un servicio en directo. Creditos: /metodo/.
 
