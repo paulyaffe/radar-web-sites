@@ -197,6 +197,11 @@ Los jugadores se representan siempre con su dorsal, tanto en el campo como
 en el banquillo; no se publican fotos ni sus URLs en las APIs de jugadores.
 Si la fuente no publica un dorsal, se muestra un punto sin inventar el número.
 Las notas 0-10 y las lesiones no se estiman.
+En el banquillo se muestra la posición habitual (portero, defensa,
+centrocampista o delantero), nunca «Suplente». Se completa desde la plantilla
+o la ficha del jugador cuando el partido solo publica su condición de reserva.
+Si no está disponible, se indica sin inventarla. Se mantienen los roles del
+once inicial para representar la formación publicada.
 El detalle se consulta de nuevo cada minuto mientras la pagina es visible;
 no se garantiza un servicio en directo. Creditos: /metodo/.
 

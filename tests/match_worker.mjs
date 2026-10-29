@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import worker,{normalizeGoals,eventMinute,normalizeMatchDetails,formationRows,matchDetails} from '../calendar_worker.mjs';
+import worker,{normalizeGoals,eventMinute,normalizeMatchDetails,formationRows,matchDetails,matchNationalities} from '../calendar_worker.mjs';
 
 const fixture=JSON.parse(fs.readFileSync(new URL('./fixtures/match-real.json',import.meta.url),'utf8'));
 const result=normalizeMatchDetails(fixture,'CL','401915313');
@@ -36,10 +36,47 @@ assert.deepEqual(formationRows(defensiveMid,'4-2-3-1').map(r=>r.length),[1,4,2,3
 const malicious=structuredClone(fixture);malicious.rosters[0].roster[0].athlete.headshot={href:'https://evil.invalid/x.png'};
 assert.ok([...result.lineups,...normalizeMatchDetails(malicious,'CL','401915313').lineups].every(l=>l.players.every(p=>!Object.hasOwn(p,'photo'))),'Player photos are omitted regardless of their source URL');
 
+{
+  const squad=JSON.parse(fs.readFileSync(new URL('./fixtures/first-team-real.json',import.meta.url),'utf8'));
+  const raw=structuredClone(fixture);
+  for(const team of raw.rosters)for(const player of team.roster)player.athlete.citizenship='Argentina';
+  const sample=()=>{const match=normalizeMatchDetails(raw,'CL','401915313');match.lineups[1].players=[];return match;};
+  const previousFetch=globalThis.fetch,previousCaches=globalThis.caches,requests=[];
+  globalThis.caches=undefined;
+  globalThis.fetch=async value=>{
+    const url=new URL(value);requests.push(url.href);
+    if(url.pathname.endsWith('/teams/86/roster')){
+      assert.equal(url.searchParams.get('season'),'2026');
+      return Response.json({...squad,athletes:[{items:squad.athletes.filter(p=>p.id!=='257237')}]});
+    }
+    assert.ok(url.pathname.endsWith('/athletes/257237'),'Only the keeper omitted from the roster needs an individual lookup');
+    return Response.json({athlete:squad.athletes.find(p=>p.id==='257237')});
+  };
+  try{
+    const before=sample(),enriched=await matchNationalities(sample(),'2026','https://site.test',{waitUntil(){} });
+    const players=enriched.lineups[0].players,bench=players.filter(p=>!p.starter);
+    assert.equal(players.find(p=>p.id==='251634').position,'Defensa');
+    assert.equal(players.find(p=>p.id==='402479').position,'Delantero');
+    assert.equal(players.find(p=>p.id==='257237').position,'Portero');
+    assert.deepEqual([...new Set(bench.map(p=>p.position))].sort(),['Centrocampista','Defensa','Delantero','Portero']);
+    assert.ok(players.every(p=>p.nationality==='Argentina'),'Position enrichment cannot replace an already known nationality');
+    assert.deepEqual(enriched.lineups[0].rows,before.lineups[0].rows,'Usual positions do not rearrange the starting formation');
+    for(const starter of before.lineups[0].players.filter(p=>p.starter))assert.equal(players.find(p=>p.id===starter.id).position,starter.position);
+    assert.equal(requests.length,2,'One squad request resolves all other bench positions');
+    globalThis.fetch=async()=>{throw Error('offline');};
+    const retained=await matchNationalities(sample(),'2026','https://offline.test',{waitUntil(){}},enriched);
+    assert.deepEqual(retained.lineups[0].players.filter(p=>!p.starter).map(p=>p.position),bench.map(p=>p.position),'Keep the last verified positions if the source fails');
+    const unknown=await matchNationalities(sample(),'2026','https://offline.test',{waitUntil(){}});
+    assert.ok(unknown.lineups[0].players.filter(p=>!p.starter).every(p=>p.position===''),'Unavailable positions are never guessed or labelled Substitute');
+    const direct=structuredClone(raw);direct.rosters[0].roster.find(p=>p.athlete.id==='257237').athlete.position={abbreviation:'G'};
+    assert.equal(normalizeMatchDetails(direct,'CL','401915313').lineups[0].players.find(p=>p.id==='257237').position,'Portero','An embedded athlete position works without a roster lookup');
+  }finally{globalThis.fetch=previousFetch;globalThis.caches=previousCaches;}
+}
+
 const originalFetch=globalThis.fetch,originalCaches=globalThis.caches;
 const cache=new Map(),waiting=[];let calls=0;
 globalThis.caches={default:{match:async key=>cache.get(key.url)?.clone(),put:async(key,value)=>cache.set(key.url,value.clone())}};
-const identified=structuredClone(fixture);for(const team of identified.rosters)for(const player of team.roster)player.athlete.citizenship='Spain';
+const identified=structuredClone(fixture);for(const team of identified.rosters)for(const player of team.roster){player.athlete.citizenship='Spain';if(!player.starter)player.athlete.position={abbreviation:'M'};}
 globalThis.fetch=async url=>{calls++;assert.equal(new URL(url).hostname,'site.api.espn.com');assert.equal(new URL(url).searchParams.get('event'),'401915313');return Response.json(identified);};
 const ctx={waitUntil:p=>waiting.push(p)},address='https://site.test/api/partido?competicion=CL&id=401915313';
 try{

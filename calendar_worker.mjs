@@ -375,12 +375,16 @@ function playerEvents(player) {
     if(present&&!events.some(e=>e.type===type))events.push({type,minute:''});
   return events;
 }
+function positionName(position) {
+  const code=String(position?.abbreviation || '').slice(0,12);
+  return /^(G|GK)$/.test(code)?'Portero':/^(CD(?:-[LR])?|CB(?:-[LR])?|LB|RB|D|DL|DR|DC)$/.test(code)?'Defensa':
+    /^(AM|DM|CM|LM|RM|M|LWB|RWB)/.test(code)?'Centrocampista':/^(F|ST|CF|LW|RW)/.test(code)?'Delantero':'';
+}
 function normalizePlayer(player) {
   const athlete=player.athlete || {},id=teamId(athlete.id);
   const number=String(player.jersey || athlete.jersey || '');
-  const code=String(player.position?.abbreviation || '').slice(0,12);
-  const position=/^(G|GK)$/.test(code)?'Portero':/^(CD(?:-[LR])?|CB(?:-[LR])?|LB|RB|D|DL|DR|DC)$/.test(code)?'Defensa':
-    /^(AM|DM|CM|LM|RM|M|LWB|RWB)/.test(code)?'Centrocampista':code==='SUB'?'Suplente':/^(F|ST|CF|LW|RW)/.test(code)?'Delantero':'';
+  const code=String(player.position?.abbreviation || athlete.position?.abbreviation || '').slice(0,12);
+  const position=positionName(player.position)||positionName(athlete.position);
   return {id,name:String(athlete.displayName || athlete.fullName || '').slice(0,100),
     short_name:String(athlete.shortName || athlete.displayName || '').slice(0,100),
     number:/^\d{1,3}$/.test(number)?number:'',position,position_code:code,
@@ -449,33 +453,39 @@ function markUruguay(payload) {
   payload.match.lineups_published=payload.lineups.every(l=>l.players.length>0);
   return payload;
 }
-async function squadNationalities(code,id,season,origin,ctx) {
-  const cache=globalThis.caches?.default,key=new Request(origin+'/__nationalities?competicion='+code+'&equipo='+id+'&temporada='+season);
+async function squadPlayerDetails(code,id,season,origin,ctx) {
+  const cache=globalThis.caches?.default,key=new Request(origin+'/__nationalities?competicion='+code+'&equipo='+id+'&temporada='+season+'&v=2');
   try{const hit=await cache?.match(key);if(hit)return await hit.json();}catch{}
   try{
     const data=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/teams/'+id+'/roster'+(season?'?season='+season:''));
     if(teamId(data.team?.id)!==id || !Array.isArray(data.athletes))throw Error('Plantilla no coincidente');
-    const players=data.athletes.flatMap(a=>a.items || [a]).slice(0,200).filter(a=>teamId(a.id)).map(a=>({id:teamId(a.id),...athleteNationality(a)}));
+    const players=data.athletes.flatMap(a=>a.items || [a]).slice(0,200).filter(a=>teamId(a.id)).map(a=>({id:teamId(a.id),...athleteNationality(a),position:positionName(a.position)}));
     if(cache)ctx.waitUntil(cache.put(key,Response.json(players,{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
     return players;
   }catch{return [];}
 }
+function fillPlayerDetails(player,details) {
+  if(!details)return;
+  if(!player.nationality&&!player.flag)Object.assign(player,{nationality:details.nationality,flag:details.flag});
+  if(!player.position&&details.position)player.position=details.position;
+}
 export async function matchNationalities(payload,season,origin,ctx,previous) {
   const code=payload.match.competition;
   await Promise.all(payload.lineups.map(async lineup=>{
-    if(!lineup.players.some(p=>!p.nationality&&!p.flag))return;
-    const squad=await squadNationalities(code,lineup.team.id,season,origin,ctx);
+    if(!lineup.players.some(p=>(!p.nationality&&!p.flag)||!p.position))return;
+    const squad=await squadPlayerDetails(code,lineup.team.id,season,origin,ctx);
     const byId=new Map(squad.map(p=>[p.id,p]));
-    for(const player of lineup.players){const nationality=byId.get(player.id);if(!player.nationality&&!player.flag&&nationality)Object.assign(player,nationality);}
+    for(const player of lineup.players)fillPlayerDetails(player,byId.get(player.id));
   }));
   // Historical or youth players may no longer be in that season's club roster.
   // Bound individual lookups to keep each request within the hosting limits.
-  const missing=payload.lineups.flatMap(l=>l.players).filter(p=>!p.nationality&&!p.flag).slice(0,10);
-  await Promise.all(missing.map(async p=>Object.assign(p,await playerNationality(p.id,origin,ctx))));
+  const players=payload.lineups.flatMap(l=>l.players);
+  const missing=[...players.filter(p=>!p.nationality&&!p.flag),...players.filter(p=>(p.nationality||p.flag)&&!p.position)].slice(0,10);
+  await Promise.all(missing.map(async p=>fillPlayerDetails(p,await playerNationality(p.id,origin,ctx))));
   const known=new Map((previous?.lineups || []).flatMap(l=>l.players || []).map(p=>[p.id,p]));
   for(const lineup of payload.lineups)for(const player of lineup.players){
     const old=known.get(player.id);
-    if(!player.nationality&&!player.flag&&old)Object.assign(player,{nationality:old.nationality,flag:old.flag});
+    fillPlayerDetails(player,old);
     player.uruguayan=isUruguayan(player);
   }
   return markUruguay(payload);
@@ -484,7 +494,7 @@ export async function matchDetails(request,ctx={waitUntil:()=>{}}) {
   if(request.method!=='GET')return json({error:'Método no permitido'},405);
   const url=new URL(request.url),code=url.searchParams.get('competicion'),id=teamId(url.searchParams.get('id'));
   if(!id||!COMPETITIONS[code])return json({error:'Partido o competición no válidos.'},400);
-  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=3',ctx,async old=>{
+  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=4',ctx,async old=>{
     const raw=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/summary?event='+id,4_000_000);
     const year=String(raw.header?.season?.year || '');
     return matchNationalities(normalizeMatchDetails(raw,code,id),/^20\d{2}$/.test(year)?year:'',url.origin,ctx,old);
@@ -574,12 +584,12 @@ export async function teamSquad(request,ctx={waitUntil:()=>{}}) {
   return json(data,data.available?200:503);
 }
 async function playerNationality(id,origin,ctx) {
-  const cache=globalThis.caches?.default,key=new Request(origin+'/api/banderas?jugador='+id+'&v=1');
+  const cache=globalThis.caches?.default,key=new Request(origin+'/api/banderas?jugador='+id+'&v=2');
   try{const cached=await cache?.match(key);if(cached)return await cached.json();}catch{}
   try{
     const data=await upstreamJson('https://site.api.espn.com/apis/common/v3/sports/soccer/all/athletes/'+id);
     if(teamId(data?.athlete?.id)!==id)throw Error('Jugador no coincidente');
-    const player={id,...athleteNationality(data.athlete)};
+    const player={id,...athleteNationality(data.athlete),position:positionName(data.athlete.position)};
     if(cache)ctx.waitUntil(cache.put(key,new Response(JSON.stringify(player),{headers:{'Cache-Control':'public, max-age=86400'}})).catch(()=>{}));
     return player;
   }catch{return {id,flag:'',nationality:''};}

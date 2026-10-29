@@ -15,6 +15,7 @@ globalThis.fetch=async url=>{
   const team=fixture.rosters.find(r=>path.endsWith('/teams/'+r.team.id+'/roster'));
   if(!team)throw Error('Unexpected upstream');
   return Response.json({team:team.team,athletes:[...team.roster.map(p=>({id:p.athlete.id,
+    position:{abbreviation:p.starter?p.position.abbreviation:'M'},
     citizenship:[homeBench,awayStarter].includes(p.athlete.id)?'Uruguay':'Spain'})),
     {id:'99999999',displayName:'Uruguayo fuera de la convocatoria',citizenship:'Uruguay'}]});
 };

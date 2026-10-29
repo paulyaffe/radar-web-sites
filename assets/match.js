@@ -28,7 +28,7 @@
     const avatar=el('span',undefined,'player-avatar');avatar.append(el('span',player.number||'·','player-number'));
     const text=el('span',undefined,'player-caption'),name=el('span',pitch?player.short_name:player.name,'player-name');
     CountryHighlight.watchPlayer(item,name,player);text.append(name);
-    if(!pitch&&player.position)text.append(el('small',(player.number?'N.º '+player.number+' · ':'')+player.position));
+    if(!pitch)text.append(el('small',(player.number?'N.º '+player.number+' · ':'')+(player.position||'Posición no disponible')));
     text.append(badges(player));item.append(avatar,text);return item;
   }
   function lineupCard(lineup){
