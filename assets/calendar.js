@@ -4,7 +4,7 @@
   const form=root.querySelector('form'),date=form.elements.fecha,filter=form.elements.competicion;
   const status=root.querySelector('[data-fixtures-status]'),list=root.querySelector('[data-fixtures-list]');
   const countryOnly=root.querySelector('[data-country-only]'),countryOnlyKey='lajornada.only-country';
-  let onlyCountry=false,view=[],totalMatches=0,partialDay=false,calendarReady=false;
+  let onlyCountry=false,view=[],totalMatches=0,partialDay=false,pendingDay=false,calendarReady=false;
   try{onlyCountry=localStorage.getItem(countryOnlyKey)==='1';}catch{}
   const zone='Europe/Madrid';let controller,version=0;
   const dayButtons=[...root.querySelectorAll('[data-day-step]')];
@@ -31,12 +31,12 @@
     }
     list.setAttribute('aria-busy',String(enabled&&pending>0));
     const day=date.value.slice(8,10)+'/'+date.value.slice(5,7)+'/'+date.value.slice(2,4);
-    if(!enabled){setStatus(!totalMatches&&partialDay?'':matchCount(totalMatches)+' · '+day);return;}
+    if(!enabled){setStatus(matchCount(totalMatches)+' · '+day+(pendingDay?' · completando selecciones':partialDay?' · algunas competiciones no disponibles':''));return;}
     if(!shown&&!pending&&!unknown&&!partialDay){setStatus('No hay partidos con jugadores de '+country.name+' · '+day);return;}
     let message=shown+' de '+matchCount(totalMatches)+' · '+day;
     if(pending)message+=' · comprobando plantillas de '+matchCount(pending);
     if(unknown)message+=' · '+matchCount(unknown)+' sin plantilla completa';
-    if(partialDay)message+=' · algunas competiciones no disponibles';
+    if(pendingDay)message+=' · completando selecciones';else if(partialDay)message+=' · algunas competiciones no disponibles';
     setStatus(message);
   }
   function setOnlyCountry(value,persist=true){
@@ -61,7 +61,8 @@
       }
       fragment.append(box);nextView.push({box,rows});
     }
-    view=nextView;totalMatches=count;partialDay=problems.length>0;calendarReady=true;
+    if(!count)fragment.append(el('p',problems.length?'Los partidos no están disponibles en este momento. Puedes elegir otra fecha o competición.':data.some(d=>d.pending_groups?.length)?'Completando los partidos de selecciones para esta fecha…':'No hay partidos publicados para esta fecha y competición. Puedes cambiar la fecha o usar Anterior y Siguiente.','calendar-empty'));
+    view=nextView;totalMatches=count;pendingDay=data.some(d=>d.pending_groups?.length);partialDay=problems.length>0||pendingDay;calendarReady=true;
     list.replaceChildren(fragment);setOnlyCountry(onlyCountry,false);root.setAttribute('aria-busy','false');
   }
   function begin(){
@@ -81,16 +82,20 @@
     const r=await fetch('/api/partidos?calendario=1&fecha='+encodeURIComponent(day)+'&competicion='+encodeURIComponent(code),{signal});
     if(!r.ok)throw Error('Calendario no disponible');return r.json();
   });
-  async function load(updateUrl=true){
+  async function load(updateUrl=true,preserve=false){
     if(!form.reportValidity())return;
+    const keep=preserve&&calendarReady,previousStatus=status.textContent;
     const {myVersion,signal}=begin();
-    calendarReady=false;view=[];totalMatches=0;partialDay=false;
-    root.setAttribute('aria-busy','true');status.textContent='';list.replaceChildren();
+    if(!keep){calendarReady=false;view=[];totalMatches=0;partialDay=false;pendingDay=false;status.textContent='Consultando partidos…';list.replaceChildren(el('p','Cargando la jornada seleccionada…','calendar-empty'));}
     if(updateUrl)updateAddress();
     try{
       const data=await readDay(date.value,filter.value,signal);
       if(myVersion===version)render(data);
-    }catch(e){if(e.name==='AbortError'||myVersion!==version)return;status.textContent='';list.replaceChildren();}
+    }catch(e){
+      if(e.name==='AbortError'||myVersion!==version)return;
+      if(keep){pendingDay=false;setStatus(previousStatus.replace(' · completando selecciones','')+' · No se ha podido actualizar. Se conserva la última consulta.');}
+      else{status.textContent='No se han podido cargar los partidos.';const retry=el('button','Reintentar','button');retry.type='button';retry.addEventListener('click',()=>load());list.replaceChildren(el('p','Puedes volver a intentarlo o elegir otra fecha y competición.','calendar-empty'),retry);}
+    }
     finally{finish(myVersion);}
   }
   async function step(direction){
@@ -113,6 +118,10 @@
   window.addEventListener('storage',event=>{if(event.key===countryOnlyKey)setOnlyCountry(event.newValue==='1',false);});
   const params=new URLSearchParams(location.search);date.value=params.get('fecha')||fmt.format(Date.now());
   if(params.get('competicion')&&[...filter.options].some(o=>o.value===params.get('competicion')))filter.value=params.get('competicion');
-  setOnlyCountry(onlyCountry,false);load(false);
-  setInterval(()=>{if(!document.hidden)load(false);},15*60*1000);
+  setOnlyCountry(onlyCountry,false);
+  let seed;
+  try{seed=JSON.parse(root.querySelector('[data-fixture-bootstrap]')?.textContent||'null');}catch{}
+  if(seed?.date===date.value&&seed.choice===filter.value&&Array.isArray(seed.competitions)&&seed.competitions.every(c=>Array.isArray(c.matches))){render([seed]);if(seed.pending_groups?.length)load(false,true);}
+  else load(false);
+  setInterval(()=>{if(!document.hidden)load(false,true);},15*60*1000);
 })();

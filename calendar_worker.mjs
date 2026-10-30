@@ -601,6 +601,91 @@ export async function playerFlags(request,ctx={waitUntil:()=>{}}) {
   const ids=[...new Set(values)];
   return json({players:await Promise.all(ids.map(id=>playerNationality(id,url.origin,ctx)))});
 }
+function htmlEscape(value) {
+  return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+const htmlClock=new Intl.DateTimeFormat('es-ES',{timeZone:TZ,day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+function htmlTeam(match,side) {
+  const name=htmlEscape(match[side]),id=match[side+'_id'],icon=match[side+'_icon'];
+  const query=new URLSearchParams({competicion:match.competition,...(id?{id}:{nombre:match[side]})});
+  return '<a class="fixture-team team-link" href="/equipo/?'+htmlEscape(query)+'">'+(icon?'<img class="team-icon'+(match.national?' flag-icon':'')+'" src="'+htmlEscape(icon)+'" width="20" height="'+(match.national?'14':'20')+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'')+'<span>'+name+'</span></a>';
+}
+export function renderCalendarHTML(data) {
+  let html='';const competitions=data.competitions||[],total=competitions.reduce((n,c)=>n+c.matches.length,0);
+  if(competitions.some(c=>c.error))html+='<p class="calendar-warning">Algunas competiciones no se han podido actualizar. La jornada puede estar incompleta.</p>';
+  for(const competition of competitions){
+    if(!competition.matches.length)continue;
+    const query='?competicion='+encodeURIComponent(competition.code);
+    html+='<section class="fixture-competition"><h3>'+htmlEscape(competition.name)+'</h3><div class="competition-actions"><a href="/clasificacion/'+query+'">Tabla de posiciones</a><a href="/goleadores/'+query+'">Tabla de goleadores</a></div>';
+    for(const value of competition.matches){
+      const match={...value,competition:competition.code};
+      const score=match.home_score==null||match.away_score==null?'—':match.home_score+' – '+match.away_score;
+      const date=htmlClock.format(new Date(match.date)).replace(',','');
+      const label=match.time_confirmed?date:date.slice(0,8)+' · Hora sin confirmar';
+      const href='/partido/?'+htmlEscape(new URLSearchParams({competicion:competition.code,id:match.id}));
+      html+='<article class="fixture-row"><div class="fixture-time"><time datetime="'+htmlEscape(match.date)+'">'+htmlEscape(label)+'</time><small>'+htmlEscape(match.status)+'</small></div>'+htmlTeam(match,'home')+'<a class="fixture-score match-link" href="'+href+'" aria-label="'+htmlEscape(match.home+' '+score+' '+match.away+'. Ver goles y alineaciones')+'">'+htmlEscape(score)+'</a>'+htmlTeam(match,'away');
+      if(match.goals?.length){
+        html+='<div class="fixture-goals" aria-label="Goleadores">';
+        for(const side of ['home','away'])html+='<div class="goals-'+side+'">'+match.goals.filter(g=>g.side===side).map(g=>'<span>'+htmlEscape(g.name+(g.minute?' '+g.minute:'')+(g.own_goal?' (p. p.)':g.penalty?' (pen.)':''))+'</span>').join('')+'</div>';
+        html+='</div>';
+      }
+      html+='</article>';
+    }
+    html+='</section>';
+  }
+  if(!total)html+='<p class="calendar-empty">'+(competitions.some(c=>c.error)?'Los partidos no están disponibles en este momento. Puedes volver a intentarlo o consultar otra competición.':data.pending_groups?.length?'La primera consulta no contiene partidos de clubes. Falta completar la información de selecciones.':'No hay partidos publicados para esta fecha y competición. Puedes cambiar la fecha o usar Anterior y Siguiente.')+'</p>';
+  if(data.pending_groups?.length)html+='<p class="updated-note">Esta primera vista incluye los clubes. Las selecciones se completan al abrir la página; también puedes elegir Solo selecciones en el filtro.</p>';
+  return html;
+}
+export async function calendarPage(request,env,ctx={waitUntil:()=>{}}) {
+  const original=await env.ASSETS.fetch(request),url=new URL(request.url);
+  if(request.method!=='GET'||original.status!==200||!original.headers.get('content-type')?.includes('text/html'))return original;
+  const template=await original.clone().text();
+  if(!template.includes('data-fixture-bootstrap'))return original;
+  const day=url.searchParams.get('fecha')||madridDay(Date.now());
+  const choice=url.searchParams.get('competicion')||template.match(/data-default-competition="([^"]+)"/)?.[1]||'clubes';
+  let html=template,status=200;
+  try{
+    if(!validDate(day))throw Error('Selecciona una fecha válida (AAAA-MM-DD).');
+    if(!['todas','clubes','selecciones'].includes(choice)&&!COMPETITIONS[choice])throw Error('Selecciona una competición disponible.');
+    const query=new URLSearchParams({fecha:day,competicion:choice==='todas'?'clubes':choice});
+    const response=await fixtures(new Request(url.origin+'/api/partidos?'+query),ctx),data=await response.json();
+    if(!Array.isArray(data.competitions))throw Error('No se ha podido consultar esta jornada.');
+    const seed={...data,choice,pending_groups:[]};
+    if(choice==='todas'){
+      // Both cold groups require 58 upstream requests. Reuse a cached national
+      // group or let the browser fetch it in its own invocation (free limit: 50).
+      let national;
+      try{
+        const cached=await globalThis.caches?.default?.match(new Request(url.origin+'/api/partidos?fecha='+day+'&competicion=selecciones&v=5'));
+        national=cached&&await cached.json();
+      }catch{}
+      if(national&&Array.isArray(national.competitions)&&Date.now()-Date.parse(national.checked_at)<FRESH_MS){
+        seed.competitions.push(...national.competitions);seed.complete=seed.complete&&national.complete;
+      }else{seed.pending_groups=['selecciones'];seed.complete=false;}
+    }
+    const count=seed.competitions.reduce((n,c)=>n+c.matches.length,0);
+    status=response.ok||count?200:503;
+    const stamp=day.slice(8,10)+'/'+day.slice(5,7)+'/'+day.slice(2,4);
+    const label=count+' '+(count===1?'partido':'partidos')+' · '+stamp+(seed.pending_groups.length?' · completando selecciones':'');
+    html=html.replace('<div id="fixture-results" data-fixtures-list></div>',()=>'<div id="fixture-results" data-fixtures-list>'+renderCalendarHTML(seed)+'</div>');
+    html=html.replace(/(<p\b[^>]*data-fixtures-status[^>]*>)[\s\S]*?<\/p>/,'$1'+htmlEscape(label)+'</p>');
+    html=html.replace(/<input type="date" name="fecha"([^>]*)>/,'<input type="date" name="fecha"$1 value="'+day+'">');
+    html=html.replace(/<option\b([^>]*)>/g,(_,attributes)=>'<option'+attributes.replace(/\sselected(?:="[^"]*")?/g,'')+(attributes.match(/\bvalue="([^"]+)"/)?.[1]===choice?' selected':'')+'>');
+    const safeJSON=JSON.stringify(seed).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+    html=html.replace('<script type="application/json" data-fixture-bootstrap></script>',()=>'<script type="application/json" data-fixture-bootstrap>'+safeJSON+'</script>');
+  }catch(error){
+    status=validDate(day)&&(['todas','clubes','selecciones'].includes(choice)||COMPETITIONS[choice])?503:400;
+    const message=status===400?'La fecha o la competición de este enlace no son válidas. Selecciona otra opción con el formulario.':'No se ha podido consultar la jornada. Puedes volver a intentarlo o elegir otra fecha.';
+    html=html.replace('<div id="fixture-results" data-fixtures-list></div>','<div id="fixture-results" data-fixtures-list><p class="calendar-empty">'+message+'</p></div>');
+    console.warn('Calendario HTML: '+String(error.message));
+  }
+  const headers=new Headers(original.headers);
+  for(const name of ['content-length','content-encoding','etag','last-modified'])headers.delete(name);
+  headers.set('Cache-Control','no-store');headers.set('Content-Type','text/html; charset=utf-8');
+  if(status!==200)headers.set('X-Robots-Tag','noindex');
+  return new Response(html,{status,headers});
+}
 export default {
   async fetch(request, env, ctx) {
     if (new URL(request.url).pathname === '/api/partidos') return fixtures(request,ctx);
@@ -609,6 +694,6 @@ export default {
     if (new URL(request.url).pathname === '/api/tabla') return competitionTable(request,ctx,env);
     if (new URL(request.url).pathname === '/api/banderas') return playerFlags(request,ctx);
     if (new URL(request.url).pathname === '/api/plantilla') return teamSquad(request,ctx);
-    return env.ASSETS.fetch(request);
+    return calendarPage(request,env,ctx);
   }
 };

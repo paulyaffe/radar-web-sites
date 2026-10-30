@@ -1,5 +1,26 @@
 # Cuatro webs en Cloudflare Pages
 
+## La Jornada: contenido inicial y publicidad
+
+El calendario se entrega con partidos en el HTML y un JSON inicial seguro.
+El navegador reutiliza esos datos y mantiene la consulta visible si falla una
+actualización. En «Todos», un grupo de selecciones que aún no está en caché
+se completa desde el navegador para respetar el límite gratuito de peticiones;
+el HTML y el estado indican cuándo esa primera consulta está incompleta.
+
+Solo las cuatro guías completas de `football_content.py` cargan AdSense.
+El marcador, los equipos, los partidos, las tablas, los índices y los errores
+conservan la verificación, pero no cargan el script publicitario. La analítica
+mantiene por defecto el almacenamiento denegado; las opciones de privacidad
+enlazan a la gestión de consentimiento de una guía que sí utiliza la CMP.
+No se modifica la configuración publicitaria de los otros sitios.
+
+Las guías explican el selector de país, las alineaciones y el banquillo,
+las fechas y resultados, y las tablas. Están enlazadas desde la portada,
+el pie y el sitemap. `/metodo/` explica fuentes, cobertura y límites.
+Estos cambios no suponen una aprobación de AdSense; la revisión de Google
+continúa siendo un proceso externo.
+
 Las cuatro webs se publicaron y se comprobaron el 12 de octubre de 2026.
 
 - Cocina en gramos: https://cocina-en-gramos-paul.pages.dev

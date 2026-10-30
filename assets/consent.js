@@ -6,6 +6,10 @@
   window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
   window.googlefc.callbackQueue.push({
     CONSENT_API_READY: function () {
+      if (location.hash === '#opciones-de-privacidad' &&
+          typeof window.googlefc.showRevocationMessage === 'function') {
+        window.googlefc.showRevocationMessage();
+      }
       if (typeof window.__tcfapi !== 'function') return;
       window.__tcfapi('addEventListener', 0, function (data, success) {
         link.hidden = !(success && data && data.gdprApplies &&

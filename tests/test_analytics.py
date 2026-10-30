@@ -27,7 +27,8 @@ class Analytics(unittest.TestCase):
                         self.assertEqual(text.count("googletagmanager.com/gtag/js?id=G-W3F2HYMSXD"), 1, page)
                         self.assertEqual(text.count("gtag('config', 'G-W3F2HYMSXD')"), 1, page)
                         self.assertLess(text.index("gtag('consent', 'default'"), text.index("googletagmanager.com/gtag/js"))
-                        self.assertLess(text.index("gtag('consent', 'default'"), text.index("adsbygoogle.js"))
+                        if 'adsbygoogle.js' in text:
+                            self.assertLess(text.index("gtag('consent', 'default'"), text.index("adsbygoogle.js"))
                         self.assertIn("/assets/consent.js", text)
                     privacy = (root/"dist/privacidad/index.html").read_text(encoding="utf-8")
                     self.assertIn("Google Analytics 4", privacy)

@@ -24,6 +24,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+if __package__:
+    from .football_content import AD_GUIDE_PATHS, GUIDES, PRIVACY_GUIDE_URL, guide_body, guide_url, guides_index, guides_teaser, method_body
+else:
+    from football_content import AD_GUIDE_PATHS, GUIDES, PRIVACY_GUIDE_URL, guide_body, guide_url, guides_index, guides_teaser, method_body
 
 UTC = dt.timezone.utc
 LOCK = threading.RLock()
@@ -417,11 +421,14 @@ def page(profile, base_url, path, title, description, body, schema=None, adsense
     if ads.get("enabled"):
         if not pub or not ads.get("google_cmp_ready"):
             raise ValueError("Para integrar AdSense falta el ID o confirmar el mensaje CMP de Google.")
-        adtags += f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-{pub}" crossorigin="anonymous"></script>'
+        if profile != "deportes" or path in AD_GUIDE_PATHS:
+            adtags += f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-{pub}" crossorigin="anonymous"></script>'
     privacy_control = ""
     if ads.get("enabled"):
         adtags += '<script src="/assets/consent.js" defer></script>'
         privacy_control = '<a href="/privacidad/" id="privacy-options" hidden>Opciones de privacidad</a>'
+        if profile == "deportes" and path not in AD_GUIDE_PATHS:
+            privacy_control = '<a href="'+PRIVACY_GUIDE_URL+'">Opciones de privacidad</a>'
     adtags = analytics_tags(analytics, ads) + adtags
     nav = '<a href="/">Inicio</a><a href="/#herramientas">Calculadoras</a><a href="/#lecturas">' + ("Recetas y guías" if profile == "cocina" else "Guías") + '</a>'
     if profile == "deportes":
@@ -436,7 +443,7 @@ def page(profile, base_url, path, title, description, body, schema=None, adsense
         document = document.replace('<body style=', '<body class="sports-app" style=', 1)
         selector_help = control_help('country-selector-help', 'Información sobre el selector de países', 'Elige un país para destacar los equipos que contienen en su primer plantilla jugadores de ese país.')
         document = document.replace('<nav aria-label="Principal"></nav>', '<div class="country-picker" data-country-picker><label for="country-search">Selecciona tú país.</label><div class="country-search-box"><input id="country-search" data-highlight-country type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="country-options" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe un país" value="Uruguay"><button data-country-toggle type="button" aria-label="Mostrar países" aria-controls="country-options" aria-expanded="false">⌄</button>'+selector_help+'</div><ul id="country-options" class="country-options" data-country-options role="listbox" aria-label="Países" hidden></ul></div>')
-        document = document.split("<footer>", 1)[0] + '<footer class="sports-footer"><a href="/privacidad/">Privacidad</a><a href="/metodo/">Créditos</a>' + privacy_control + '</footer></body></html>'
+        document = document.split("<footer>", 1)[0] + '<footer class="sports-footer"><a href="/guias/">Guías</a><a href="/metodo/">Cómo trabajamos</a><a href="/privacidad/">Privacidad</a>' + privacy_control + '</footer></body></html>'
     elif profile == "cocina":
         version = hashlib.sha256((Path(__file__).parent/'assets/cooking.css').read_bytes()).hexdigest()[:12]
         document = document.replace('</head>', '<link rel="stylesheet" href="/assets/cooking.css?v='+version+'"></head>', 1)
@@ -521,6 +528,8 @@ def render(root):
     p = PROFILES[profile]
     catalog = read_json(root/"catalog.json", {"articles": []})
     articles = [a for a in catalog["articles"] if a["status"] == "published"]
+    if profile == "deportes":
+        articles = [a for a in articles if '/guias/'+a['id']+'/' not in AD_GUIDE_PATHS]
     out = root/"dist"
     out.mkdir(exist_ok=True)
     assets = root/"assets" if (root/"assets").exists() else Path(__file__).parent/"assets"
@@ -543,7 +552,7 @@ def render(root):
         strip = f'<section class="trend-strip"><p class="eyebrow">EL RADAR DEL TEMA</p><ul>{pills}</ul><p class="small">Consultado: {esc(ranking.get("updated", ""))}. Señales de búsquedas y noticias, no visitas a esta web.</p></section>'
         body = hero + strip + body[len(hero):]
     if profile == "deportes":
-        body = football_quick_links() + '<h1 class="sport-title">Fútbol</h1>' + calendar_html()
+        body = football_quick_links() + '<h1 class="sport-title">Fútbol</h1>' + calendar_html() + guides_teaser()
     elif profile == "cocina":
         body = cooking_calculators_html(articles)
     save("/", p["seo_title"], p["description"], body, {"@context": "https://schema.org", "@type": "WebSite", "name": p["title"], "url": base+"/", "inLanguage": "es"})
@@ -551,6 +560,14 @@ def render(root):
         save('/recetas/', 'Recetas en gramos', 'Recetas con ingredientes en gramos y cantidades ajustables por raciones.', cooking_recipes_html(articles, assets))
     if profile == "deportes":
         sports = read_json(root/"sports.json", {})
+        save('/guias/', 'Guías de La Jornada', 'Cómo seguir a los jugadores de tu país, leer alineaciones y consultar resultados y tablas.', guides_index())
+        for guide in GUIDES:
+            save(guide_url(guide), guide['title'], guide['description'], guide_body(guide), {
+                '@context': 'https://schema.org', '@type': 'Article', 'headline': guide['title'],
+                'description': guide['description'], 'datePublished': '2026-10-30',
+                'author': {'@type': 'Organization', 'name': 'La Jornada'},
+                'mainEntityOfPage': base+guide_url(guide), 'inLanguage': 'es',
+            })
         save("/equipo/", "Plantilla y partidos de un equipo", "Plantilla del primer equipo, últimos cinco resultados y próximos cinco partidos de un club o selección.", '<section class="team-history" data-team-history aria-busy="false"><a class="back-link" href="/partidos/">← Partidos</a><h1>Equipo</h1><p data-team-status class="data-status" role="status" aria-live="polite"></p><div data-team-content></div><noscript>Activa JavaScript para ver los partidos.</noscript></section><script src="'+asset_url('team.js')+'" defer></script>')
         team_page = out/"equipo/index.html"
         team_page.write_text(team_page.read_text(encoding="utf-8").replace("</head>", '<meta name="robots" content="noindex,follow"></head>'), encoding="utf-8")
@@ -600,7 +617,7 @@ def render(root):
         save(f"/{category}/{aid}/", article["title"], article["description"], body, schema)
     method = '<article class="reading"><p class="eyebrow">NUESTRO MÉTODO</p><h1>Útil, claro y comprobable.</h1><p>Publicamos calculadoras con fórmulas visibles, ejemplos identificados y textos propios. Las ilustraciones son dibujos, no fotografías de resultados cocinados.</p><h2>Contenido y revisión</h2><p>Las señales de tendencias ayudan a elegir temas. Un tema popular no demuestra que una receta funcione. Las nuevas propuestas de recetas se guardan como borradores; las guías matemáticas usan una biblioteca limitada de fórmulas y ejemplos comprobados.</p><h2>Lo que mostramos</h2><p>No inventamos visitas, valoraciones, ensayos, autores expertos ni datos nutricionales. Los precios eléctricos de ejemplo son editables y no representan una tarifa vigente.</p></article>'
     if profile == "deportes":
-        method = '<article class="reading"><h1>Créditos</h1><p>Datos deportivos: <a href="https://www.espn.com/soccer/scoreboard">ESPN</a>.</p><p>Datos complementarios: <a href="https://github.com/openfootball/football.json">OpenFootball</a> (CC0 1.0) y <a href="https://www.openligadb.de/">OpenLigaDB</a> (<a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL 1.0</a>).</p><p>Escudos: ESPN. Banderas: ESPN y FlagCDN.</p><p><a href="/deportes.json">Datos y atribuciones</a> · Países: Unicode CLDR (<a href="/assets/COUNTRY-DATA-LICENSE.txt">licencia</a>).</p></article>'
+        method = method_body()
     save("/metodo/", "Créditos" if profile == "deportes" else "Cómo trabajamos", "Fuentes de los datos deportivos y licencias." if profile == "deportes" else "Nuestro método editorial y los límites de nuestras calculadoras.", method)
     privacy = '<article class="reading"><p class="eyebrow">PRIVACIDAD</p><h1>Tus cuentas se quedan contigo.</h1><p>Las calculadoras se ejecutan en tu navegador. Esta versión no tiene formularios de registro, cookies publicitarias, seguimiento analítico ni servicios externos de cálculo.</p><h2>Alojamiento</h2><p>El proveedor de alojamiento puede procesar información técnica de las solicitudes, como la dirección IP, para entregar la web y proteger su infraestructura. Eso no ofrece tu conexión como proxy ni permite que terceros naveguen usando la IP de tu casa.</p><h2>Cuando cambie el sitio</h2><p>Si añadimos publicidad, analíticas o formularios, actualizaremos esta información y los mecanismos de consentimiento que correspondan antes de activarlos.</p></article>'
     if profile == "deportes":
@@ -614,6 +631,7 @@ def render(root):
         privacy = privacy.replace('<h1>Datos y publicidad.</h1>', '<h1>Datos, publicidad y estadísticas.</h1>')
     if profile == "deportes":
         privacy = privacy.replace('</article>', '<p>El país que eliges para resaltar se guarda en este navegador como preferencia y puedes cambiarlo desde la cabecera.</p></article>')
+        privacy = privacy.replace('</article>', '<h2>Dónde se muestra publicidad</h2><p>Los anuncios se reservan a las guías completas. Las pantallas de partidos, equipos, tablas, búsqueda y error no cargan anuncios. Las opciones de consentimiento de Google se gestionan en las guías con publicidad; en el resto de páginas la analítica conserva el estado de almacenamiento denegado.</p><p><a href="'+PRIVACY_GUIDE_URL+'">Gestionar mis opciones de privacidad</a>. Desde una guía también puedes usar el enlace Opciones de privacidad para cambiar o retirar tu consentimiento.</p></article>')
     save("/privacidad/", "Privacidad", "Cómo funcionan las calculadoras y qué datos procesa esta web.", privacy)
     save("/404/", "Página no encontrada", "La página que buscas no está aquí.", '<section class="page-heading"><h1>Ese enlace se ha perdido.</h1><p>Vuelve al inicio para encontrar las calculadoras y las guías.</p><a class="button" href="/">Ir al inicio →</a></section>')
     (out/"404.html").write_text((out/"404/index.html").read_text(encoding="utf-8"), encoding="utf-8")
@@ -627,7 +645,10 @@ def render(root):
             raise ValueError("ID de editor AdSense no válido.")
         (out/"ads.txt").write_text(f"google.com, {pub}, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
     # Índice público sin borradores, rankings privados ni metadatos de las fuentes.
-    write_json(out/"contenido.json", {"site": p["title"], "articles": [{"title": a["title"], "url": f'/{"recetas" if a["kind"]=="recipe" else "guias"}/{a["id"]}/'} for a in articles]})
+    public_articles = [{"title": a["title"], "url": f'/{"recetas" if a["kind"]=="recipe" else "guias"}/{a["id"]}/'} for a in articles]
+    if profile == "deportes":
+        public_articles += [{"title": guide['title'], "url": guide_url(guide)} for guide in GUIDES]
+    write_json(out/"contenido.json", {"site": p["title"], "articles": public_articles})
     if profile == "deportes":
         public_sports = read_json(root/"sports.json", {})
         public_sports.pop("f1", None)
@@ -636,7 +657,7 @@ def render(root):
         worker = Path(__file__).with_name("calendar_worker.mjs")
         if worker.exists():
             shutil.copy2(worker, out/"_worker.js")
-            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo", "/api/tabla", "/api/banderas", "/api/partido", "/api/plantilla"], "exclude": []})
+            write_json(out/"_routes.json", {"version": 1, "include": ["/api/partidos", "/api/equipo", "/api/tabla", "/api/banderas", "/api/partido", "/api/plantilla", "/", "/partidos", "/partidos/", "/futbol", "/futbol/*"], "exclude": []})
         (out/"_redirects").write_text("/tenis /futbol/ 301\n/tenis/* /futbol/ 301\n/formula-1 /futbol/ 301\n/formula-1/* /futbol/ 301\n", encoding="utf-8")
         for removed_route in ("tenis", "formula-1"):
             stale = out/removed_route/"index.html"
@@ -675,7 +696,7 @@ def calendar_html(selected="todas"):
     choices += [(code, value[2]) for code, value in LEAGUES.items()]
     choices += list(NATIONAL_COMPETITIONS.items())
     options = "".join(f'<option value="{esc(code)}"'+(' data-group="selecciones"' if code in NATIONAL_COMPETITIONS else ' data-group="clubes"' if code in LEAGUES else '')+(' selected' if selected == code else '')+f'>{esc(name)}</option>' for code, name in choices)
-    return '<section id="partidos" class="calendar" data-fixtures aria-busy="false">'+date_controls('<label>Competición<select name="competicion">'+options+'</select></label>', match_navigation=True)+'<p class="calendar-status" data-fixtures-status role="status" aria-live="polite"></p><div id="fixture-results" data-fixtures-list></div><noscript>Activa JavaScript para consultar los partidos.</noscript><script src="/assets/calendar-navigation.js" defer></script><script src="'+asset_url('calendar.js')+'" defer></script></section>'
+    return '<section id="partidos" class="calendar" data-fixtures data-default-competition="'+esc(selected)+'" aria-busy="false">'+date_controls('<label>Competición<select name="competicion">'+options+'</select></label>', match_navigation=True)+'<p class="calendar-status" data-fixtures-status role="status" aria-live="polite"></p><div id="fixture-results" data-fixtures-list></div><noscript>Los partidos disponibles se muestran al abrir la página. Puedes cambiar la fecha y la competición con el formulario. Activa JavaScript para usar los resaltados y completar la vista de todas las competiciones.</noscript><script type="application/json" data-fixture-bootstrap></script><script src="/assets/calendar-navigation.js" defer></script><script src="'+asset_url('calendar.js')+'" defer></script></section>'
 
 
 

@@ -46,9 +46,10 @@
           const rows=data.scorers.map((p,i)=>{if(p.goals!==last)rank=i+1;last=p.goals;return [rank,scorerName(p),p.goals,team(p.team),p.played];});
           if(rows.length)fragment.append(makeTable(['#','Jugador','Goles','Equipo','PJ'],rows,'Goleadores de '+data.name));
         }
+        if(!(kind==='clasificacion'?data.groups.some(group=>group.rows.length):data.scorers.length))fragment.append(el('p',kind==='clasificacion'?'Esta competición todavía no tiene una tabla de posiciones disponible.':'Esta competición todavía no tiene datos de goleadores disponibles.','calendar-empty'));
         if(data.updated)fragment.append(el('p','Actualizado '+dateLabel(data.updated)+' · España peninsular','updated-note'));list.replaceChildren(fragment);
         if(kind==='goleadores')loadPlayerFlags(list,data.scorers,controller.signal);
-      }catch(e){if(e.name==='AbortError'||v!==version)return;status.textContent='';list.replaceChildren();}
+      }catch(e){if(e.name==='AbortError'||v!==version)return;status.textContent='No se ha podido consultar esta tabla.';list.replaceChildren(el('p','Vuelve al calendario para elegir otra competición o recarga esta página para intentarlo de nuevo.','calendar-empty'));}
       finally{if(v===version)tableRoot.setAttribute('aria-busy','false');}
     }
     load();

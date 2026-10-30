@@ -294,4 +294,27 @@ for(const scenario of ['pitch','list','unpublished','failure','midnight','urugua
   await run('calendar.js',state);state.countryOnly.click();for(let i=0;i<10;i++)await new Promise(setImmediate);
   assert.equal(state.countryOnly.attributes['aria-pressed'],'true');assert.equal(classes(state.list,'fixture-row').filter(row=>!row.hidden).length,1,'Filtering works when browser storage is blocked');
 }
-console.log('Páginas: partidos, plantillas, nacionalidades y filtro por país; carga diferida, respuestas tardías, errores, fechas, competiciones y preferencias comprobados.');
+for(const scenario of ['complete','pending','offline']){
+  const payload={competitions:[{code:'CL',name:'Champions League',matches:[structuredClone(data.match)]}]};
+  const state=calendarContext(payload),seed=new Element('script'),pending=[];
+  const choice=scenario==='complete'?'clubes':'todas';
+  if(choice==='todas'){state.filter.options.push({value:'todas'});state.sandbox.location.search='?fecha=2026-10-21&competicion=todas';}
+  seed.textContent=JSON.stringify({...payload,date:'2026-10-21',choice,pending_groups:choice==='todas'?['selecciones']:[]});
+  state.root.selectors['[data-fixture-bootstrap]']=seed;state.root.append(seed);
+  state.sandbox.fetch=url=>{
+    state.requests.push(url);
+    if(scenario==='offline')return Promise.reject(Error('offline'));
+    return new Promise(resolve=>pending.push(()=>resolve(Response.json(String(url).includes('competicion=selecciones')?{competitions:[]}:payload))));
+  };
+  await run('calendar.js',state);
+  assert.equal(classes(state.list,'fixture-row').length,1,'The server-provided match stays visible during startup');
+  assert.ok(state.list.textContent.includes('Real Madrid'));
+  if(scenario==='complete')assert.equal(state.requests.length,0,'A complete seed avoids downloading the same calendar again');
+  if(scenario==='pending'){
+    assert.equal(pending.length,2);assert.ok(state.status.textContent.includes('completando selecciones'));
+    for(const resolve of pending)resolve();for(let i=0;i<10;i++)await new Promise(setImmediate);
+    assert.equal(classes(state.list,'fixture-row').length,1);assert.ok(!state.status.textContent.includes('completando selecciones'));
+  }
+  if(scenario==='offline')assert.ok(state.status.textContent.includes('Se conserva la última consulta'));
+}
+console.log('Páginas: partidos, plantillas, filtro por país y calendario inicial; carga diferida, respuestas tardías, fallos, preferencias y datos del servidor comprobados.');

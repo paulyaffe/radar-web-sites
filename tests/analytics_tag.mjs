@@ -41,3 +41,14 @@ assert.equal(existing.dataLayer.at(-1)[2].analytics_storage, 'granted');
 existing.gtag('consent', 'update', {analytics_storage: 'denied'});
 assert.equal(existing.dataLayer.at(-1)[2].analytics_storage, 'denied');
 console.log('Analytics: defaults denied before config, single async tag, queue and consent updates checked.');
+{
+  const fs=await import('node:fs');
+  const script=fs.readFileSync(path.join(root,'assets/consent.js'),'utf8');
+  for(const hash of ['', '#opciones-de-privacidad']){
+    let opened=0;const handlers={},link={hidden:true,addEventListener:(key,fn)=>handlers[key]=fn};
+    const state={document:{getElementById:()=>link},location:{hash},googlefc:{callbackQueue:[],showRevocationMessage:()=>opened++}};state.window=state;
+    vm.runInNewContext(script,state);
+    state.googlefc.callbackQueue[0].CONSENT_API_READY();
+    assert.equal(opened,hash?1:0,'The privacy link explicitly opens consent management on the guide');
+  }
+}

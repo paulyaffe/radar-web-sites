@@ -53,7 +53,7 @@
       status.textContent=(data.team.national?'Selección':'Club')+' · Hora peninsular';
       const grid=el('div',undefined,'team-history-grid');grid.append(section(data.past,false),section(data.future,true));
       const squad=squadSection();content.replaceChildren(squad.box,grid);loadSquad(data.team.id,squad);
-    }catch(e){status.textContent='';content.replaceChildren();}
+    }catch(e){status.textContent='No se ha podido consultar este equipo.';const retry=el('button','Reintentar','button');retry.type='button';retry.addEventListener('click',load);content.replaceChildren(el('p','Comprueba el enlace del equipo o vuelve al calendario para elegir otro.','calendar-empty'),retry);}
     finally{root.setAttribute('aria-busy','false');}
   }
   load();

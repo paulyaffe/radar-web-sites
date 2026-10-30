@@ -1,0 +1,47 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import worker from '../calendar_worker.mjs';
+
+const source=JSON.parse(fs.readFileSync(new URL('./fixtures/match-mls-761908.json',import.meta.url),'utf8'));
+const event={...source.header,date:source.header.competitions[0].date,status:source.header.competitions[0].status};
+const python=spawnSync(process.env.PYTHON||'python',['-X','utf8','-c',"import engine; print(engine.page('deportes','https://example.org','/','Fútbol','Partidos',engine.calendar_html()))"],{encoding:'utf8'});
+assert.equal(python.status,0,python.stderr);
+const template=python.stdout,originalFetch=globalThis.fetch,originalCaches=globalThis.caches;
+const cache=new Map(),waiting=[],requests=[],ctx={waitUntil:p=>waiting.push(p)};
+globalThis.caches={default:{match:async key=>cache.get(key.url)?.clone(),put:async(key,response)=>cache.set(key.url,response.clone())}};
+const env={ASSETS:{fetch:async()=>new Response(template,{headers:{'Content-Type':'text/html','ETag':'old-template','Cache-Control':'public, max-age=86400'}})}};
+const request=query=>new Request('https://example.org/?fecha=2026-10-29&'+query);
+const seed=html=>JSON.parse(html.match(/<script type="application\/json" data-fixture-bootstrap>([\s\S]*?)<\/script>/)[1]);
+globalThis.fetch=async value=>{requests.push(String(value));return Response.json({events:String(value).includes('/usa.1/')?[event]:[]});};
+try{
+  let response=await worker.fetch(request('competicion=MLS'),env,ctx),html=await response.text();
+  assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'no-store');assert.equal(response.headers.has('ETag'),false);
+  assert.ok(html.includes('Inter Miami CF'));assert.ok(html.includes('FC Cincinnati'));assert.ok(html.includes('class="fixture-row"'));
+  assert.ok(html.includes('name="fecha" min="2000-01-01" max="2099-12-31" required value="2026-10-29"'));
+  assert.ok(html.includes('value="MLS" data-group="clubes" selected'));
+  assert.equal(seed(html).choice,'MLS');assert.equal(seed(html).competitions[0].matches.length,1);
+  assert.equal(requests.length,2,'The same two UTC dates as the API cover one Madrid day');await Promise.all(waiting);
+  cache.clear();requests.length=0;
+  response=await worker.fetch(request('competicion=todas'),env,ctx);html=await response.text();
+  assert.ok(requests.length<=35,'A cold HTML request stays below the free subrequest limit');
+  assert.deepEqual(seed(html).pending_groups,['selecciones']);assert.ok(html.includes('completando selecciones'));await Promise.all(waiting);
+  cache.set('https://example.org/api/partidos?fecha=2026-10-29&competicion=selecciones&v=5',Response.json({checked_at:new Date().toISOString(),complete:true,competitions:[{code:'FRIENDLY',name:'Amistosos',matches:[],error:null}]}));
+  const before=requests.length;
+  response=await worker.fetch(request('competicion=todas'),env,ctx);html=await response.text();
+  assert.deepEqual(seed(html).pending_groups,[]);assert.ok(seed(html).competitions.some(c=>c.code==='FRIENDLY'));assert.equal(requests.length,before,'Warm groups render without new provider calls');
+  response=await worker.fetch(request('competicion=NOPE'),env,ctx);html=await response.text();
+  assert.equal(response.status,400);assert.ok(html.includes('no son válidas'));assert.equal(requests.length,before);
+  cache.clear();globalThis.fetch=async()=>Response.json({events:[]});
+  response=await worker.fetch(request('competicion=MLS'),env,ctx);html=await response.text();assert.equal(response.status,200);assert.ok(html.includes('No hay partidos publicados'));
+  cache.clear();globalThis.fetch=async()=>{throw Error('offline');};
+  response=await worker.fetch(request('competicion=MLS'),env,ctx);html=await response.text();assert.equal(response.status,503);assert.ok(html.includes('Los partidos no están disponibles'));assert.ok(!html.includes('adsbygoogle.js'));
+  cache.clear();const hostile=structuredClone(event);hostile.competitions[0].competitors.find(t=>t.homeAway==='home').team.displayName='$& </script><script>alert(1)</script>';
+  globalThis.fetch=async()=>Response.json({events:[hostile]});
+  response=await worker.fetch(request('competicion=MLS'),env,ctx);html=await response.text();
+  assert.ok(!html.includes('<script>alert(1)</script>'));assert.ok(html.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
+  assert.equal(seed(html).competitions[0].matches[0].home,'$& </script><script>alert(1)</script>','Names cannot alter replace markers or close the JSON script');
+  const staticEnv={ASSETS:{fetch:async()=>new Response('<h1>Guía</h1>',{headers:{'Content-Type':'text/html'}})}};
+  response=await worker.fetch(new Request('https://example.org/guias/'),staticEnv,ctx);assert.equal(await response.text(),'<h1>Guía</h1>');
+}finally{globalThis.fetch=originalFetch;globalThis.caches=originalCaches;}
+console.log('HTML inicial: partidos reales, fecha, filtros, caché, límite gratuito, vacío, errores y escape comprobados.');

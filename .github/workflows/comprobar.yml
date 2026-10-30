@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - engine.py
+      - football_content.py
       - update.py
       - calendar_worker.mjs
       - tests/**
@@ -28,6 +29,7 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/calendar_worker.mjs
+      - run: node tests/calendar_html.mjs
       - run: node tests/team_worker.mjs
       - run: node tests/sports_data_worker.mjs
       - run: node tests/sports_page.mjs
