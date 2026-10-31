@@ -26,7 +26,7 @@ try{
   response=await worker.fetch(request('competicion=todas'),env,ctx);html=await response.text();
   assert.ok(requests.length<=35,'A cold HTML request stays below the free subrequest limit');
   assert.deepEqual(seed(html).pending_groups,['selecciones']);assert.ok(html.includes('completando selecciones'));await Promise.all(waiting);
-  cache.set('https://example.org/api/partidos?fecha=2026-10-29&competicion=selecciones&v=5',Response.json({checked_at:new Date().toISOString(),complete:true,competitions:[{code:'FRIENDLY',name:'Amistosos',matches:[],error:null}]}));
+  cache.set('https://example.org/api/partidos?fecha=2026-10-29&competicion=selecciones&v=6',Response.json({checked_at:new Date().toISOString(),complete:true,competitions:[{code:'FRIENDLY',name:'Amistosos',matches:[],error:null}]}));
   const before=requests.length;
   response=await worker.fetch(request('competicion=todas'),env,ctx);html=await response.text();
   assert.deepEqual(seed(html).pending_groups,[]);assert.ok(seed(html).competitions.some(c=>c.code==='FRIENDLY'));assert.equal(requests.length,before,'Warm groups render without new provider calls');

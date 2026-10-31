@@ -145,10 +145,10 @@ class Publishing(unittest.TestCase):
         with patch.object(engine, "sports_request", side_effect=TimeoutError) as request:
             result = engine.update_sports(self.root)
         self.assertEqual(result["football"]["updated"], previous["football"]["updated"])
-        self.assertEqual(len(result["errors"]), 18)
+        self.assertEqual(len(result["errors"]), 19)
         urls = [call.args[0] for call in request.call_args_list]
         self.assertFalse(any('jolpi' in url or '/tennis/' in url for url in urls))
-        for league in ('esp.copa_del_rey', 'usa.1', 'mex.1', 'uru.1', 'arg.1', 'bra.1'):
+        for league in ('esp.copa_del_rey', 'usa.1', 'mex.1', 'uru.1', 'arg.1', 'bra.1', 'ksa.1'):
             self.assertTrue(any('/'+league+'/scoreboard' in url for url in urls))
             self.assertTrue(any('/'+league+'/standings' in url for url in urls))
 

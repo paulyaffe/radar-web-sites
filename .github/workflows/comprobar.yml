@@ -44,19 +44,23 @@ jobs:
           python - <<'PY'
           import json, xml.etree.ElementTree as ET
           from pathlib import Path
+          from football_content import AD_GUIDE_PATHS
           for site in Path('sites').iterdir():
               config = json.loads((site/'site.json').read_text())
               base = config['base_url']
               for page in (site/'dist').rglob('*.html'):
                   text = page.read_text()
+                  route = '/' + page.relative_to(site/'dist').as_posix().removesuffix('index.html')
+                  serves_ads = config.get('adsense', {}).get('enabled') and (config['profile'] != 'deportes' or route in AD_GUIDE_PATHS)
                   assert 'chatgpt.site' not in text
                   assert base in text
                   assert 'ca-pub-7901739911277041' in text
                   if config.get('analytics', {}).get('enabled'):
                       measurement = config['analytics']['measurement_id']
                       assert text.count('googletagmanager.com/gtag/js?id='+measurement) == 1
-                      assert text.index("gtag('consent', 'default'") < text.index('adsbygoogle.js')
-                  if config.get('adsense', {}).get('enabled'):
+                      if serves_ads:
+                          assert text.index("gtag('consent', 'default'") < text.index('adsbygoogle.js')
+                  if serves_ads:
                       assert config['adsense'].get('google_cmp_ready')
                       assert 'adsbygoogle.js?client=ca-pub-7901739911277041' in text
                       assert '/assets/consent.js' in text
@@ -66,12 +70,12 @@ jobs:
               ET.parse(site/'dist/sitemap.xml')
               assert 'pub-7901739911277041' in (site/'dist/ads.txt').read_text()
           sports = json.loads(Path('sites/deportes/sports.json').read_text())
-          assert {'PD','CDR','SA','PL','FL1','DED','PPL','BL1','CL','EL','MLS','MEX','URU','ARG','BRA'} <= set(sports['leagues'])
+          assert {'PD','CDR','SA','PL','FL1','DED','PPL','BL1','CL','EL','MLS','MEX','URU','ARG','BRA','SPL'} <= set(sports['leagues'])
           assert Path('sites/deportes/dist/_worker.js').is_file()
-          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos', '/api/equipo', '/api/tabla', '/api/banderas', '/api/partido', '/api/plantilla']
-          for route in ('partidos','futbol/copa-del-rey','futbol/champions-league','futbol/europa-league','futbol/selecciones','futbol/mls','futbol/liga-mx','futbol/liga-uruguaya','futbol/liga-argentina','futbol/brasileirao','clasificacion','goleadores'):
+          assert json.loads(Path('sites/deportes/dist/_routes.json').read_text())['include'] == ['/api/partidos', '/api/equipo', '/api/tabla', '/api/banderas', '/api/partido', '/api/plantilla', '/', '/partidos', '/partidos/', '/futbol', '/futbol/*']
+          for route in ('partidos','futbol/copa-del-rey','futbol/champions-league','futbol/europa-league','futbol/selecciones','futbol/mls','futbol/liga-mx','futbol/liga-uruguaya','futbol/liga-argentina','futbol/brasileirao','futbol/liga-saudi','clasificacion','goleadores'):
               assert Path('sites/deportes/dist',route,'index.html').is_file()
-          print('Cuatro webs, SEO, AdSense, quince competiciones de clubes y calendario internacional comprobados. Esta tarea no publica.')
+          print('Cuatro webs, SEO, AdSense, dieciséis competiciones de clubes y calendario internacional comprobados. Esta tarea no publica.')
           PY
       - uses: actions/upload-artifact@v4
         with:

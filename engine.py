@@ -50,6 +50,7 @@ LEAGUES = {
     "URU": ("liga-uruguaya", "Uruguay", "Liga AUF Uruguaya", None),
     "ARG": ("liga-argentina", "Argentina", "Liga Profesional Argentina", None),
     "BRA": ("brasileirao", "Brasil", "Brasileirão Serie A", None),
+    "SPL": ("liga-saudi", "Arabia Saudí", "Liga de Arabia Saudí", None),
 }
 NATIONAL_COMPETITIONS = {
     "FRIENDLY": "Amistosos internacionales", "WORLD": "Mundial", "EURO": "Eurocopa",
@@ -63,7 +64,7 @@ PROFILES = {
     "deportes": {
         "title": "La Jornada", "eyebrow": "FÚTBOL",
         "heading": "El resultado.\nLa fuente. La fecha.",
-        "description": "Resultados y horarios de fútbol europeo y americano. Clasificaciones, goleadores y partidos de clubes y selecciones.",
+        "description": "Resultados y horarios de fútbol europeo, americano y de Arabia Saudí. Clasificaciones, goleadores y partidos de clubes y selecciones.",
         "color": "#3759a0", "background": "#f2f4f7", "icon": "sport",
         "query": "futbol ligas europa america resultados",
         "topics": {"futbol": ["futbol", "bundesliga", "mls", "liga mx", "brasileirao"]},
@@ -575,7 +576,7 @@ def render(root):
         match_page = out/'partido/index.html'
         match_page.write_text(match_page.read_text(encoding='utf-8').replace('</head>', '<meta name="robots" content="noindex,follow"></head>'), encoding='utf-8')
         save("/partidos/", "Partidos por fecha", "Horarios y resultados de fútbol por fecha.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
-        save("/futbol/", "Fútbol: partidos, clasificación y goleadores", "Calendario de ligas europeas y americanas, Copa del Rey, Champions League, Europa League y selecciones.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
+        save("/futbol/", "Fútbol: partidos, clasificación y goleadores", "Calendario de ligas europeas, americanas y de Arabia Saudí, Copa del Rey, Champions League, Europa League y selecciones.", football_quick_links()+'<h1 class="sport-title">Fútbol</h1>'+calendar_html())
         save("/futbol/selecciones/", "Partidos de selecciones", "Resultados y horarios de selecciones internacionales.", football_quick_links("selecciones")+'<h1 class="sport-title">Selecciones</h1>'+calendar_html("selecciones"))
         for code, (route, country, name, _) in LEAGUES.items():
             save(f"/futbol/{route}/", f"{name}: partidos y resultados", f"Horarios, resultados, clasificación y goleadores de {name}.", football_quick_links(code)+'<h1 class="sport-title">'+esc(name)+'</h1>'+calendar_html(code))
@@ -801,7 +802,7 @@ def recent_matches(matches):
 
 def update_tables(root):
     """The native publisher keeps a dated copy when the edge cannot reach standings."""
-    slugs = {"PD": "esp.1", "CDR": "esp.copa_del_rey", "SA": "ita.1", "PL": "eng.1", "FL1": "fra.1", "DED": "ned.1", "PPL": "por.1", "BL1": "ger.1", "CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1"}
+    slugs = {"PD": "esp.1", "CDR": "esp.copa_del_rey", "SA": "ita.1", "PL": "eng.1", "FL1": "fra.1", "DED": "ned.1", "PPL": "por.1", "BL1": "ger.1", "CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1", "SPL": "ksa.1"}
     slugs.update({"WORLD": "fifa.world", "EURO": "uefa.euro", "NATIONS": "uefa.nations", "WQ_EU": "fifa.worldq.uefa", "WQ_SA": "fifa.worldq.conmebol", "WQ_NA": "fifa.worldq.concacaf", "WQ_AF": "fifa.worldq.caf", "WQ_AS": "fifa.worldq.afc", "WQ_OC": "fifa.worldq.ofc", "COPA": "conmebol.america", "GOLD": "concacaf.gold", "AFCON": "caf.nations", "ASIAN": "afc.asian.cup"})
     result = read_json(root/"tables.json", {"competitions": {}})
     def compact(node):
@@ -837,7 +838,7 @@ def update_sports(root):
     files = {"PD": "es.1", "SA": "it.1", "PL": "en.1", "FL1": "fr.1", "DED": "nl.1", "PPL": "pt.1", "BL1": "de.1"}
     requests = [(code, f"https://raw.githubusercontent.com/openfootball/football.json/master/{season}/{file}.json", "CC0-1.0", "OpenFootball") for code, file in files.items()]
     requests += [(code, f"https://api.openligadb.de/getmatchdata/{league}/{year}", "ODbL-1.0", "OpenLigaDB") for code, league in {"PD":"la1", "PL":"pl", "BL1":"bl1"}.items()]
-    requests += [(code, f"https://site.api.espn.com/apis/site/v2/sports/soccer/{source}/scoreboard", "", "ESPN") for code, source in {"CDR": "esp.copa_del_rey", "CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1"}.items()]
+    requests += [(code, f"https://site.api.espn.com/apis/site/v2/sports/soccer/{source}/scoreboard", "", "ESPN") for code, source in {"CDR": "esp.copa_del_rey", "CL": "uefa.champions", "EL": "uefa.europa", "MLS": "usa.1", "MEX": "mex.1", "URU": "uru.1", "ARG": "arg.1", "BRA": "bra.1", "SPL": "ksa.1"}.items()]
     fetched = []
     with ThreadPoolExecutor(max_workers=4) as executor:
         futures = {executor.submit(sports_request, request[1]): request for request in requests}

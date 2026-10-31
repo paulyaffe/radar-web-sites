@@ -31,7 +31,7 @@ class CalendarTests(unittest.TestCase):
             config["adsense"] = {"publisher_id": "pub-7901739911277041", "enabled": True, "google_cmp_ready": True}
             engine.write_json(root/"site.json", config)
             engine.render(root)
-            for route in ("partidos", "futbol/copa-del-rey", "futbol/champions-league", "futbol/europa-league", "futbol/selecciones", "futbol/mls", "futbol/liga-mx", "futbol/liga-uruguaya", "futbol/liga-argentina", "futbol/brasileirao"):
+            for route in ("partidos", "futbol/copa-del-rey", "futbol/champions-league", "futbol/europa-league", "futbol/selecciones", "futbol/mls", "futbol/liga-mx", "futbol/liga-uruguaya", "futbol/liga-argentina", "futbol/brasileirao", "futbol/liga-saudi"):
                 text = (root/"dist"/route/"index.html").read_text(encoding="utf-8")
                 self.assertIn('name="fecha"', text)
                 self.assertIn('ca-pub-7901739911277041', text)
@@ -79,7 +79,7 @@ class CalendarTests(unittest.TestCase):
                 self.assertFalse((root/'dist'/route/'index.html').exists())
                 self.assertNotIn('/'+route+'/', (root/'dist/sitemap.xml').read_text())
                 self.assertIn('/'+route+'/* /futbol/ 301', (root/'dist/_redirects').read_text())
-            for code in ('CDR','MLS','MEX','URU','ARG','BRA'):
+            for code in ('CDR','MLS','MEX','URU','ARG','BRA','SPL'):
                 self.assertIn('value="'+code+'"', home)
                 self.assertIn('href="/futbol/'+engine.LEAGUES[code][0]+'/"', (root/'dist/goleadores/index.html').read_text(encoding='utf-8'))
             cup = (root/'dist/futbol/copa-del-rey/index.html').read_text(encoding='utf-8')

@@ -139,7 +139,7 @@ Comprobaciones: `node tests/team_worker.mjs` (desde el paquete Cloudflare).
 La portada entra al calendario. Los enlaces a posiciones y goleadores aparecen
 debajo del título de cada competición. Incluye siete ligas europeas, Copa del Rey, Champions League, Europa League,
 MLS (Estados Unidos), Liga MX (México), Liga AUF Uruguaya, Liga Profesional
-Argentina y Brasileirão Serie A, además de las competiciones de selecciones.
+Argentina, Brasileirão Serie A y Liga de Arabia Saudí, además de las competiciones de selecciones.
 Las ligas nuevas se incluyen en los filtros, las fichas de equipos, la navegación
 hasta la próxima fecha con partidos y las tablas disponibles en la fuente.
 Posiciones conserva los grupos, conferencias o fases publicados por ESPN.

@@ -10,6 +10,7 @@ export const COMPETITIONS = {
   URU: ['Liga AUF Uruguaya', 'uru.1', false],
   ARG: ['Liga Profesional Argentina', 'arg.1', false],
   BRA: ['Brasileirão Serie A', 'bra.1', false],
+  SPL: ['Liga de Arabia Saudí', 'ksa.1', false],
   FRIENDLY: ['Amistosos internacionales', 'fifa.friendly', true],
   WORLD: ['Mundial', 'fifa.world', true], EURO: ['Eurocopa', 'uefa.euro', true],
   NATIONS: ['UEFA Nations League', 'uefa.nations', true],
@@ -205,7 +206,7 @@ export async function fixtures(request, ctx={waitUntil:()=>{}}) {
   if (!codes.length) return json({error:'Competición no disponible.'},400);
   // Groups keep each request below the free plan's subrequest limit.
   const cache = globalThis.caches?.default;
-  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=5');
+  const key = new Request(url.origin+'/api/partidos?fecha='+day+'&competicion='+choice+'&v=6');
   let cached;
   try { const response = await cache?.match(key); cached = response && await response.json(); } catch { /* cache is optional */ }
   if (cached && Date.now()-Date.parse(cached.checked_at) < FRESH_MS) return json(cached);
@@ -657,7 +658,7 @@ export async function calendarPage(request,env,ctx={waitUntil:()=>{}}) {
       // group or let the browser fetch it in its own invocation (free limit: 50).
       let national;
       try{
-        const cached=await globalThis.caches?.default?.match(new Request(url.origin+'/api/partidos?fecha='+day+'&competicion=selecciones&v=5'));
+        const cached=await globalThis.caches?.default?.match(new Request(url.origin+'/api/partidos?fecha='+day+'&competicion=selecciones&v=6'));
         national=cached&&await cached.json();
       }catch{}
       if(national&&Array.isArray(national.competitions)&&Date.now()-Date.parse(national.checked_at)<FRESH_MS){
