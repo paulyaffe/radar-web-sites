@@ -418,7 +418,8 @@ export function formationRows(players, formation) {
   field.sort((a,b)=>depth(a)-depth(b)||(a.place||0)-(b.place||0));
   const rows=[[keeper[0].id]];let offset=0;
   for(const count of counts){
-    const row=field.slice(offset,offset+count).sort((a,b)=>side(a)-side(b));
+    // The keeper is at the top, facing down the pitch: his left is screen-right.
+    const row=field.slice(offset,offset+count).sort((a,b)=>side(b)-side(a));
     rows.push(row.map(p=>p.id));offset+=count;
   }
   return new Set(starters.map(p=>p.id)).size===11 && starters.every(p=>p.id)?rows:[];
@@ -495,7 +496,7 @@ export async function matchDetails(request,ctx={waitUntil:()=>{}}) {
   if(request.method!=='GET')return json({error:'Método no permitido'},405);
   const url=new URL(request.url),code=url.searchParams.get('competicion'),id=teamId(url.searchParams.get('id'));
   if(!id||!COMPETITIONS[code])return json({error:'Partido o competición no válidos.'},400);
-  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=5',ctx,async old=>{
+  const response=await cachedData(url,'/api/partido?competicion='+code+'&id='+id+'&v=6',ctx,async old=>{
     const raw=await upstreamJson('https://site.api.espn.com/apis/site/v2/sports/soccer/'+COMPETITIONS[code][1]+'/summary?event='+id,4_000_000);
     const year=String(raw.header?.season?.year || '');
     return matchNationalities(normalizeMatchDetails(raw,code,id),/^20\d{2}$/.test(year)?year:'',url.origin,ctx,old);

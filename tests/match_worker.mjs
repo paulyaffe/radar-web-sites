@@ -13,6 +13,10 @@ for(const lineup of result.lineups){
   assert.deepEqual(lineup.rows.map(r=>r.length),[1,4,2,3,1]);
   assert.equal(new Set(lineup.rows.flat()).size,11);
   assert.equal(lineup.players.find(p=>p.id===lineup.rows[0][0]).position,'Portero');
+  const roles=row=>row.map(id=>lineup.players.find(p=>p.id===id).position_code);
+  assert.deepEqual(roles(lineup.rows[1]),['RB','CD-R','CD-L','LB'],'With the keeper above, his right is screen-left and his left is screen-right');
+  assert.deepEqual(roles(lineup.rows[2]),['RM','LM']);
+  assert.deepEqual(roles(lineup.rows[3]),['AM-R','AM','AM-L']);
 }
 assert.equal(result.lineups[0].players.find(p=>p.id==='402479').events.filter(e=>e.type==='goal').length,1);
 assert.throws(()=>normalizeMatchDetails(fixture,'PD','401915313'),/competición/);
@@ -39,13 +43,20 @@ assert.deepEqual(formationRows(defensiveMid,'4-2-3-1').map(r=>r.length),[1,4,2,3
   assert.equal(miami.formation,'4-3-3');
   assert.deepEqual(miami.rows.map(r=>r.length),[1,4,3,3],'Left/right forwards must not suppress Inter Miami’s published pitch');
   assert.deepEqual(cincinnati.rows.map(r=>r.length),[1,3,5,2]);
-  assert.deepEqual(miami.rows.at(-1).map(id=>miami.players.find(p=>p.id===id).name),['Germán Berterame','Luis Suárez','Lionel Messi'],'Wide forwards stay on their published sides');
+  assert.deepEqual(miami.rows.at(-1).map(id=>miami.players.find(p=>p.id===id).name),['Lionel Messi','Luis Suárez','Germán Berterame'],'Wide forwards follow the same keeper perspective as the defence');
+  const roles=(lineup,row)=>row.map(id=>lineup.players.find(p=>p.id===id).position_code);
+  assert.deepEqual(roles(miami,miami.rows[1]),['RB','CD-R','CD-L','LB']);
+  assert.deepEqual(roles(miami,miami.rows[2]),['RM','CM','LM']);
+  assert.deepEqual(roles(cincinnati,cincinnati.rows[1]),['CD-R','CD','CD-L']);
+  assert.deepEqual(roles(cincinnati,cincinnati.rows[2]),['RM','CM-R','AM','CM-L','LM']);
+  assert.deepEqual(roles(cincinnati,cincinnati.rows[3]),['CF-R','CF-L']);
   for(const lineup of [miami,cincinnati])assert.equal(new Set(lineup.rows.flat()).size,11);
   for(const code of ['LF','RF'])assert.equal(miami.players.find(p=>p.position_code===code).position,'Delantero');
   const backThree=structuredClone(miami.players),codes={'314952':'CD-L','173666':'CD','231241':'LWB','315617':'CD-R','297328':'CM','174466':'RWB'};
   for(const player of backThree)if(codes[player.id])player.position_code=codes[player.id];
   const threeRows=formationRows(backThree,'3-4-3');
   assert.deepEqual(threeRows.map(r=>r.length),[1,3,4,3],'The same wide-forward codes work with a three-player defence');
+  assert.deepEqual(threeRows[2].map(id=>backThree.find(p=>p.id===id).position_code),['RWB','CM','CM','LWB'],'Wing-backs follow the keeper perspective too');
   assert.deepEqual(threeRows.at(-1),miami.rows.at(-1));
   const unknown=structuredClone(miami.players);unknown.find(p=>p.position_code==='LF').position_code='UNKNOWN';
   assert.deepEqual(formationRows(unknown,'4-3-3'),[],'Unknown positions still fall back to a list without inventing a layout');
